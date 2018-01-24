@@ -76,6 +76,8 @@ module.exports = {
       },
     ],
 
+    "linebreak-style": 0,
+
     // Allow .js files to use JSX syntax
     // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-filename-extension.md
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx'] }],
@@ -86,7 +88,7 @@ module.exports = {
 
     // ESLint plugin for prettier formatting
     // https://github.com/prettier/eslint-plugin-prettier
-    'prettier/prettier': 'error',
+    'prettier/prettier': 'warning',
   },
 
   settings: {

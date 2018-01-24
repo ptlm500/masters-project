@@ -8,38 +8,69 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Home.css';
 
 class Home extends React.Component {
-  static propTypes = {
-    news: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string.isRequired,
-        link: PropTypes.string.isRequired,
-        content: PropTypes.string,
-      }),
-    ).isRequired,
-  };
+  constructor() {
+    super();
+    this.state = { rect: { x: 5, y: 2 } };
+  }
+  // static propTypes = {
+  // };
+
+  startDrag(e) {
+    // https://codepen.io/nasrullahs/pen/edwPyL
+    e.preventDefault();
+    let point = this.svg.createSVGPoint();
+    let dragOffset = {};
+
+    point.x = e.clientX;
+    point.y = e.clientY;
+    point = point.matrixTransform(this.svg.getScreenCTM().inverse());
+
+    dragOffset = {
+      x: point.x - this.state.rect.x,
+      y: point.y - this.state.rect.y,
+    };
+
+    const mousemove = (e) => {
+      e.preventDefault();
+      point.x = e.clientX;
+      point.y = e.clientY;
+      const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
+      this.setState({
+        rect: {
+          x: cursor.x - dragOffset.x,
+          y: cursor.y - dragOffset.y,
+        },
+      });
+    };
+
+    const mouseup = (e) => {
+      document.removeEventListener('mousemove', mousemove);
+      document.removeEventListener('mouseup', mouseup);
+    };
+
+    document.addEventListener('mousemove', mousemove);
+    document.addEventListener('mouseup', mouseup);
+  }
 
   render() {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <h1>React.js New</h1>
-          {this.props.news.map(item => (
-            <article key={item.link} className={s.newsItem}>
-              <h1 className={s.newsTitle}>
-                <a href={item.link}>{item.title}</a>
-              </h1>
-              <div
-                className={s.newsDesc}
-                // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={{ __html: item.content }}
-              />
-            </article>
-          ))}
+          <svg viewBox="0 0 100 100" ref = {(svg) => this.svg = svg}>
+            <rect
+              x={this.state.rect.x}
+              y={this.state.rect.y}
+              width="20"
+              height="20"
+              ref={e => (this.svgRectElem = e)}
+              onMouseDown={e => this.startDrag(e)}
+            />
+          </svg>
         </div>
       </div>
     );
