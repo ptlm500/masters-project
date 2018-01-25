@@ -14,44 +14,6 @@ class DraggableComponent extends React.Component {
     svg: PropTypes.func,
   };
 
-
-  startDrag(e) {
-    // https://codepen.io/nasrullahs/pen/edwPyL
-    e.preventDefault();
-    let point = this.props.svg.createSVGPoint();
-    let dragOffset = {};
-
-    point.x = e.clientX;
-    point.y = e.clientY;
-    point = point.matrixTransform(this.props.svg.getScreenCTM().inverse());
-
-    dragOffset = {
-      x: point.x - this.state.rect.x,
-      y: point.y - this.state.rect.y,
-    };
-
-    const mousemove = (e) => {
-      e.preventDefault();
-      point.x = e.clientX;
-      point.y = e.clientY;
-      const cursor = point.matrixTransform(this.props.svg.getScreenCTM().inverse());
-      this.setState({
-        rect: {
-          x: cursor.x - dragOffset.x,
-          y: cursor.y - dragOffset.y,
-        },
-      });
-    };
-
-    const mouseup = (e) => {
-      document.removeEventListener('mousemove', mousemove);
-      document.removeEventListener('mouseup', mouseup);
-    };
-
-    document.addEventListener('mousemove', mousemove);
-    document.addEventListener('mouseup', mouseup);
-  }
-
   render() {
     return (
       <rect

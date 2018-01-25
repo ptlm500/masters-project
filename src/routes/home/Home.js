@@ -57,11 +57,19 @@ class Home extends React.Component {
     document.addEventListener('mouseup', mouseup);
   }
 
+  placeShape(e) {
+    console.log('Place shape')
+  }
+
   render() {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <svg viewBox="0 0 100 100" ref = {(svg) => this.svg = svg}>
+          <svg
+            viewBox="0 0 100 100"
+            ref = {(svg) => this.svg = svg}
+            onMouseDown={e => this.placeShape(e)}
+          >
             <rect
               x={this.state.rect.x}
               y={this.state.rect.y}
