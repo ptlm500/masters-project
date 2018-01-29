@@ -11,6 +11,8 @@ import React from 'react';
 // import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Home.css';
+import { addComponent } from '../../store/actions';
+import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 
 class Home extends React.Component {
   constructor() {
@@ -61,6 +63,10 @@ class Home extends React.Component {
     console.log('Place shape')
   }
 
+  componentDidMount() {
+
+  }
+
   render() {
     return (
       <div className={s.root}>
@@ -70,6 +76,7 @@ class Home extends React.Component {
             ref = {(svg) => this.svg = svg}
             onMouseDown={e => this.placeShape(e)}
           >
+
             <rect
               x={this.state.rect.x}
               y={this.state.rect.y}

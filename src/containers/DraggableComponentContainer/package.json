@@ -1,0 +1,6 @@
+{
+  "name": "DraggableComponentContainer",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./DraggableComponentContainer.js"
+}

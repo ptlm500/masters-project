@@ -11,14 +11,15 @@ class DraggableComponent extends React.Component {
   }
 
   static propTypes = {
-    svg: PropTypes.func,
+    component: PropTypes.object.isRequired,
+    move: PropTypes.func.isRequired
   };
 
   render() {
     return (
       <rect
-        x={this.state.rect.x}
-        y={this.state.rect.y}
+        x={this.props.component.get('x')}
+        y={this.props.component.get('y')}
         width="20"
         height="20"
         ref={e => (this.svgRectElem = e)}
