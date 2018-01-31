@@ -10,11 +10,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-import appReducers from '../../store/reducers';
 
-let store = createStore(appReducers);
 
 // external-global styles must be imported in your JS.
 import normalizeCss from 'normalize.css';
@@ -30,14 +26,12 @@ class Layout extends React.Component {
 
   render() {
     return (
-      <Provider store={store}>
-        <div>
-          <Header />
-          {this.props.children}
-          <Feedback />
-          <Footer />
-        </div>
-      </Provider>
+      <div>
+        <Header />
+        {this.props.children}
+        <Feedback />
+        <Footer />
+      </div>
     );
   }
 }

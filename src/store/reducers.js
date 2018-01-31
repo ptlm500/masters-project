@@ -3,13 +3,17 @@ import { combineReducers } from 'redux';
 import { MOVE_COMPONENT, ADD_COMPONENT } from './actions';
 
 // Define initial store state
-const initialState = Immutable.Map({
-  components: Immutable.Map({
-    a: Immutable.Map({
+const initialState = Immutable.fromJS({
+  components: {
+    a: {
       x: 5,
       y: 5
-    })
-  })
+    },
+    b: {
+      x: 10,
+      y: 10
+    }
+  }
 });
 
 // Component action reducers
@@ -17,7 +21,7 @@ function components(state = initialState, action) {
   switch (action.type) {
     // NB: reducer composition may remove the need for 'components'
     case MOVE_COMPONENT:
-      return state.update(action.uuid, component => action.component)
+      return state.setIn(['components', action.uuid], action.component);
     case ADD_COMPONENT: {
       return state.set(action.uuid, action.component);
     }

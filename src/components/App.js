@@ -9,6 +9,11 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import appReducers from '../store/reducers';
+
+let store = createStore(appReducers);
 
 const ContextType = {
   // Enables critical path CSS rendering
@@ -55,7 +60,11 @@ class App extends React.PureComponent {
   render() {
     // NOTE: If you need to add or modify header, footer etc. of the app,
     // please do that inside the Layout component.
-    return React.Children.only(this.props.children);
+    return (
+      <Provider store={store}>
+        {React.Children.only(this.props.children)}
+      </Provider>
+    );
   }
 }
 
