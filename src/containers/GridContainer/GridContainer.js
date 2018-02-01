@@ -1,17 +1,24 @@
 import { connect } from 'react-redux';
-import { moveComponent } from '../../store/actions';
+import { moveComponent, startComponentMove, endComponentMove } from '../../store/actions';
 import Grid from '../../components/Grid/Grid';
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    components: state.components.get('components')
+    components: state.components.get('components'),
+    movingComponent: state.components.get('movingComponent')
   };
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     move: (uuid, component) => {
-      dispatch(moveComponent(uuid, component))
+      dispatch(moveComponent(uuid, component));
+    },
+    startMove: (uuid) => {
+      dispatch(startComponentMove(uuid));
+    },
+    endMove: (uuid) => {
+      dispatch(endComponentMove(uuid));
     }
   }
 }

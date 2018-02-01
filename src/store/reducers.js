@@ -1,9 +1,10 @@
 import Immutable from 'immutable';
 import { combineReducers } from 'redux';
-import { MOVE_COMPONENT, ADD_COMPONENT } from './actions';
+import { MOVE_COMPONENT, ADD_COMPONENT, START_COMPONENT_MOVE, END_COMPONENT_MOVE } from './actions';
 
 // Define initial store state
 const initialState = Immutable.fromJS({
+  movingComponent: false,
   components: {
     a: {
       x: 5,
@@ -22,6 +23,10 @@ function components(state = initialState, action) {
     // NB: reducer composition may remove the need for 'components'
     case MOVE_COMPONENT:
       return state.setIn(['components', action.uuid], action.component);
+    case START_COMPONENT_MOVE:
+    return state.set('movingComponent', true)
+    case END_COMPONENT_MOVE:
+      return state.set('movingComponent', false)
     case ADD_COMPONENT: {
       return state.set(action.uuid, action.component);
     }

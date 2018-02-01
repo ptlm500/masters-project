@@ -11,10 +11,14 @@ class Grid extends React.Component {
 
   static propTypes = {
     components: PropTypes.object.isRequired,
-    move: PropTypes.func.isRequired
+    movingComponent: PropTypes.bool.isRequired,
+    move: PropTypes.func.isRequired,
+    startMove: PropTypes.func.isRequired,
+    endMove: PropTypes.func.isRequired
   };
 
   startDrag(e, uuid, component) {
+    this.props.startMove(uuid);
     e.preventDefault();
     let point = this.svg.createSVGPoint();
     let dragOffset = {};
@@ -42,10 +46,17 @@ class Grid extends React.Component {
     const mouseup = (e) => {
       document.removeEventListener('mousemove', mousemove);
       document.removeEventListener('mouseup', mouseup);
+      this.props.endMove(uuid);
     };
 
     document.addEventListener('mousemove', mousemove);
     document.addEventListener('mouseup', mouseup);
+  }
+
+  addComponent(e) {
+    if (!this.props.movingComponent) {
+      console.log(e)
+    }
   }
 
   renderComponents() {
@@ -66,7 +77,11 @@ class Grid extends React.Component {
 
   render() {
     return (
-      <svg viewBox="0 0 100 100" ref={svg => (this.svg = svg)}>
+      <svg
+        viewBox="0 0 100 100"
+        ref={svg => (this.svg = svg)}
+        onMouseDown={e => (this.addComponent(e))}
+      >
         {this.renderComponents()}
       </svg>
     );
