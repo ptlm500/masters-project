@@ -2,36 +2,75 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './DraggableComponent.css';
+import { STROKE_WIDTH, NODE_RADIUS, LEG_LENGTH, LEG_SPACING } from '../componentConstants';
 
 import Node from '../Node/Node';
 
 class DraggableComponent extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   static propTypes = {
-    component: PropTypes.object.isRequired,
+    uuid: PropTypes.string.isRequired,
+    component: PropTypes.shape({}).isRequired,
     moveComponent: PropTypes.func.isRequired
   };
 
+  setComponentDimensions(nodeCount) {
+    this.componentHeight = nodeCount * 10;
+    this.nodeOffset = NODE_RADIUS + STROKE_WIDTH / 2;
+  }
+
   render() {
-    return(
+    this.setComponentDimensions(this.props.component.get('nodes').size);
+    return (
       <svg
         x={this.props.component.get('x')}
         y={this.props.component.get('y')}
-        ref={e => (this.svgRectElem = e)}
-        onMouseDown={e => (
-          this.props.moveComponent(e, this.props.uuid, this.props.component))}
+        onMouseDown={e =>
+          this.props.moveComponent(e, this.props.uuid, this.props.component)
+        }
       >
         <g>
-        <line x1="1" y1="5" x2="6" y2="5" stroke="black" strokeWidth={1}/>
-        <line x1="1" y1="11" x2="6" y2="11" stroke="black" strokeWidth={1}/>
-        <Node x="2" y="5" input={true}/>
-        <Node x="2" y="11" input={true}/>
-        <path d="M 6,2 L 6,14 l 3,0 c 8,0 8,-12 0,-12, Z" fill="white" stroke="black" strokeWidth={1}/>
-        <line x1="15" y1="8" x2="20" y2="8" stroke="black" strokeWidth={1}/>
-        <Node x="19" y="8" input={false}/>
+          <line
+            x1={NODE_RADIUS * 2}
+            y1="6"
+            x2={LEG_LENGTH}
+            y2="6"
+            stroke="black"
+            strokeWidth={STROKE_WIDTH}
+          />
+          <line
+            x1={NODE_RADIUS * 2}
+            y1="25"
+            x2={LEG_LENGTH}
+            y2="25"
+            stroke="black"
+            strokeWidth={STROKE_WIDTH}
+          />
+          <Node x={this.nodeOffset} y="6" input />
+          <Node x={this.nodeOffset} y="25" input />
+          <path
+            d={
+              `M ${LEG_LENGTH},2
+              L ${LEG_LENGTH},${this.componentHeight}
+              l 8,0
+              c 16,0 16,-28 0,-28,
+              Z`}
+            fill="white"
+            stroke="black"
+            strokeWidth={2}
+          />
+          <line
+            x1="40"
+            y1={this.componentHeight / 2 + STROKE_WIDTH / 2}
+            x2={40 + LEG_LENGTH - NODE_RADIUS * 2}
+            y2={this.componentHeight / 2 + STROKE_WIDTH / 2}
+            stroke="black"
+            strokeWidth={STROKE_WIDTH}
+          />
+          <Node
+            x={40 + LEG_LENGTH - this.nodeOffset}
+            y={this.componentHeight / 2 + STROKE_WIDTH / 2}
+            input={false}
+          />
         </g>
       </svg>
     );

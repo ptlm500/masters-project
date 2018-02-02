@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { moveComponent } from '../../store/actions';
+// import { moveComponent } from '../../store/actions';
 import DraggableComponent from '../../components/DraggableComponent/DraggableComponent';
 
 const mapStateToProps = (state, ownProps) => {
@@ -10,7 +10,7 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const DraggableComponentContainer = connect(
-  mapStateToProps
+  mapStateToProps,
 )(DraggableComponent);
 
 export default DraggableComponentContainer;

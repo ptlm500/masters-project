@@ -3,19 +3,19 @@ import PropTypes from 'prop-types';
 import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 
 class Grid extends React.Component {
-  constructor() {
-    super();
-
-    this.startDrag = this.startDrag.bind(this);
-  }
-
   static propTypes = {
     components: PropTypes.object.isRequired,
     movingComponent: PropTypes.bool.isRequired,
     move: PropTypes.func.isRequired,
     startMove: PropTypes.func.isRequired,
-    endMove: PropTypes.func.isRequired
+    endMove: PropTypes.func.isRequired,
   };
+
+  constructor() {
+    super();
+
+    this.startDrag = this.startDrag.bind(this);
+  }
 
   startDrag(e, uuid, component) {
     this.props.startMove(uuid);
@@ -43,7 +43,7 @@ class Grid extends React.Component {
       this.props.move(uuid, component)
     };
 
-    const mouseup = (e) => {
+    const mouseup = e => {
       document.removeEventListener('mousemove', mousemove);
       document.removeEventListener('mouseup', mouseup);
       this.props.endMove(uuid);
@@ -60,7 +60,7 @@ class Grid extends React.Component {
   }
 
   renderComponents() {
-    let components = [];
+    const components = [];
 
     this.props.components.keySeq().forEach(uuid => {
       components.push(
@@ -68,7 +68,7 @@ class Grid extends React.Component {
           key={uuid}
           uuid={uuid}
           moveComponent={this.startDrag}
-        />
+        />,
       );
     });
 
@@ -78,9 +78,9 @@ class Grid extends React.Component {
   render() {
     return (
       <svg
-        viewBox="0 0 100 100"
+        viewBox="0 0 500 500"
         ref={svg => (this.svg = svg)}
-        onMouseDown={e => (this.addComponent(e))}
+        onMouseDown={e => this.addComponent(e)}
       >
         {this.renderComponents()}
       </svg>
