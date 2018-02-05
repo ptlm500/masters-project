@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './DraggableComponent.css';
-import { STROKE_WIDTH, NODE_RADIUS, LEG_LENGTH, LEG_SPACING } from '../componentConstants';
+import { STROKE_WIDTH, NODE_RADIUS, LEG_LENGTH, NODE_OFFSET } from '../componentConstants';
 
-import Node from '../Node/Node';
+import NodeContainer from '../../containers/NodeContainer/NodeContainer';
 
 class DraggableComponent extends React.Component {
   static propTypes = {
@@ -15,7 +15,6 @@ class DraggableComponent extends React.Component {
 
   setComponentDimensions(nodeCount) {
     this.componentHeight = nodeCount * 10;
-    this.nodeOffset = NODE_RADIUS + STROKE_WIDTH / 2;
   }
 
   render() {
@@ -45,8 +44,16 @@ class DraggableComponent extends React.Component {
             stroke="black"
             strokeWidth={STROKE_WIDTH}
           />
-          <Node x={this.nodeOffset} y="6" input />
-          <Node x={this.nodeOffset} y="25" input />
+          <NodeContainer
+            x={NODE_OFFSET}
+            y={6}
+            uuid={`${this.props.uuid}_1`}
+          />
+          <NodeContainer
+            x={NODE_OFFSET}
+            y={25}
+            uuid={`${this.props.uuid}_2`}
+          />
           <path
             d={
               `M ${LEG_LENGTH},2
@@ -66,10 +73,10 @@ class DraggableComponent extends React.Component {
             stroke="black"
             strokeWidth={STROKE_WIDTH}
           />
-          <Node
-            x={40 + LEG_LENGTH - this.nodeOffset}
+          <NodeContainer
+            x={40 + LEG_LENGTH - NODE_OFFSET}
             y={this.componentHeight / 2 + STROKE_WIDTH / 2}
-            input={false}
+            uuid={`${this.props.uuid}_3`}
           />
         </g>
       </svg>

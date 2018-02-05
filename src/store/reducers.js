@@ -1,6 +1,14 @@
 import Immutable from 'immutable';
 import { combineReducers } from 'redux';
-import { MOVE_COMPONENT, ADD_COMPONENT, START_COMPONENT_MOVE, END_COMPONENT_MOVE } from './actions';
+import {
+  MOVE_COMPONENT,
+  ADD_COMPONENT,
+  START_COMPONENT_MOVE,
+  END_COMPONENT_MOVE,
+  START_NODE_CONNECTION,
+  CONNECT_NODES,
+} from './actions';
+import { getComponentIdFromNodeId, uuid } from '../helpers';
 
 /*
   Component structure
@@ -13,8 +21,6 @@ import { MOVE_COMPONENT, ADD_COMPONENT, START_COMPONENT_MOVE, END_COMPONENT_MOVE
     nodes: {
       nodeId: {
         input: bool,
-        x: "",  < probably not the best way of doing this, should work out position internally
-        y: "",
         connection: "",
         state: 0
       }
@@ -35,6 +41,10 @@ import { MOVE_COMPONENT, ADD_COMPONENT, START_COMPONENT_MOVE, END_COMPONENT_MOVE
 // Define initial store state
 const initialState = Immutable.fromJS({
   movingComponent: false,
+  activeNode: {
+    id: '',
+    input: true
+  },
   components: {
     a: {
       x: 5,
@@ -79,6 +89,7 @@ const initialState = Immutable.fromJS({
       },
     },
   },
+  wires: {},
 });
 
 // Component action reducers
@@ -93,6 +104,52 @@ function components(state = initialState, action) {
       return state.set('movingComponent', false)
     case ADD_COMPONENT: {
       return state.set(action.uuid, action.component);
+    }
+    case START_NODE_CONNECTION: {
+      let newState = state;
+      newState = newState.set('activeNode', Immutable.Map({
+        id: action.nodeId,
+        input: action.input
+      }));
+
+      newState = newState.setIn(['wires', uuid()], Immutable.fromJS({
+        nodes: [action.nodeId]
+      }));
+
+      console.log(newState.toJS());
+
+      return newState;
+    }
+    case CONNECT_NODES: {
+      let newState = state;
+      newState = newState.setIn(
+        [
+          'components',
+          getComponentIdFromNodeId(action.startNodeId),
+          'nodes',
+          action.startNodeId,
+          'connection',
+        ],
+        action.endNodeId,
+      );
+      newState = newState.setIn(
+        [
+          'components',
+          getComponentIdFromNodeId(action.endNodeId),
+          'nodes',
+          action.endNodeId,
+          'connection',
+        ],
+        action.startNodeId,
+      );
+      newState = newState.set('activeNode',
+        Immutable.Map({
+          id: '',
+          input: true
+        })
+      );
+      console.log(newState.toJS())
+      return newState;
     }
     default:
       console.log(`created store with state ${state}`);

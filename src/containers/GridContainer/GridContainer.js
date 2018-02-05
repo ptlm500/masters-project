@@ -5,6 +5,7 @@ import Grid from '../../components/Grid/Grid';
 const mapStateToProps = (state, ownProps) => {
   return {
     components: state.components.get('components'),
+    wires: state.components.get('wires'),
     movingComponent: state.components.get('movingComponent')
   };
 }
@@ -19,9 +20,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     endMove: (uuid) => {
       dispatch(endComponentMove(uuid));
-    }
-  }
-}
+    },
+  };
+};
 
 const GridContainer = connect(
   mapStateToProps,

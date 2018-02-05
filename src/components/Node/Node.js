@@ -4,14 +4,28 @@ import { NODE_RADIUS, STROKE_WIDTH } from '../componentConstants';
 
 class Node extends React.Component {
   static propTypes = {
-    x: PropTypes.string.isRequired,
-    y: PropTypes.string.isRequired,
-    input: PropTypes.bool.isRequired,
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+    uuid: PropTypes.string.isRequired,
+    node: PropTypes.object.isRequired,
+    activeNode: PropTypes.object.isRequired,
+    startNodeConnection: PropTypes.func.isRequired,
+    connectNodes: PropTypes.func.isRequired
   }
 
+
+
   mouseDown(e) {
-    console.log('Pressed node');
+    console.log('Pressed node', this.props.activeNode.toJS());
     e.stopPropagation();
+    // NEED TO CHECK IF ALREADY CONNECTED, AND STOP INPUT > INPUT CONNECTION etc.
+    if (this.props.activeNode.get('id') !== ''
+        && this.props.activeNode.get('id') !== this.props.uuid
+        && this.props.activeNode.get('input') !== this.props.node.get('input')) {
+      this.props.connectNodes(this.props.activeNode.get('id'), this.props.uuid);
+    } else {
+      this.props.startNodeConnection(this.props.uuid, this.props.node.get('input'));
+    }
   }
 
   render() {

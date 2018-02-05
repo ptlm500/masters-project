@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
+import { getComponentIdFromNodeId } from '../../helpers';
 
 class Grid extends React.Component {
   static propTypes = {
     components: PropTypes.object.isRequired,
+    wires: PropTypes.object.isRequired,
     movingComponent: PropTypes.bool.isRequired,
     move: PropTypes.func.isRequired,
     startMove: PropTypes.func.isRequired,
@@ -15,6 +17,14 @@ class Grid extends React.Component {
     super();
 
     this.startDrag = this.startDrag.bind(this);
+
+    this.state = {
+      mouseBuffer: {
+        x: 0,
+        y: 0
+      },
+      direction: 'horizontal'
+    };
   }
 
   startDrag(e, uuid, component) {
@@ -38,8 +48,8 @@ class Grid extends React.Component {
       point.y = e.clientY;
       const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
 
-      component = component.set('x', cursor.x - dragOffset.x);
-      component = component.set('y', cursor.y - dragOffset.y)
+      component = component.set('x', Math.ceil((cursor.x - dragOffset.x) / 2) * 2);
+      component = component.set('y', Math.ceil((cursor.y - dragOffset.y) / 2) * 2);
       this.props.move(uuid, component)
     };
 
@@ -59,6 +69,24 @@ class Grid extends React.Component {
     }
   }
 
+  wireTracker(e) {
+    if (this.props.wires.size !== 0) {
+      if (this.state.mouseBuffer.x === 0 && this.state.mouseBuffer.y === 0) {
+        this.setState({
+          mouseBuffer: {
+            x: e.clientX,
+            y: e.clientY
+          }
+        });
+      }
+
+      if (Math.ceil(this.state.mouseBuffer.y / 10) !== Math.ceil(e.clientY / 10)) {
+        console.log('horizontal', Math.ceil(this.state.mouseBuffer.y / 10), Math.ceil(e.clientY / 10));
+      }
+
+    }
+  }
+
   renderComponents() {
     const components = [];
 
@@ -75,14 +103,43 @@ class Grid extends React.Component {
     return components;
   }
 
+  renderWires() {
+    const wires = [];
+
+    this.props.wires.keySeq().forEach(uuid => {
+      const wire = this.props.wires.get(uuid);
+      if (wire) {
+        console.log(wire);
+        const startNodeId = wire.getIn(['nodes', 0]);
+        const startComponent = this.props.components.get(getComponentIdFromNodeId(startNodeId));
+        // NEED TO GET NODE POSITION FROM STORE STATE
+        const startNode ={
+          x: startComponent.get('x') + 40 + 20,
+          y: startComponent.get('y') + 16,
+        };
+
+        wires.push(
+          <svg>
+            <polyline strokeWidth="2" stroke="black" points={`${startNode.x}, ${startNode.y} ${startNode.x + 10}, ${startNode.y}`}/>
+          </svg>
+        );
+        console.log('start', startNode);
+      }
+    });
+    return wires;
+  }
+
+
   render() {
     return (
       <svg
         viewBox="0 0 500 500"
         ref={svg => (this.svg = svg)}
         onMouseDown={e => this.addComponent(e)}
+        onMouseMove={e => this.wireTracker(e)}
       >
         {this.renderComponents()}
+        {this.renderWires()}
       </svg>
     );
   }
