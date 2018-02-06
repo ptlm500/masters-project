@@ -37,6 +37,7 @@ import { getComponentIdFromNodeId, uuid } from '../helpers';
 
 */
 
+import { NODE_OFFSET, LEG_LENGTH, STROKE_WIDTH } from '../components/componentConstants';
 
 // Define initial store state
 const initialState = Immutable.fromJS({
@@ -51,16 +52,22 @@ const initialState = Immutable.fromJS({
       y: 5,
       nodes: {
         a_1: {
+          x: NODE_OFFSET,
+          y: 6,
           input: true,
           connection: '',
           state: 0,
         },
         a_2: {
+          x: NODE_OFFSET,
+          y: 25,
           input: true,
           connection: '',
           state: 0,
         },
         a_3: {
+          x: 40 + LEG_LENGTH - NODE_OFFSET,
+          y: 30 / 2 + STROKE_WIDTH / 2, // 30 should be replaced by component height
           input: false,
           connection: '',
           state: 0,
@@ -72,16 +79,22 @@ const initialState = Immutable.fromJS({
       y: 10,
       nodes: {
         b_1: {
+          x: NODE_OFFSET,
+          y: 6,
           input: true,
           connection: '',
           state: 0,
         },
         b_2: {
+          x: NODE_OFFSET,
+          y: 25,
           input: true,
           connection: '',
           state: 0,
         },
         b_3: {
+          x: 40 + LEG_LENGTH - NODE_OFFSET,
+          y: 30 / 2 + STROKE_WIDTH / 2, // 30 should be replaced by component height
           input: false,
           connection: '',
           state: 0,

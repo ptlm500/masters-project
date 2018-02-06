@@ -80,8 +80,13 @@ class Grid extends React.Component {
         });
       }
 
-      if (Math.ceil(this.state.mouseBuffer.y / 10) !== Math.ceil(e.clientY / 10)) {
-        console.log('horizontal', Math.ceil(this.state.mouseBuffer.y / 10), Math.ceil(e.clientY / 10));
+      if (this.state.direction === 'horizontal' && Math.ceil(this.state.mouseBuffer.y / 10) !== Math.ceil(e.clientY / 10)) {
+        console.log(
+          'vertical',
+          Math.ceil(this.state.mouseBuffer.y / 10),
+          Math.ceil(e.clientY / 10),
+        );
+        this.setState({ direction: 'vertical' });
       }
 
     }
@@ -112,14 +117,13 @@ class Grid extends React.Component {
         console.log(wire);
         const startNodeId = wire.getIn(['nodes', 0]);
         const startComponent = this.props.components.get(getComponentIdFromNodeId(startNodeId));
-        // NEED TO GET NODE POSITION FROM STORE STATE
         const startNode ={
-          x: startComponent.get('x') + 40 + 20,
-          y: startComponent.get('y') + 16,
+          x: startComponent.get('x') + startComponent.getIn(['nodes', startNodeId, 'x']) + 4,
+          y: startComponent.get('y') + startComponent.getIn(['nodes', startNodeId, 'y']),
         };
 
         wires.push(
-          <svg>
+          <svg key={uuid}>
             <polyline strokeWidth="2" stroke="black" points={`${startNode.x}, ${startNode.y} ${startNode.x + 10}, ${startNode.y}`}/>
           </svg>
         );
