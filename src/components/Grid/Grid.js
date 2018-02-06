@@ -19,6 +19,19 @@ class Grid extends React.Component {
     this.startDrag = this.startDrag.bind(this);
   }
 
+  getNodeInfo(nodeId) {
+    const component = this.props.components.get(
+      getComponentIdFromNodeId(nodeId),
+    );
+    const node = {
+      x: component.get('x') + component.getIn(['nodes', nodeId, 'x']),
+      y: component.get('y') + component.getIn(['nodes', nodeId, 'y']),
+      input: component.getIn(['nodes', nodeId, 'input']),
+    };
+
+    return node;
+  }
+
   startDrag(e, uuid, component) {
     this.props.startMove(uuid);
     e.preventDefault();
@@ -101,6 +114,9 @@ class Grid extends React.Component {
   }
 
   renderWires() {
+    // If start node is an input, the wire must first go left
+    // If start node is an output, the wire must first go right
+    // If end node x < start node x, the wire must clear the component and go left
     const wires = [];
 
     this.props.wires.keySeq().forEach(uuid => {
@@ -108,21 +124,46 @@ class Grid extends React.Component {
       if (wire && wire.get('nodes').size > 1) {
         console.log(wire);
         const startNodeId = wire.getIn(['nodes', 0]);
-        const startComponent = this.props.components.get(getComponentIdFromNodeId(startNodeId));
-        const startNode ={
-          x: startComponent.get('x') + startComponent.getIn(['nodes', startNodeId, 'x']) + 4,
-          y: startComponent.get('y') + startComponent.getIn(['nodes', startNodeId, 'y']),
-        };
+        const startNode = this.getNodeInfo(startNodeId);
         const endNodeId = wire.getIn(['nodes', 1]);
-        const endComponent = this.props.components.get(getComponentIdFromNodeId(endNodeId));
-        const endNode ={
-          x: endComponent.get('x') + endComponent.getIn(['nodes', endNodeId, 'x']) + 4,
-          y: endComponent.get('y') + endComponent.getIn(['nodes', endNodeId, 'y']),
-        };
+        const endNode = this.getNodeInfo(endNodeId);
+
+        let points = '';
+
+        if (!startNode.input) {
+          points = `${startNode.x + 4}, ${startNode.y}`;
+          if (startNode.y !== endNode.y) {
+            if (startNode.x < endNode.x) {
+              points = points.concat(` ${startNode.x + (endNode.x - startNode.x) / 2}, ${startNode.y}`);
+              points = points.concat(` ${startNode.x + (endNode.x - startNode.x) / 2}, ${endNode.y}`);
+            } else if (startNode.x > endNode.x) {
+              points = points.concat(` ${startNode.x + 10}, ${startNode.y}`);
+              points = points.concat(` ${startNode.x + 10}, ${startNode.y + (endNode.y - startNode.y) / 2}`);
+              points = points.concat(` ${endNode.x - 10}, ${startNode.y + (endNode.y - startNode.y) / 2}`);
+              points = points.concat(` ${endNode.x - 10}, ${endNode.y}`);
+            }
+          }
+
+          points = points.concat(` ${endNode.x - 4}, ${endNode.y}`);
+        } else if (startNode.input) {
+          points = `${startNode.x - 4}, ${startNode.y}`;
+          if (startNode.y !== endNode.y) {
+            if (startNode.x < endNode.x) {
+              points = points.concat(` ${startNode.x - 10}, ${startNode.y}`);
+              points = points.concat(` ${startNode.x - 10}, ${startNode.y + (startNode.x - endNode.x) / 4}`);
+              points = points.concat(` ${endNode.x + 10}, ${startNode.y + (startNode.x - endNode.x) / 4}`);
+              points = points.concat(` ${endNode.x + 10}, ${endNode.y}`);
+            } else if (startNode.x > endNode.x) {
+              points = points.concat(` ${startNode.x - (startNode.x - endNode.x) / 2}, ${startNode.y}`);
+              points = points.concat(` ${startNode.x - (startNode.x - endNode.x) / 2}, ${endNode.y}`);
+            }
+          }
+          points = points.concat(` ${endNode.x + 4}, ${endNode.y}`);
+        }
 
         wires.push(
           <svg key={uuid}>
-            <polyline strokeWidth="2" stroke="black" points={`${startNode.x}, ${startNode.y} ${endNode.x - 8}, ${endNode.y}`}/>
+            <polyline strokeWidth="2" stroke="black" fill="none" points={points}/>
           </svg>
         );
         console.log('start', startNode);
