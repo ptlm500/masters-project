@@ -46,6 +46,7 @@ const initialState = Immutable.fromJS({
     id: '',
     input: true
   },
+  activeWire: '',
   components: {
     a: {
       x: 5,
@@ -125,9 +126,13 @@ function components(state = initialState, action) {
         input: action.input
       }));
 
-      newState = newState.setIn(['wires', uuid()], Immutable.fromJS({
+      const wireUuid = uuid();
+
+      newState = newState.setIn(['wires', wireUuid], Immutable.fromJS({
         nodes: [action.nodeId]
       }));
+
+      newState = newState.set('activeWire', wireUuid);
 
       console.log(newState.toJS());
 
@@ -135,6 +140,7 @@ function components(state = initialState, action) {
     }
     case CONNECT_NODES: {
       let newState = state;
+      // Update start node connection info
       newState = newState.setIn(
         [
           'components',
@@ -145,6 +151,7 @@ function components(state = initialState, action) {
         ],
         action.endNodeId,
       );
+      // Update end node connection info
       newState = newState.setIn(
         [
           'components',
@@ -155,12 +162,19 @@ function components(state = initialState, action) {
         ],
         action.startNodeId,
       );
+      // Update wire node info
+      newState = newState.updateIn(
+        ['wires', newState.get('activeWire'), 'nodes'],
+        nodes => nodes.push(action.endNodeId),
+      );
+      // Clear activeNode and activeWire
       newState = newState.set('activeNode',
         Immutable.Map({
           id: '',
           input: true
         })
       );
+      newState = newState.set('activeWire', '');
       console.log(newState.toJS())
       return newState;
     }

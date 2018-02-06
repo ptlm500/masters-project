@@ -17,14 +17,6 @@ class Grid extends React.Component {
     super();
 
     this.startDrag = this.startDrag.bind(this);
-
-    this.state = {
-      mouseBuffer: {
-        x: 0,
-        y: 0
-      },
-      direction: 'horizontal'
-    };
   }
 
   startDrag(e, uuid, component) {
@@ -69,28 +61,28 @@ class Grid extends React.Component {
     }
   }
 
-  wireTracker(e) {
-    if (this.props.wires.size !== 0) {
-      if (this.state.mouseBuffer.x === 0 && this.state.mouseBuffer.y === 0) {
-        this.setState({
-          mouseBuffer: {
-            x: e.clientX,
-            y: e.clientY
-          }
-        });
-      }
+  // wireTracker(e) {
+  //   if (this.props.wires.size !== 0) {
+  //     if (this.state.mouseBuffer.x === 0 && this.state.mouseBuffer.y === 0) {
+  //       this.setState({
+  //         mouseBuffer: {
+  //           x: e.clientX,
+  //           y: e.clientY
+  //         }
+  //       });
+  //     }
 
-      if (this.state.direction === 'horizontal' && Math.ceil(this.state.mouseBuffer.y / 10) !== Math.ceil(e.clientY / 10)) {
-        console.log(
-          'vertical',
-          Math.ceil(this.state.mouseBuffer.y / 10),
-          Math.ceil(e.clientY / 10),
-        );
-        this.setState({ direction: 'vertical' });
-      }
+  //     if (this.state.direction === 'horizontal' && Math.ceil(this.state.mouseBuffer.y / 10) !== Math.ceil(e.clientY / 10)) {
+  //       console.log(
+  //         'vertical',
+  //         Math.ceil(this.state.mouseBuffer.y / 10),
+  //         Math.ceil(e.clientY / 10),
+  //       );
+  //       this.setState({ direction: 'vertical' });
+  //     }
 
-    }
-  }
+  //   }
+  // }
 
   renderComponents() {
     const components = [];
@@ -113,7 +105,7 @@ class Grid extends React.Component {
 
     this.props.wires.keySeq().forEach(uuid => {
       const wire = this.props.wires.get(uuid);
-      if (wire) {
+      if (wire && wire.get('nodes').size > 1) {
         console.log(wire);
         const startNodeId = wire.getIn(['nodes', 0]);
         const startComponent = this.props.components.get(getComponentIdFromNodeId(startNodeId));
@@ -121,10 +113,16 @@ class Grid extends React.Component {
           x: startComponent.get('x') + startComponent.getIn(['nodes', startNodeId, 'x']) + 4,
           y: startComponent.get('y') + startComponent.getIn(['nodes', startNodeId, 'y']),
         };
+        const endNodeId = wire.getIn(['nodes', 1]);
+        const endComponent = this.props.components.get(getComponentIdFromNodeId(endNodeId));
+        const endNode ={
+          x: endComponent.get('x') + endComponent.getIn(['nodes', endNodeId, 'x']) + 4,
+          y: endComponent.get('y') + endComponent.getIn(['nodes', endNodeId, 'y']),
+        };
 
         wires.push(
           <svg key={uuid}>
-            <polyline strokeWidth="2" stroke="black" points={`${startNode.x}, ${startNode.y} ${startNode.x + 10}, ${startNode.y}`}/>
+            <polyline strokeWidth="2" stroke="black" points={`${startNode.x}, ${startNode.y} ${endNode.x - 8}, ${endNode.y}`}/>
           </svg>
         );
         console.log('start', startNode);
@@ -140,7 +138,6 @@ class Grid extends React.Component {
         viewBox="0 0 500 500"
         ref={svg => (this.svg = svg)}
         onMouseDown={e => this.addComponent(e)}
-        onMouseMove={e => this.wireTracker(e)}
       >
         {this.renderComponents()}
         {this.renderWires()}
