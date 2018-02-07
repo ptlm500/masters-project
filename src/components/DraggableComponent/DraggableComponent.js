@@ -10,11 +10,31 @@ class DraggableComponent extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
-    moveComponent: PropTypes.func.isRequired
+    selectedComponent: PropTypes.object.isRequired,
+    moveComponent: PropTypes.func.isRequired,
+    selectComponent: PropTypes.func.isRequired,
   };
 
   setComponentDimensions(nodeCount) {
     this.componentHeight = nodeCount * 10;
+  }
+
+  onMouseDown(e) {
+    e.stopPropagation();
+    this.props.selectComponent(this.props.uuid);
+    this.props.moveComponent(e, this.props.uuid, this.props.component);
+  }
+
+  getWireColour() {
+    if (this.isSelectedComponent()) {
+      return "blue";
+    }
+
+    return "black";
+  }
+
+  isSelectedComponent() {
+    return this.props.selectedComponent.get('uuid') === this.props.uuid;
   }
 
   renderNodes() {
@@ -40,10 +60,7 @@ class DraggableComponent extends React.Component {
       <svg
         x={this.props.component.get('x')}
         y={this.props.component.get('y')}
-        onMouseDown={e => {
-          e.stopPropagation();
-          this.props.moveComponent(e, this.props.uuid, this.props.component)
-        }}
+        onMouseDown={e => this.onMouseDown(e)}
       >
         <g>
           <line
@@ -51,7 +68,7 @@ class DraggableComponent extends React.Component {
             y1="6"
             x2={LEG_LENGTH}
             y2="6"
-            stroke="black"
+            stroke={this.getWireColour()}
             strokeWidth={STROKE_WIDTH}
           />
           <line
@@ -59,7 +76,7 @@ class DraggableComponent extends React.Component {
             y1="25"
             x2={LEG_LENGTH}
             y2="25"
-            stroke="black"
+            stroke={this.getWireColour()}
             strokeWidth={STROKE_WIDTH}
           />
           <path
@@ -70,7 +87,7 @@ class DraggableComponent extends React.Component {
               c 16,0 16,-28 0,-28,
               Z`}
             fill="white"
-            stroke="black"
+            stroke={this.getWireColour()}
             strokeWidth={2}
           />
           <line
@@ -78,7 +95,7 @@ class DraggableComponent extends React.Component {
             y1={this.componentHeight / 2 + STROKE_WIDTH / 2}
             x2={40 + LEG_LENGTH - NODE_RADIUS * 2}
             y2={this.componentHeight / 2 + STROKE_WIDTH / 2}
-            stroke="black"
+            stroke={this.getWireColour()}
             strokeWidth={STROKE_WIDTH}
           />
           {this.renderNodes()}

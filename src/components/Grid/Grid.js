@@ -12,6 +12,7 @@ class Grid extends React.Component {
     updateWire: PropTypes.func.isRequired,
     startMove: PropTypes.func.isRequired,
     endMove: PropTypes.func.isRequired,
+    selectComponent: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -66,10 +67,8 @@ class Grid extends React.Component {
     document.addEventListener('mouseup', mouseup);
   }
 
-  addComponent(e) {
-    if (!this.props.movingComponent) {
-      console.log(e)
-    }
+  onMouseDown(e) {
+    this.props.selectComponent();
   }
 
   renderComponents() {
@@ -104,7 +103,7 @@ class Grid extends React.Component {
       <svg
         viewBox="0 0 500 500"
         ref={svg => (this.svg = svg)}
-        onMouseDown={e => this.addComponent(e)}
+        onMouseDown={e => this.onMouseDown(e)}
       >
         {this.renderComponents()}
         {this.renderWires()}

@@ -10,8 +10,14 @@ class Wire extends React.Component {
     deleteWire: PropTypes.func.isRequired,
   };
 
+  constructor() {
+    super();
+
+    this.keyDown = this.keyDown.bind(this);
+  }
+
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.keyDown.bind(this));
+    document.removeEventListener('keydown', this.keyDown);
   }
 
   getPoints() {
@@ -51,9 +57,9 @@ class Wire extends React.Component {
 
   render() {
     if (this.isSelectedComponent()) {
-      document.addEventListener('keydown', this.keyDown.bind(this));
+      document.addEventListener('keydown', this.keyDown);
     } else {
-      document.removeEventListener('keydown', this.keyDown.bind(this));
+      document.removeEventListener('keydown', this.keyDown);
     }
 
     return (

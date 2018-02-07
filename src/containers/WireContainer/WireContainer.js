@@ -6,8 +6,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     wire: state.components.getIn(['wires', ownProps.uuid]),
     selectedComponent: state.components.get('selectedComponent'),
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
@@ -16,7 +16,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     deleteWire: uuid => {
       dispatch(deleteWire(uuid));
-    }
+    },
   };
 };
 
