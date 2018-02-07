@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
-import { getComponentIdFromNodeId } from '../../helpers';
+import WireContainer from '../../containers/WireContainer/WireContainer';
 
 class Grid extends React.Component {
   static propTypes = {
@@ -9,6 +9,7 @@ class Grid extends React.Component {
     wires: PropTypes.object.isRequired,
     movingComponent: PropTypes.bool.isRequired,
     move: PropTypes.func.isRequired,
+    updateWire: PropTypes.func.isRequired,
     startMove: PropTypes.func.isRequired,
     endMove: PropTypes.func.isRequired,
   };
@@ -19,17 +20,13 @@ class Grid extends React.Component {
     this.startDrag = this.startDrag.bind(this);
   }
 
-  getNodeInfo(nodeId) {
-    const component = this.props.components.get(
-      getComponentIdFromNodeId(nodeId),
-    );
-    const node = {
-      x: component.get('x') + component.getIn(['nodes', nodeId, 'x']),
-      y: component.get('y') + component.getIn(['nodes', nodeId, 'y']),
-      input: component.getIn(['nodes', nodeId, 'input']),
-    };
-
-    return node;
+  updateWires(component) {
+    component.get('nodes').forEach(node => {
+      if (node.get('connection')) {
+        console.log('updating wire', node.get('connection'));
+        this.props.updateWire(node.get('connection'));
+      }
+    });
   }
 
   startDrag(e, uuid, component) {
@@ -55,7 +52,8 @@ class Grid extends React.Component {
 
       component = component.set('x', Math.ceil((cursor.x - dragOffset.x) / 2) * 2);
       component = component.set('y', Math.ceil((cursor.y - dragOffset.y) / 2) * 2);
-      this.props.move(uuid, component)
+      this.props.move(uuid, component);
+      this.updateWires(component);
     };
 
     const mouseup = e => {
@@ -74,29 +72,6 @@ class Grid extends React.Component {
     }
   }
 
-  // wireTracker(e) {
-  //   if (this.props.wires.size !== 0) {
-  //     if (this.state.mouseBuffer.x === 0 && this.state.mouseBuffer.y === 0) {
-  //       this.setState({
-  //         mouseBuffer: {
-  //           x: e.clientX,
-  //           y: e.clientY
-  //         }
-  //       });
-  //     }
-
-  //     if (this.state.direction === 'horizontal' && Math.ceil(this.state.mouseBuffer.y / 10) !== Math.ceil(e.clientY / 10)) {
-  //       console.log(
-  //         'vertical',
-  //         Math.ceil(this.state.mouseBuffer.y / 10),
-  //         Math.ceil(e.clientY / 10),
-  //       );
-  //       this.setState({ direction: 'vertical' });
-  //     }
-
-  //   }
-  // }
-
   renderComponents() {
     const components = [];
 
@@ -114,64 +89,15 @@ class Grid extends React.Component {
   }
 
   renderWires() {
-    // If start node is an input, the wire must first go left
-    // If start node is an output, the wire must first go right
-    // If end node x < start node x, the wire must clear the component and go left
     const wires = [];
 
     this.props.wires.keySeq().forEach(uuid => {
-      const wire = this.props.wires.get(uuid);
-      if (wire && wire.get('nodes').size > 1) {
-        console.log(wire);
-        const startNodeId = wire.getIn(['nodes', 0]);
-        const startNode = this.getNodeInfo(startNodeId);
-        const endNodeId = wire.getIn(['nodes', 1]);
-        const endNode = this.getNodeInfo(endNodeId);
-
-        let points = '';
-
-        if (!startNode.input) {
-          points = `${startNode.x + 4}, ${startNode.y}`;
-          if (startNode.y !== endNode.y) {
-            if (startNode.x < endNode.x) {
-              points = points.concat(` ${startNode.x + (endNode.x - startNode.x) / 2}, ${startNode.y}`);
-              points = points.concat(` ${startNode.x + (endNode.x - startNode.x) / 2}, ${endNode.y}`);
-            } else if (startNode.x > endNode.x) {
-              points = points.concat(` ${startNode.x + 10}, ${startNode.y}`);
-              points = points.concat(` ${startNode.x + 10}, ${startNode.y + (endNode.y - startNode.y) / 2}`);
-              points = points.concat(` ${endNode.x - 10}, ${startNode.y + (endNode.y - startNode.y) / 2}`);
-              points = points.concat(` ${endNode.x - 10}, ${endNode.y}`);
-            }
-          }
-
-          points = points.concat(` ${endNode.x - 4}, ${endNode.y}`);
-        } else if (startNode.input) {
-          points = `${startNode.x - 4}, ${startNode.y}`;
-          if (startNode.y !== endNode.y) {
-            if (startNode.x < endNode.x) {
-              points = points.concat(` ${startNode.x - 10}, ${startNode.y}`);
-              points = points.concat(` ${startNode.x - 10}, ${startNode.y + (startNode.x - endNode.x) / 4}`);
-              points = points.concat(` ${endNode.x + 10}, ${startNode.y + (startNode.x - endNode.x) / 4}`);
-              points = points.concat(` ${endNode.x + 10}, ${endNode.y}`);
-            } else if (startNode.x > endNode.x) {
-              points = points.concat(` ${startNode.x - (startNode.x - endNode.x) / 2}, ${startNode.y}`);
-              points = points.concat(` ${startNode.x - (startNode.x - endNode.x) / 2}, ${endNode.y}`);
-            }
-          }
-          points = points.concat(` ${endNode.x + 4}, ${endNode.y}`);
-        }
-
-        wires.push(
-          <svg key={uuid}>
-            <polyline strokeWidth="2" stroke="black" fill="none" points={points}/>
-          </svg>
-        );
-        console.log('start', startNode);
+      if (this.props.wires.getIn([uuid, 'points'])) {
+        wires.push(<WireContainer key={uuid} uuid={uuid} />);
       }
     });
     return wires;
   }
-
 
   render() {
     return (

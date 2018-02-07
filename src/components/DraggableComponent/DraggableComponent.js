@@ -40,9 +40,10 @@ class DraggableComponent extends React.Component {
       <svg
         x={this.props.component.get('x')}
         y={this.props.component.get('y')}
-        onMouseDown={e =>
+        onMouseDown={e => {
+          e.stopPropagation();
           this.props.moveComponent(e, this.props.uuid, this.props.component)
-        }
+        }}
       >
         <g>
           <line
