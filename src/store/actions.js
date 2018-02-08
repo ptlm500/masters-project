@@ -4,8 +4,6 @@
 export const MOVE_COMPONENT = 'MOVE_COMPONENT';
 export const ADD_COMPONENT = 'ADD_COMPONENT';
 export const SELECT_COMPONENT = 'SELECT_COMPONENT';
-export const START_COMPONENT_MOVE = 'START_COMPONENT_MOVE';
-export const END_COMPONENT_MOVE = 'END_COMPONENT_MOVE';
 export const START_NODE_CONNECTION = 'START_NODE_CONNECTION';
 export const CONNECT_NODES = 'CONNECT_NODES';
 export const UPDATE_WIRE = 'UPDATE_WIRE';
@@ -27,20 +25,6 @@ export function selectComponent(uuid, componentType) {
     type: SELECT_COMPONENT,
     uuid,
     componentType,
-  };
-}
-
-export function startComponentMove(uuid) {
-  return {
-    type: START_COMPONENT_MOVE,
-    uuid,
-  };
-}
-
-export function endComponentMove(uuid) {
-  return {
-    type: END_COMPONENT_MOVE,
-    uuid,
   };
 }
 

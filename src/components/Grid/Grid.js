@@ -7,11 +7,8 @@ class Grid extends React.Component {
   static propTypes = {
     components: PropTypes.object.isRequired,
     wires: PropTypes.object.isRequired,
-    movingComponent: PropTypes.bool.isRequired,
     move: PropTypes.func.isRequired,
     updateWire: PropTypes.func.isRequired,
-    startMove: PropTypes.func.isRequired,
-    endMove: PropTypes.func.isRequired,
     selectComponent: PropTypes.func.isRequired,
   };
 
@@ -30,7 +27,6 @@ class Grid extends React.Component {
     // Set quantise scale
     const qScale = type === 'component' ? 2 : 1;
 
-    this.props.startMove(uuid);
     let point = this.svg.createSVGPoint();
     let dragOffset = {};
 
@@ -43,10 +39,10 @@ class Grid extends React.Component {
       y: point.y - component.get('y'),
     };
 
-    const mousemove = (e) => {
-      e.preventDefault();
-      point.x = e.clientX;
-      point.y = e.clientY;
+    const mousemove = moveEvent => {
+      moveEvent.preventDefault();
+      point.x = moveEvent.clientX;
+      point.y = moveEvent.clientY;
       const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
 
       let newComponent = component.set(
@@ -65,10 +61,9 @@ class Grid extends React.Component {
       }
     };
 
-    const mouseup = e => {
+    const mouseup = () => {
       document.removeEventListener('mousemove', mousemove);
       document.removeEventListener('mouseup', mouseup);
-      this.props.endMove(uuid);
     };
 
     document.addEventListener('mousemove', mousemove);
@@ -78,7 +73,6 @@ class Grid extends React.Component {
   updateWires(component) {
     component.get('nodes').forEach(node => {
       if (node.get('connection')) {
-        console.log('updating wire', node.get('connection'));
         this.props.updateWire(node.get('connection'));
       }
     });

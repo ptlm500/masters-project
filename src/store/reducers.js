@@ -3,8 +3,6 @@ import { combineReducers } from 'redux';
 import {
   MOVE_COMPONENT,
   ADD_COMPONENT,
-  START_COMPONENT_MOVE,
-  END_COMPONENT_MOVE,
   START_NODE_CONNECTION,
   CONNECT_NODES,
   UPDATE_WIRE,
@@ -192,7 +190,6 @@ function components(state = initialState, action) {
   switch (action.type) {
     // NB: reducer composition may remove the need for 'components'
     case MOVE_COMPONENT:
-      console.log('move type', action.moveType);
       if (action.moveType === 'component') {
         return state.setIn(['components', action.uuid], action.component);
       } else if (action.moveType === 'vertex') {
@@ -201,10 +198,7 @@ function components(state = initialState, action) {
           action.component,
         );
       }
-    case START_COMPONENT_MOVE:
-      return state.set('movingComponent', true);
-    case END_COMPONENT_MOVE:
-      return state.set('movingComponent', false)
+      break;
     case ADD_COMPONENT: {
       return state.set(action.uuid, action.component);
     }
