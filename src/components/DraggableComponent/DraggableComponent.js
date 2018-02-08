@@ -22,7 +22,7 @@ class DraggableComponent extends React.Component {
   onMouseDown(e) {
     e.stopPropagation();
     this.props.selectComponent(this.props.uuid);
-    this.props.moveComponent(e, this.props.uuid, this.props.component);
+    this.props.moveComponent(e, this.props.uuid, this.props.component, 'component');
   }
 
   getWireColour() {

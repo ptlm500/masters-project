@@ -18,21 +18,19 @@ class Grid extends React.Component {
   constructor() {
     super();
 
-    this.startDrag = this.startDrag.bind(this);
+    this.startComponentDrag = this.startComponentDrag.bind(this);
   }
 
-  updateWires(component) {
-    component.get('nodes').forEach(node => {
-      if (node.get('connection')) {
-        console.log('updating wire', node.get('connection'));
-        this.props.updateWire(node.get('connection'));
-      }
-    });
+  onMouseDown(e) {
+    this.props.selectComponent();
   }
 
-  startDrag(e, uuid, component) {
-    this.props.startMove(uuid);
+  startComponentDrag(e, uuid, component, type, vertexId) {
     e.preventDefault();
+    // Set quantise scale
+    const qScale = type === 'component' ? 2 : 1;
+
+    this.props.startMove(uuid);
     let point = this.svg.createSVGPoint();
     let dragOffset = {};
 
@@ -51,10 +49,20 @@ class Grid extends React.Component {
       point.y = e.clientY;
       const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
 
-      component = component.set('x', Math.ceil((cursor.x - dragOffset.x) / 2) * 2);
-      component = component.set('y', Math.ceil((cursor.y - dragOffset.y) / 2) * 2);
-      this.props.move(uuid, component);
-      this.updateWires(component);
+      let newComponent = component.set(
+        'x',
+        Math.ceil((cursor.x - dragOffset.x) / qScale) * qScale,
+      );
+      newComponent = newComponent.set(
+        'y',
+        Math.ceil((cursor.y - dragOffset.y) / qScale) * qScale,
+      );
+      // Call reducer for component move
+      this.props.move(uuid, newComponent, type, vertexId);
+      // If component is moving, call wire updater
+      if (type === 'component') {
+        this.updateWires(newComponent);
+      }
     };
 
     const mouseup = e => {
@@ -67,8 +75,13 @@ class Grid extends React.Component {
     document.addEventListener('mouseup', mouseup);
   }
 
-  onMouseDown(e) {
-    this.props.selectComponent();
+  updateWires(component) {
+    component.get('nodes').forEach(node => {
+      if (node.get('connection')) {
+        console.log('updating wire', node.get('connection'));
+        this.props.updateWire(node.get('connection'));
+      }
+    });
   }
 
   renderComponents() {
@@ -79,7 +92,7 @@ class Grid extends React.Component {
         <DraggableComponentContainer
           key={uuid}
           uuid={uuid}
-          moveComponent={this.startDrag}
+          moveComponent={this.startComponentDrag}
         />,
       );
     });
@@ -92,7 +105,13 @@ class Grid extends React.Component {
 
     this.props.wires.keySeq().forEach(uuid => {
       if (this.props.wires.getIn([uuid, 'points'])) {
-        wires.push(<WireContainer key={uuid} uuid={uuid} />);
+        wires.push(
+          <WireContainer
+            key={uuid}
+            uuid={uuid}
+            moveVertex={this.startComponentDrag}
+          />,
+        );
       }
     });
     return wires;

@@ -12,11 +12,13 @@ export const UPDATE_WIRE = 'UPDATE_WIRE';
 export const DELETE_WIRE = 'DELETE_WIRE';
 
 // Action creators
-export function moveComponent(uuid, component) {
+export function moveComponent(uuid, component, moveType, vertexId) {
   return {
     type: MOVE_COMPONENT,
     uuid,
     component,
+    moveType,
+    vertexId,
   };
 }
 

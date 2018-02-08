@@ -192,7 +192,15 @@ function components(state = initialState, action) {
   switch (action.type) {
     // NB: reducer composition may remove the need for 'components'
     case MOVE_COMPONENT:
-      return state.setIn(['components', action.uuid], action.component);
+      console.log('move type', action.moveType);
+      if (action.moveType === 'component') {
+        return state.setIn(['components', action.uuid], action.component);
+      } else if (action.moveType === 'vertex') {
+        return state.setIn(
+          ['wires', action.uuid, 'points', action.vertexId],
+          action.component,
+        );
+      }
     case START_COMPONENT_MOVE:
       return state.set('movingComponent', true);
     case END_COMPONENT_MOVE:

@@ -8,6 +8,7 @@ class Wire extends React.Component {
     selectedComponent: PropTypes.object.isRequired,
     selectComponent: PropTypes.func.isRequired,
     deleteWire: PropTypes.func.isRequired,
+    moveVertex: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -55,6 +56,32 @@ class Wire extends React.Component {
     }
   }
 
+  moveVertex(e, vertex, vertexId) {
+    e.stopPropagation();
+    this.props.moveVertex(e, this.props.uuid, vertex, 'vertex', vertexId);
+  }
+
+  renderVertices() {
+    const vertices = [];
+    const points = this.props.wire.get('points');
+    for (let i = 1; i < points.size - 1; i += 1) {
+      vertices.push(
+        <circle
+          key={i}
+          onMouseDown={e => this.moveVertex(e, points.get(i), i)}
+          cx={points.getIn([i, 'x'])}
+          cy={points.getIn([i, 'y'])}
+          r={2}
+          fill="white"
+          stroke="black"
+          strokeWidth={2}
+        />,
+      );
+    }
+
+    return vertices;
+  }
+
   render() {
     if (this.isSelectedComponent()) {
       document.addEventListener('keydown', this.keyDown);
@@ -74,6 +101,7 @@ class Wire extends React.Component {
           fill="none"
           points={this.getPoints()}
         />
+        {this.renderVertices()}
       </svg>
     );
   }
