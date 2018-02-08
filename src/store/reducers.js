@@ -128,8 +128,8 @@ const initialState = Immutable.fromJS({
   },
   components: {
     a: {
-      x: 5,
-      y: 5,
+      x: 10,
+      y: 10,
       type: 'ANDGate',
       nodes: {
         a_1: {
@@ -158,7 +158,7 @@ const initialState = Immutable.fromJS({
     b: {
       x: 10,
       y: 10,
-      type: 'ORGate',
+      type: 'XORGate',
       nodes: {
         b_1: {
           x: NODE_OFFSET,
@@ -175,6 +175,34 @@ const initialState = Immutable.fromJS({
           state: 0,
         },
         b_3: {
+          x: 40 + LEG_LENGTH - NODE_OFFSET,
+          y: 30 / 2 + STROKE_WIDTH / 2, // 30 should be replaced by component height
+          input: false,
+          connection: '',
+          state: 0,
+        },
+      },
+    },
+    c: {
+      x: 10,
+      y: 10,
+      type: 'ORGate',
+      nodes: {
+        c_1: {
+          x: NODE_OFFSET,
+          y: 6,
+          input: true,
+          connection: '',
+          state: 0,
+        },
+        c_2: {
+          x: NODE_OFFSET,
+          y: 25,
+          input: true,
+          connection: '',
+          state: 0,
+        },
+        c_3: {
           x: 40 + LEG_LENGTH - NODE_OFFSET,
           y: 30 / 2 + STROKE_WIDTH / 2, // 30 should be replaced by component height
           input: false,

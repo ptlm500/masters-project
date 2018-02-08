@@ -5,6 +5,7 @@ import s from './DraggableComponent.css';
 
 import ANDGate from '../logic/ANDGate/ANDGate';
 import ORGate from '../logic/ORGate/ORGate';
+import XORGate from '../logic/XORGate/XORGate';
 
 class DraggableComponent extends React.Component {
   static propTypes = {
@@ -30,6 +31,10 @@ class DraggableComponent extends React.Component {
       case 'ORGate':
         return (
           <ORGate uuid={this.props.uuid} component={this.props.component} selectedComponent={this.props.selectedComponent}/>
+        );
+      case 'XORGate':
+        return (
+          <XORGate uuid={this.props.uuid} component={this.props.component} selectedComponent={this.props.selectedComponent}/>
         );
       default:
         return null;

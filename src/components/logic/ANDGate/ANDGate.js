@@ -72,7 +72,7 @@ class ANDGate extends React.Component {
           d={`M ${LEG_LENGTH},2
             L ${LEG_LENGTH},${this.componentHeight}
             l 8,0
-            c 16,0 16,-28 0,-28,
+            c 16,0 16,-${this.componentHeight - 2} 0,-${this.componentHeight - 2},
             Z`}
           fill="white"
           stroke={this.getWireColour()}

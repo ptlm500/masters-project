@@ -7,7 +7,7 @@ import {
   LEG_LENGTH,
 } from '../../componentConstants';
 
-class ORGate extends React.Component {
+class XORGate extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
@@ -61,6 +61,13 @@ class ORGate extends React.Component {
           stroke={this.getWireColour()}
           strokeWidth={2}
         />
+          <path
+          d={`M ${LEG_LENGTH - 8},2
+            c 10,0 10,${this.componentHeight - 2} 0,${this.componentHeight - 2}`}
+          fill="white"
+          stroke={this.getWireColour()}
+          strokeWidth={2}
+        />
         <line
           x1={NODE_RADIUS * 2}
           y1="6"
@@ -91,4 +98,4 @@ class ORGate extends React.Component {
   }
 }
 
-export default ORGate;
+export default XORGate;
