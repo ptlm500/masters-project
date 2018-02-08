@@ -93,17 +93,8 @@ function getWirePoints(state, startNodeId, endNodeId) {
           y: startNode.y + (endNode.y - startNode.y) / 2,
         });
         points.push({
-          x: endNode.x - 10,
-          y: startNode.y + (endNode.y - startNode.y) / 2,
-        });
-        points.push({ x: endNode.x - 10, y: endNode.y });
-        points.push({
-          x: startNode.x - 10,
-          y: startNode.y + (startNode.y - endNode.y) / 2,
-        });
-        points.push({
           x: endNode.x + 10,
-          y: startNode.y + (startNode.y - endNode.y) / 2,
+          y: startNode.y + (endNode.y - startNode.y) / 2,
         });
         points.push({ x: endNode.x + 10, y: endNode.y });
       } else if (startNode.x > endNode.x) {
