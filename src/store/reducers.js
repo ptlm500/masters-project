@@ -130,6 +130,7 @@ const initialState = Immutable.fromJS({
     a: {
       x: 5,
       y: 5,
+      type: 'ANDGate',
       nodes: {
         a_1: {
           x: NODE_OFFSET,
@@ -157,6 +158,7 @@ const initialState = Immutable.fromJS({
     b: {
       x: 10,
       y: 10,
+      type: 'ORGate',
       nodes: {
         b_1: {
           x: NODE_OFFSET,

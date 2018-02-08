@@ -1,0 +1,6 @@
+{
+  "name": "ORGate",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ORGate.js"
+}
