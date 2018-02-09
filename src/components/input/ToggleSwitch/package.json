@@ -1,0 +1,6 @@
+{
+  "name": "ToggleSwitch",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ToggleSwitch.js"
+}

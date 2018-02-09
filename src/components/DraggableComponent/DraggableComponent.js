@@ -6,6 +6,7 @@ import s from './DraggableComponent.css';
 import ANDGate from '../logic/ANDGate/ANDGate';
 import ORGate from '../logic/ORGate/ORGate';
 import XORGate from '../logic/XORGate/XORGate';
+import ToggleSwitch from '../input/ToggleSwitch/ToggleSwitch';
 
 class DraggableComponent extends React.Component {
   static propTypes = {
@@ -35,6 +36,10 @@ class DraggableComponent extends React.Component {
       case 'XORGate':
         return (
           <XORGate uuid={this.props.uuid} component={this.props.component} selectedComponent={this.props.selectedComponent}/>
+        );
+      case 'ToggleSwitch':
+        return (
+          <ToggleSwitch uuid={this.props.uuid} component={this.props.component} selectedComponent={this.props.selectedComponent}/>
         );
       default:
         return null;

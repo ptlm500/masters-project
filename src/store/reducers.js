@@ -8,6 +8,7 @@ import {
   UPDATE_WIRE,
   SELECT_COMPONENT,
   DELETE_WIRE,
+  TOGGLE_STATE,
 } from './actions';
 import { getComponentIdFromNodeId, uuid } from '../helpers';
 
@@ -211,6 +212,21 @@ const initialState = Immutable.fromJS({
         },
       },
     },
+    d: {
+      x: 10,
+      y: 10,
+      type: 'ToggleSwitch',
+      state: 0,
+      nodes: {
+        d_1: {
+          x: 51 + LEG_LENGTH - NODE_OFFSET,
+          y: 16,
+          input: false,
+          connections: Immutable.Set(),
+          state: 0,
+        },
+      },
+    },
   },
   wires: {},
 });
@@ -327,6 +343,28 @@ function components(state = initialState, action) {
 
         newState = newState.deleteIn(['wires', action.wireId]);
       });
+
+      return newState;
+    }
+    case TOGGLE_STATE: {
+      const newComponentState = state.getIn(['components', action.uuid, 'state']) === 0 ? 1 : 0;
+      let newState = state;
+
+      // Update component state
+      newState = newState.setIn(
+        ['components', action.uuid, 'state'],
+        newComponentState,
+      );
+
+      // Update output node state
+      newState = newState.updateIn(
+        ['components', action.uuid, 'nodes'],
+        nodes =>
+          nodes.map(
+            node =>
+              !node.get('input') ? node.set('state', newComponentState) : node,
+          ),
+      );
 
       return newState;
     }

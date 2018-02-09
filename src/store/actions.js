@@ -8,6 +8,7 @@ export const START_NODE_CONNECTION = 'START_NODE_CONNECTION';
 export const CONNECT_NODES = 'CONNECT_NODES';
 export const UPDATE_WIRE = 'UPDATE_WIRE';
 export const DELETE_WIRE = 'DELETE_WIRE';
+export const TOGGLE_STATE = 'TOGGLE_STATE';
 
 // Action creators
 export function moveComponent(uuid, component, moveType, vertexId) {
@@ -63,5 +64,12 @@ export function deleteWire(wireId) {
   return {
     type: DELETE_WIRE,
     wireId,
+  };
+}
+
+export function toggleState(uuid) {
+  return {
+    type: TOGGLE_STATE,
+    uuid,
   };
 }
