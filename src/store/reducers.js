@@ -22,7 +22,7 @@ import { getComponentIdFromNodeId, uuid } from '../helpers';
     nodes: {
       nodeId: {
         input: bool,
-        connection: "",
+        connections: Set,
         state: 0
       }
     }
@@ -136,21 +136,21 @@ const initialState = Immutable.fromJS({
           x: NODE_OFFSET,
           y: 6,
           input: true,
-          connection: '',
+          connections: Immutable.Set(),
           state: 0,
         },
         a_2: {
           x: NODE_OFFSET,
           y: 25,
           input: true,
-          connection: '',
+          connections: Immutable.Set(),
           state: 0,
         },
         a_3: {
           x: 40 + LEG_LENGTH - NODE_OFFSET,
           y: 30 / 2 + STROKE_WIDTH / 2, // 30 should be replaced by component height
           input: false,
-          connection: '',
+          connections: Immutable.Set(),
           state: 0,
         },
       },
@@ -164,21 +164,21 @@ const initialState = Immutable.fromJS({
           x: NODE_OFFSET,
           y: 6,
           input: true,
-          connection: '',
+          connections: Immutable.Set(),
           state: 0,
         },
         b_2: {
           x: NODE_OFFSET,
           y: 25,
           input: true,
-          connection: '',
+          connections: Immutable.Set(),
           state: 0,
         },
         b_3: {
           x: 40 + LEG_LENGTH - NODE_OFFSET,
           y: 30 / 2 + STROKE_WIDTH / 2, // 30 should be replaced by component height
           input: false,
-          connection: '',
+          connections: Immutable.Set(),
           state: 0,
         },
       },
@@ -192,21 +192,21 @@ const initialState = Immutable.fromJS({
           x: NODE_OFFSET,
           y: 6,
           input: true,
-          connection: '',
+          connections: Immutable.Set(),
           state: 0,
         },
         c_2: {
           x: NODE_OFFSET,
           y: 25,
           input: true,
-          connection: '',
+          connections: Immutable.Set(),
           state: 0,
         },
         c_3: {
           x: 40 + LEG_LENGTH - NODE_OFFSET,
           y: 30 / 2 + STROKE_WIDTH / 2, // 30 should be replaced by component height
           input: false,
-          connection: '',
+          connections: Immutable.Set(),
           state: 0,
         },
       },
@@ -260,26 +260,26 @@ function components(state = initialState, action) {
     case CONNECT_NODES: {
       let newState = state;
       // Update start node connection info
-      newState = newState.setIn(
+      newState = newState.updateIn(
         [
           'components',
           getComponentIdFromNodeId(action.startNodeId),
           'nodes',
           action.startNodeId,
-          'connection',
+          'connections',
         ],
-        newState.get('activeWire'),
+        connections => connections.add(newState.get('activeWire')),
       );
       // Update end node connection info
-      newState = newState.setIn(
+      newState = newState.updateIn(
         [
           'components',
           getComponentIdFromNodeId(action.endNodeId),
           'nodes',
           action.endNodeId,
-          'connection',
+          'connections',
         ],
-        newState.get('activeWire'),
+        connections => connections.add(newState.get('activeWire')),
       );
       // Update wire node info
       newState = newState.updateIn(
@@ -314,15 +314,15 @@ function components(state = initialState, action) {
       const wireNodes = newState.getIn(['wires', action.wireId, 'nodes']);
       // Delete connection record for nodes
       wireNodes.forEach(nodeId => {
-        newState = newState.setIn(
+        newState = newState.updateIn(
           [
             'components',
             getComponentIdFromNodeId(nodeId),
             'nodes',
             nodeId,
-            'connection',
+            'connections',
           ],
-          '',
+          connections => connections.delete(action.wireId),
         );
 
         newState = newState.deleteIn(['wires', action.wireId]);

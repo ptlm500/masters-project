@@ -72,8 +72,10 @@ class Grid extends React.Component {
 
   updateWires(component) {
     component.get('nodes').forEach(node => {
-      if (node.get('connection')) {
-        this.props.updateWire(node.get('connection'));
+      if (node.get('connections').size > 0) {
+        node.get('connections').forEach(connection => {
+          this.props.updateWire(connection);
+        });
       }
     });
   }
