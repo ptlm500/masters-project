@@ -1,18 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import NodeContainer from '../../../containers/NodeContainer/NodeContainer';
 import {
   STROKE_WIDTH,
   NODE_RADIUS,
   LEG_LENGTH,
 } from '../../componentConstants';
+import { updateConnections } from '../../../store/actions';
 
 class XORGate extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
     selectedComponent: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
   };
+
+  componentDidUpdate() {
+    this.props.dispatch(updateConnections(this.props.uuid, 'component'));
+  }
 
   setComponentDimensions(nodeCount) {
     this.componentHeight = nodeCount * 10;
@@ -98,4 +105,4 @@ class XORGate extends React.Component {
   }
 }
 
-export default XORGate;
+export default connect()(XORGate);

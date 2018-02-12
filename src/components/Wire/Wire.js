@@ -5,16 +5,22 @@ class Wire extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     wire: PropTypes.object.isRequired,
+    wireState: PropTypes.number.isRequired,
     selectedComponent: PropTypes.object.isRequired,
     selectComponent: PropTypes.func.isRequired,
     deleteWire: PropTypes.func.isRequired,
     moveVertex: PropTypes.func.isRequired,
+    updateConnections: PropTypes.func.isRequired,
   };
 
   constructor() {
     super();
 
     this.keyDown = this.keyDown.bind(this);
+  }
+
+  componentDidUpdate() {
+    this.props.updateConnections(this.props.wireState);
   }
 
   componentWillUnmount() {
@@ -31,13 +37,12 @@ class Wire extends React.Component {
     return points;
   }
 
-
   getWireColour() {
     if (this.isSelectedComponent()) {
       return "blue";
     }
 
-    return "black";
+    return this.props.wireState === 0 ? 'black' : 'green';
   }
 
   isSelectedComponent() {

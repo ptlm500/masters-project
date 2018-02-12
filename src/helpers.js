@@ -12,3 +12,16 @@ export function uuid() {
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   )
 }
+
+export function getOutputNodeId(component) {
+  let outputNodeId;
+  component.get('nodes').keySeq().forEach(nodeId => {
+    if (!component.getIn(['nodes', nodeId, 'input'])) {
+      outputNodeId = nodeId;
+      return false;
+    }
+    return true;
+  });
+
+  return outputNodeId;
+}

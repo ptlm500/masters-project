@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import NodeContainer from '../../../containers/NodeContainer/NodeContainer';
 import {toggleState } from '../../../store/actions';
 import { STROKE_WIDTH, LEG_LENGTH, NODE_RADIUS } from '../../componentConstants';
@@ -89,7 +89,7 @@ class ToggleSwitch extends React.Component {
           y1={HEIGHT / 2 + STROKE_WIDTH / 2}
           x2={WIDTH + LEG_LENGTH - NODE_RADIUS * 2}
           y2={HEIGHT / 2 + STROKE_WIDTH / 2}
-          stroke={this.props.component.get('state') === 0 ? 'grey' : 'green'}
+          stroke={this.props.component.get('state') === 0 ? 'black' : 'green'}
           strokeWidth={STROKE_WIDTH}
         />
         {this.renderNodes()}

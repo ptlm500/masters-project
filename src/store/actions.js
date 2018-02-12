@@ -9,6 +9,8 @@ export const CONNECT_NODES = 'CONNECT_NODES';
 export const UPDATE_WIRE = 'UPDATE_WIRE';
 export const DELETE_WIRE = 'DELETE_WIRE';
 export const TOGGLE_STATE = 'TOGGLE_STATE';
+export const UPDATE_CONNECTIONS = 'UPDATE_CONNECTIONS';
+export const UPDATE_COMPONENT_OUTPUT = 'UPDATE_COMPONENT_OUTPUT';
 
 // Action creators
 export function moveComponent(uuid, component, moveType, vertexId) {
@@ -71,5 +73,22 @@ export function toggleState(uuid) {
   return {
     type: TOGGLE_STATE,
     uuid,
+  };
+}
+
+export function updateConnections(uuid, startType, wireState) {
+  return {
+    type: UPDATE_CONNECTIONS,
+    uuid,
+    startType,
+    wireState,
+  };
+}
+
+export function updateComponentOutput(uuid, outputState) {
+  return {
+    type: UPDATE_COMPONENT_OUTPUT,
+    uuid,
+    outputState,
   };
 }
