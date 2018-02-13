@@ -4,20 +4,14 @@ import { selectComponent, deleteWire, updateConnections } from '../../store/acti
 import { getComponentIdFromNodeId } from '../../helpers';
 
 const mapStateToProps = (state, ownProps) => {
-  const inputNodeId = state.components.getIn([
-    'wires',
-    ownProps.uuid,
-    'nodes',
-    0,
-  ]);
-
+  const wire = state.components.getIn(['wires', ownProps.uuid])
   return {
-    wire: state.components.getIn(['wires', ownProps.uuid]),
+    wire,
     wireState: state.components.getIn([
       'components',
-      getComponentIdFromNodeId(inputNodeId),
+      getComponentIdFromNodeId(wire.get('inputNode')),
       'nodes',
-      inputNodeId,
+      wire.get('inputNode'),
       'state',
     ]),
     selectedComponent: state.components.get('selectedComponent'),

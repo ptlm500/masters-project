@@ -47,11 +47,10 @@ export function startNodeConnection(nodeId, input) {
   };
 }
 
-export function connectNodes(startNodeId, endNodeId) {
+export function connectNodes(nodes) {
   return {
     type: CONNECT_NODES,
-    startNodeId,
-    endNodeId,
+    nodes,
   };
 }
 

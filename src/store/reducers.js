@@ -34,7 +34,8 @@ import { getComponentIdFromNodeId, uuid, getOutputNodeId } from '../helpers';
 /*
   Wire structure
   uuid: {
-    nodes: [],
+    inputNode: '',
+    outputNode: '',
     state: 0
   }
 
@@ -303,24 +304,24 @@ function components(state = initialState, action) {
     }
     case CONNECT_NODES: {
       let newState = state;
-      // Update start node connection info
+      // Update input node connection info
       newState = newState.updateIn(
         [
           'components',
-          getComponentIdFromNodeId(action.startNodeId),
+          getComponentIdFromNodeId(action.nodes.inputNodeId),
           'nodes',
-          action.startNodeId,
+          action.nodes.inputNodeId,
           'connections',
         ],
         connections => connections.add(newState.get('activeWire')),
       );
-      // Update end node connection info
+      // Update output node connection info
       newState = newState.updateIn(
         [
           'components',
-          getComponentIdFromNodeId(action.endNodeId),
+          getComponentIdFromNodeId(action.nodes.outputNodeId),
           'nodes',
-          action.endNodeId,
+          action.nodes.outputNodeId,
           'connections',
         ],
         connections => connections.add(newState.get('activeWire')),
@@ -329,16 +330,16 @@ function components(state = initialState, action) {
       newState = newState.setIn(
         ['wires', newState.get('activeWire')],
         Immutable.Map({
-          nodes: Immutable.List([action.startNodeId]),
-          points: getWirePoints(newState, action.startNodeId, action.endNodeId)
+          inputNode: action.nodes.inputNodeId,
+          outputNode: action.nodes.outputNodeId,
+          points: getWirePoints(
+            newState,
+            action.nodes.inputNodeId,
+            action.nodes.outputNodeId,
+          ),
         }),
       );
 
-      // Update wire node info
-      newState = newState.updateIn(
-        ['wires', newState.get('activeWire'), 'nodes'],
-        nodes => nodes.push(action.endNodeId),
-      );
       // Clear activeNode and activeWire
       newState = newState.set('activeNode',
         Immutable.Map({
@@ -354,12 +355,14 @@ function components(state = initialState, action) {
       const wire = state.getIn(['wires', action.wireId]);
       return state.setIn(
         ['wires', action.wireId, 'points'],
-        getWirePoints(state, wire.getIn(['nodes', 0]), wire.getIn(['nodes', 1])),
+        getWirePoints(state, wire.get('inputNode'), wire.get('outputNode')),
       );
     }
     case DELETE_WIRE: {
       let newState = state;
-      const wireNodes = newState.getIn(['wires', action.wireId, 'nodes']);
+
+      const wire = newState.getIn(['wires', action.wireId]);
+      const wireNodes = [wire.get('inputNode'), wire.get('outputNode')];
       // Iterate through wire connections
       wireNodes.forEach(nodeId => {
         // Delete connection record for nodes
@@ -432,23 +435,33 @@ function components(state = initialState, action) {
         }
       console.log('output', newState.toJS());
       } else if (action.startType === 'wire') {
-        const wire = newState.getIn(['wires', action.uuid]);
+        const wireOutputNode = newState.getIn(['wires', action.uuid, 'outputNode']);
+        // Update wire output node
+        newState = newState.setIn(
+          [
+            'components',
+            getComponentIdFromNodeId(wireOutputNode),
+            'nodes',
+            wireOutputNode,
+            'state',
+          ],
+          action.wireState,
+        );
 
-        // Update all nodes connected to the output of the wire
-        for (let i = 1; i < wire.get('nodes').size; i += 1) {
-          const nodeId = wire.getIn(['nodes', i]);
-          // Update connected node with wire state
-          newState = newState.setIn(
-            [
-              'components',
-              getComponentIdFromNodeId(nodeId),
-              'nodes',
-              nodeId,
-              'state',
-            ],
-            action.wireState,
-          );
-        }
+        // for (let i = 1; i < wire.get('nodes').size; i += 1) {
+        //   const nodeId = wire.getIn(['nodes', i]);
+        //   // Update connected node with wire state
+        //   newState = newState.setIn(
+        //     [
+        //       'components',
+        //       getComponentIdFromNodeId(nodeId),
+        //       'nodes',
+        //       nodeId,
+        //       'state',
+        //     ],
+        //     action.wireState,
+        //   );
+        // }
       }
 
       return newState;

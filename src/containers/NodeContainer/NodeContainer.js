@@ -15,8 +15,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     startNodeConnection: (nodeId, input) => {
       dispatch(startNodeConnection(nodeId, input));
     },
-    connectNodes: (startNodeId, endNodeId) => {
-      dispatch(connectNodes(startNodeId, endNodeId));
+    connectNodes: nodes => {
+      dispatch(connectNodes(nodes));
     },
   };
 };

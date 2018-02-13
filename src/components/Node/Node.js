@@ -19,12 +19,29 @@ class Node extends React.Component {
     console.log('Pressed node', this.props.activeNode.toJS());
     e.stopPropagation();
     // NEED TO CHECK IF ALREADY CONNECTED, AND STOP INPUT > INPUT CONNECTION etc.
-    if (this.props.activeNode.get('id') !== ''
-        && this.props.activeNode.get('id') !== this.props.uuid
-        && this.props.activeNode.get('input') !== this.props.node.get('input')) {
-      this.props.connectNodes(this.props.activeNode.get('id'), this.props.uuid);
+    const activeNodeId = this.props.activeNode.get('id');
+
+    if (
+      activeNodeId !== '' &&
+      activeNodeId !== this.props.uuid &&
+      this.props.activeNode.get('input') !== this.props.node.get('input')
+    ) {
+      // Connect wire input to the output node, and wire output to the input node
+      const nodes = {
+        inputNodeId: !this.props.activeNode.get('input')
+          ? activeNodeId
+          : this.props.uuid,
+        outputNodeId: this.props.activeNode.get('input')
+          ? activeNodeId
+          : this.props.uuid,
+      };
+
+      this.props.connectNodes(nodes);
     } else {
-      this.props.startNodeConnection(this.props.uuid, this.props.node.get('input'));
+      this.props.startNodeConnection(
+        this.props.uuid,
+        this.props.node.get('input'),
+      );
     }
   }
 
