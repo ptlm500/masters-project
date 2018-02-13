@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import Immutable from 'immutable';
 import NodeContainer from '../../../containers/NodeContainer/NodeContainer';
 import {
   STROKE_WIDTH,
@@ -18,7 +19,11 @@ class XORGate extends React.Component {
   };
 
   componentDidUpdate() {
-    this.props.dispatch(updateConnections(this.props.uuid, 'component'));
+    // Check if we need to update component output state
+    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
+      this.props.dispatch(updateConnections(this.props.uuid, 'component'));
+      this.nodes = this.props.component.get('nodes');
+    }
   }
 
   setComponentDimensions(nodeCount) {

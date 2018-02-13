@@ -134,6 +134,22 @@ const initialState = Immutable.fromJS({
       x: 10,
       y: 10,
       type: 'ANDGate',
+      f: nodes => {
+        let outputState = 1;
+
+        nodes.forEach(node => {
+          if (node.get('input')) {
+            if (node.get('state') === 0) {
+              outputState = 0;
+              return false;
+            }
+            return true;
+          }
+          return true;
+        });
+
+        return outputState;
+      },
       nodes: {
         a_1: {
           x: NODE_OFFSET,
@@ -167,7 +183,6 @@ const initialState = Immutable.fromJS({
 
         nodes.forEach(node => {
           if (node.get('input')) {
-            console.log('XOR node state', node.get('state'));
             if (node.get('state') === 1 && outputState === 0) {
               outputState = 1;
               return true;
@@ -179,7 +194,6 @@ const initialState = Immutable.fromJS({
           return true;
         });
 
-        console.log('XOR output', outputState);
         return outputState;
       },
       nodes: {

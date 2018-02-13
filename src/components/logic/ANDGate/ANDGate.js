@@ -1,18 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import Immutable from 'immutable';
 import NodeContainer from '../../../containers/NodeContainer/NodeContainer';
 import {
   STROKE_WIDTH,
   NODE_RADIUS,
   LEG_LENGTH,
 } from '../../componentConstants';
+import { updateConnections } from '../../../store/actions';
 
 class ANDGate extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
     selectedComponent: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
   };
+
+  componentDidUpdate() {
+    // Check if we need to update component output state
+    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
+      this.props.dispatch(updateConnections(this.props.uuid, 'component'));
+      this.nodes = this.props.component.get('nodes');
+    }
+  }
 
   setComponentDimensions(nodeCount) {
     this.componentHeight = nodeCount * 10;
@@ -92,4 +104,4 @@ class ANDGate extends React.Component {
   }
 }
 
-export default ANDGate;
+export default connect()(ANDGate);
