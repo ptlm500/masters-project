@@ -8,6 +8,7 @@ import ANDGate from '../logic/ANDGate/ANDGate';
 import ORGate from '../logic/ORGate/ORGate';
 import XORGate from '../logic/XORGate/XORGate';
 import ToggleSwitch from '../input/ToggleSwitch/ToggleSwitch';
+import LED from '../output/LED/LED';
 
 class DraggableComponent extends React.Component {
   static propTypes = {
@@ -21,7 +22,12 @@ class DraggableComponent extends React.Component {
   onMouseDown(e) {
     e.stopPropagation();
     this.props.selectComponent(this.props.uuid);
-    this.props.moveComponent(e, this.props.uuid, this.props.component, 'component');
+    this.props.moveComponent(
+      e,
+      this.props.uuid,
+      this.props.component,
+      'component',
+    );
   }
 
   renderComponent() {
@@ -61,6 +67,14 @@ class DraggableComponent extends React.Component {
             selectedComponent={this.props.selectedComponent}
           />
         );
+      case 'LED':
+        return (
+          <LED
+            uuid={this.props.uuid}
+            component={this.props.component}
+            selectedComponent={this.props.selectedComponent}
+          />
+        )
       default:
         return null;
     }

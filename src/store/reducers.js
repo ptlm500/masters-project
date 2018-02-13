@@ -291,6 +291,20 @@ const initialState = Immutable.fromJS({
         },
       },
     },
+    f: {
+      x: 10,
+      y: 10,
+      type: 'LED',
+      nodes: {
+        f_1: {
+          x: NODE_OFFSET,
+          y: STROKE_WIDTH + 10,
+          input: true,
+          connections: Immutable.Set(),
+          state: 0,
+        },
+      },
+    },
   },
   wires: {},
 });
