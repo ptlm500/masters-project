@@ -220,7 +220,6 @@ const initialState = Immutable.fromJS({
           return true;
         });
 
-        console.log('OR output', outputState);
         return outputState;
       },
       nodes: {
@@ -376,18 +375,19 @@ function components(state = initialState, action) {
           ],
           connections => connections.delete(action.wireId),
         );
-        // Reset all connected node states to 0
-        newState = newState.setIn(
-          [
-            'components',
-            getComponentIdFromNodeId(nodeId),
-            'nodes',
-            nodeId,
-            'state',
-          ],
-          0,
-        );
       });
+
+      // Reset output node state to 0
+      newState = newState.setIn(
+        [
+          'components',
+          getComponentIdFromNodeId(wire.get('outputNode')),
+          'nodes',
+          wire.get('outputNode'),
+          'state',
+        ],
+        0,
+      );
 
       newState = newState.deleteIn(['wires', action.wireId]);
       return newState;
@@ -433,7 +433,6 @@ function components(state = initialState, action) {
             f(newState.getIn(['components', action.uuid, 'nodes'])),
           );
         }
-      console.log('output', newState.toJS());
       } else if (action.startType === 'wire') {
         const wireOutputNode = newState.getIn(['wires', action.uuid, 'outputNode']);
         // Update wire output node
