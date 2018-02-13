@@ -1,84 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import Immutable from 'immutable';
-import NodeContainer from '../../../containers/NodeContainer/NodeContainer';
 import {
   STROKE_WIDTH,
   NODE_RADIUS,
   LEG_LENGTH,
 } from '../../componentConstants';
-import { updateConnections } from '../../../store/actions';
 
 class ORGate extends React.Component {
   static propTypes = {
-    uuid: PropTypes.string.isRequired,
-    component: PropTypes.object.isRequired,
-    selectedComponent: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
+    height: PropTypes.number.isRequired,
+    colour: PropTypes.string.isRequired,
+    nodes: PropTypes.arrayOf(React.Component).isRequired,
   };
 
-  componentDidUpdate() {
-    // Check if we need to update component output state
-    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
-      this.props.dispatch(updateConnections(this.props.uuid, 'component'));
-      this.nodes = this.props.component.get('nodes');
-    }
-  }
-
-  setComponentDimensions(nodeCount) {
-    this.componentHeight = nodeCount * 10;
-  }
-
-  getWireColour() {
-    if (this.isSelectedComponent()) {
-      return 'blue';
-    }
-
-    return 'black';
-  }
-
-  isSelectedComponent() {
-    return this.props.selectedComponent.get('uuid') === this.props.uuid;
-  }
-
-  renderNodes() {
-    const nodes = [];
-
-    this.props.component.get('nodes').keySeq().forEach(uuid => {
-      nodes.push(
-        <NodeContainer
-          x={this.props.component.getIn(['nodes', uuid, 'x'])}
-          y={this.props.component.getIn(['nodes', uuid, 'y'])}
-          uuid={uuid}
-          key={uuid}
-        />
-      );
-    });
-
-    return nodes;
-  }
-
   render() {
-    this.setComponentDimensions(this.props.component.get('nodes').size);
-
     return (
       <g>
         <path
           d={`M ${LEG_LENGTH - 4},2
-            c 10,0 10,${this.componentHeight - 2} 0,${this.componentHeight - 2}
+            c 10,0 10,${this.props.height - 2} 0,${this.props.height - 2}
             M ${LEG_LENGTH - 4},2
-            c 32,0 32,${this.componentHeight - 2} 0,${this.componentHeight - 2}`}
+            c 32,0 32,${this.props.height - 2} 0,${this.props.height - 2}`}
           fill="white"
-          stroke={this.getWireColour()}
-          strokeWidth={2}
+          stroke={this.props.colour}
+          strokeWidth={STROKE_WIDTH}
         />
         <line
           x1={NODE_RADIUS * 2}
           y1="6"
           x2={LEG_LENGTH + 1}
           y2="6"
-          stroke={this.getWireColour()}
+          stroke={this.props.colour}
           strokeWidth={STROKE_WIDTH}
         />
         <line
@@ -86,21 +38,21 @@ class ORGate extends React.Component {
           y1="25"
           x2={LEG_LENGTH + 1}
           y2="25"
-          stroke={this.getWireColour()}
+          stroke={this.props.colour}
           strokeWidth={STROKE_WIDTH}
         />
         <line
           x1="40"
-          y1={this.componentHeight / 2 + STROKE_WIDTH / 2}
+          y1={this.props.height / 2 + STROKE_WIDTH / 2}
           x2={40 + LEG_LENGTH - NODE_RADIUS * 2}
-          y2={this.componentHeight / 2 + STROKE_WIDTH / 2}
-          stroke={this.getWireColour()}
+          y2={this.props.height / 2 + STROKE_WIDTH / 2}
+          stroke={this.props.colour}
           strokeWidth={STROKE_WIDTH}
         />
-        {this.renderNodes()}
+        {this.props.nodes}
       </g>
     );
   }
 }
 
-export default connect()(ORGate);
+export default ORGate;

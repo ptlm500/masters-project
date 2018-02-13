@@ -276,6 +276,21 @@ const initialState = Immutable.fromJS({
         },
       },
     },
+    e: {
+      x: 10,
+      y: 10,
+      type: 'ToggleSwitch',
+      state: 0,
+      nodes: {
+        e_1: {
+          x: 51 + LEG_LENGTH - NODE_OFFSET,
+          y: 16,
+          input: false,
+          connections: Immutable.Set(),
+          state: 0,
+        },
+      },
+    },
   },
   wires: {},
 });

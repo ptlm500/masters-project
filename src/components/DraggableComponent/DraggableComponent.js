@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './DraggableComponent.css';
 
+import LogicGate from '../logic/LogicGate/LogicGate';
 import ANDGate from '../logic/ANDGate/ANDGate';
 import ORGate from '../logic/ORGate/ORGate';
 import XORGate from '../logic/XORGate/XORGate';
@@ -27,19 +28,38 @@ class DraggableComponent extends React.Component {
     switch (this.props.component.get('type')) {
       case 'ANDGate':
         return (
-          <ANDGate uuid={this.props.uuid} component={this.props.component} selectedComponent={this.props.selectedComponent}/>
+          <LogicGate
+            uuid={this.props.uuid}
+            gateType={ANDGate}
+            component={this.props.component}
+            selectedComponent={this.props.selectedComponent}
+          />
         );
       case 'ORGate':
         return (
-          <ORGate uuid={this.props.uuid} component={this.props.component} selectedComponent={this.props.selectedComponent}/>
+          <LogicGate
+            uuid={this.props.uuid}
+            gateType={ORGate}
+            component={this.props.component}
+            selectedComponent={this.props.selectedComponent}
+          />
         );
       case 'XORGate':
         return (
-          <XORGate uuid={this.props.uuid} component={this.props.component} selectedComponent={this.props.selectedComponent}/>
+          <LogicGate
+            uuid={this.props.uuid}
+            gateType={XORGate}
+            component={this.props.component}
+            selectedComponent={this.props.selectedComponent}
+          />
         );
       case 'ToggleSwitch':
         return (
-          <ToggleSwitch uuid={this.props.uuid} component={this.props.component} selectedComponent={this.props.selectedComponent}/>
+          <ToggleSwitch
+            uuid={this.props.uuid}
+            component={this.props.component}
+            selectedComponent={this.props.selectedComponent}
+          />
         );
       default:
         return null;

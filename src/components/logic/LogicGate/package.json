@@ -1,0 +1,6 @@
+{
+  "name": "LogicGate",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./LogicGate.js"
+}
