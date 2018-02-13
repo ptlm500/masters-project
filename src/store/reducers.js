@@ -167,6 +167,7 @@ const initialState = Immutable.fromJS({
 
         nodes.forEach(node => {
           if (node.get('input')) {
+            console.log('XOR node state', node.get('state'));
             if (node.get('state') === 1 && outputState === 0) {
               outputState = 1;
               return true;
@@ -324,6 +325,23 @@ function components(state = initialState, action) {
           'connections',
         ],
         connections => connections.add(newState.get('activeWire')),
+      );
+      // Set output node initial state
+      newState = newState.setIn(
+        [
+          'components',
+          getComponentIdFromNodeId(action.nodes.outputNodeId),
+          'nodes',
+          action.nodes.outputNodeId,
+          'state',
+        ],
+        newState.getIn([
+          'components',
+          getComponentIdFromNodeId(action.nodes.inputNodeId),
+          'nodes',
+          action.nodes.inputNodeId,
+          'state',
+        ]),
       );
       // Set wire info
       newState = newState.setIn(
