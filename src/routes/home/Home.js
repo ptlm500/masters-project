@@ -11,18 +11,15 @@ import React from 'react';
 // import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Home.css';
-import { addComponent, moveComponent } from '../../store/actions';
 // import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 import GridContainer from '../../containers/GridContainer/GridContainer';
+import Sidebar from '../../components/Sidebar/Sidebar';
 
 class Home extends React.Component {
-  constructor() {
-    super();
-  }
-
   render() {
     return (
       <div className={s.root}>
+        <Sidebar/>
         <div className={s.container}>
           <GridContainer/>
         </div>
