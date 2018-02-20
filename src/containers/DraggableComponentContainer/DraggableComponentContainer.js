@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { selectComponent } from '../../store/actions';
+import { selectComponent, deleteComponent, deleteWire } from '../../store/actions';
 import DraggableComponent from '../../components/DraggableComponent/DraggableComponent';
 
 const mapStateToProps = (state, ownProps) => {
@@ -12,8 +12,14 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    selectComponent: uuid => {
-      dispatch(selectComponent(uuid, 'component'));
+    selectComponent: () => {
+      dispatch(selectComponent(ownProps.uuid, 'component'));
+    },
+    deleteComponent: () => {
+      dispatch(deleteComponent(ownProps.uuid));
+    },
+    deleteWire: wireId => {
+      dispatch(deleteWire(wireId));
     },
   };
 };

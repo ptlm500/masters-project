@@ -11,6 +11,7 @@ import {
   DELETE_WIRE,
   TOGGLE_STATE,
   UPDATE_CONNECTIONS,
+  DELETE_COMPONENT,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId } from '../helpers';
 
@@ -338,6 +339,9 @@ function components(state = initialState, action) {
         uuid: action.uuid,
         type: action.componentType,
       }));
+    }
+    case DELETE_COMPONENT: {
+      return state.deleteIn(['components', action.uuid]);
     }
     case START_NODE_CONNECTION: {
       let newState = state;

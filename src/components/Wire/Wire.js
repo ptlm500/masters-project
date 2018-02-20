@@ -90,8 +90,6 @@ class Wire extends React.Component {
   render() {
     if (this.isSelectedComponent()) {
       document.addEventListener('keydown', this.keyDown);
-    } else {
-      document.removeEventListener('keydown', this.keyDown);
     }
 
     return (
