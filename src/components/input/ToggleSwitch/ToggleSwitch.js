@@ -35,7 +35,6 @@ class ToggleSwitch extends React.Component {
 
   renderNodes() {
     const nodes = [];
-
     this.props.component.get('nodes').keySeq().forEach(uuid => {
       nodes.push(
         <NodeContainer

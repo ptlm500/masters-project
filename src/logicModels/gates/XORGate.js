@@ -31,21 +31,23 @@ function generateNodes(uuid, inputNodeCount) {
   return nodes;
 }
 
-export default function generateANDGate(uuid, x, y, inputNodeCount) {
+export default function generateXORGate(uuid, x, y, inputNodeCount) {
   return Immutable.Map({
-    type: 'ANDGate',
+    type: 'XORGate',
     x,
     y,
     f: nodes => {
-      let outputState = 1;
+      let outputState = 0;
 
       nodes.forEach(node => {
         if (node.get('input')) {
-          if (node.get('state') === 0) {
+          if (node.get('state') === 1 && outputState === 0) {
+            outputState = 1;
+            return true;
+          } else if (node.get('state') === 1 && outputState === 1) {
             outputState = 0;
             return false;
           }
-          return true;
         }
         return true;
       });

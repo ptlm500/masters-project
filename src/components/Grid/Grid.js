@@ -39,7 +39,7 @@ class Grid extends React.Component {
       // Create component
       this.props.addComponent(
         componentUuid,
-        this.props.draggingComponent(componentUuid, 2, point.x, point.y),
+        this.props.draggingComponent(componentUuid, point.x, point.y, 2),
       );
       this.props.selectComponent(componentUuid);
       this.props.setDraggingComponent();

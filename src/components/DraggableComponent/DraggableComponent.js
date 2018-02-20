@@ -17,7 +17,6 @@ class DraggableComponent extends React.Component {
     selectedComponent: PropTypes.object.isRequired,
     moveComponent: PropTypes.func.isRequired,
     selectComponent: PropTypes.func.isRequired,
-    dragEnter: PropTypes.func.isRequired,
     deleteComponent: PropTypes.func.isRequired,
     deleteWire: PropTypes.func.isRequired,
   };

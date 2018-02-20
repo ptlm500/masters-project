@@ -31,21 +31,18 @@ function generateNodes(uuid, inputNodeCount) {
   return nodes;
 }
 
-export default function generateANDGate(uuid, x, y, inputNodeCount) {
+export default function generateORGate(uuid, x, y, inputNodeCount) {
   return Immutable.Map({
-    type: 'ANDGate',
+    type: 'ORGate',
     x,
     y,
     f: nodes => {
-      let outputState = 1;
+      let outputState = 0;
 
       nodes.forEach(node => {
-        if (node.get('input')) {
-          if (node.get('state') === 0) {
-            outputState = 0;
-            return false;
-          }
-          return true;
+        if (node.get('input') && node.get('state') === 1) {
+          outputState = 1;
+          return false;
         }
         return true;
       });
