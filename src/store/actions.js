@@ -2,6 +2,7 @@
 
 // Action types
 export const MOVE_COMPONENT = 'MOVE_COMPONENT';
+export const SET_DRAGGING_COMPONENT = 'SET_DRAGGING_COMPONENT';
 export const ADD_COMPONENT = 'ADD_COMPONENT';
 export const SELECT_COMPONENT = 'SELECT_COMPONENT';
 export const START_NODE_CONNECTION = 'START_NODE_CONNECTION';
@@ -20,6 +21,13 @@ export function moveComponent(uuid, component, moveType, vertexId) {
     component,
     moveType,
     vertexId,
+  };
+}
+
+export function setDraggingComponent(component) {
+  return {
+    type: SET_DRAGGING_COMPONENT,
+    component,
   };
 }
 

@@ -2,14 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 import WireContainer from '../../containers/WireContainer/WireContainer';
+import { createUuid } from '../../helpers';
 
 class Grid extends React.Component {
   static propTypes = {
     components: PropTypes.object.isRequired,
     wires: PropTypes.object.isRequired,
+    draggingComponent: PropTypes.func,
     move: PropTypes.func.isRequired,
     updateWire: PropTypes.func.isRequired,
     selectComponent: PropTypes.func.isRequired,
+    addComponent: PropTypes.func.isRequired,
+    setDraggingComponent: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -22,19 +26,39 @@ class Grid extends React.Component {
     this.props.selectComponent();
   }
 
-  startComponentDrag(e, uuid, component, type, vertexId) {
+  onDrop(e) {
+    e.preventDefault();
+    if (this.props.draggingComponent) {
+      // Initialize drop point
+      let point = this.svg.createSVGPoint();
+      point.x = e.clientX;
+      point.y = e.clientY;
+      point = point.matrixTransform(this.svg.getScreenCTM().inverse());
+
+      const componentUuid = createUuid();
+      // Create component
+      this.props.addComponent(
+        componentUuid,
+        this.props.draggingComponent(componentUuid, 2, point.x, point.y),
+      );
+      this.props.selectComponent(componentUuid);
+      this.props.setDraggingComponent();
+    }
+  }
+
+  startComponentDrag(e, uuid, type, vertexId) {
+    const component = this.props.components.get(uuid);
     e.preventDefault();
     // Set quantise scale
     const qScale = type === 'component' ? 2 : 1;
 
     let point = this.svg.createSVGPoint();
-    let dragOffset = {};
 
     point.x = e.clientX;
     point.y = e.clientY;
     point = point.matrixTransform(this.svg.getScreenCTM().inverse());
 
-    dragOffset = {
+    const dragOffset = {
       x: point.x - component.get('x'),
       y: point.y - component.get('y'),
     };
@@ -119,6 +143,8 @@ class Grid extends React.Component {
         viewBox="0 0 500 500"
         ref={svg => (this.svg = svg)}
         onMouseDown={e => this.onMouseDown(e)}
+        onDragOver={e => e.preventDefault()}
+        onDrop={e => this.onDrop(e)}
       >
         {this.renderComponents()}
         {this.renderWires()}
@@ -126,5 +152,9 @@ class Grid extends React.Component {
     );
   }
 }
+
+Grid.defaultProps = {
+  draggingComponent: null,
+};
 
 export default Grid;

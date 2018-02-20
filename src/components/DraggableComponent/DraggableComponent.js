@@ -17,6 +17,7 @@ class DraggableComponent extends React.Component {
     selectedComponent: PropTypes.object.isRequired,
     moveComponent: PropTypes.func.isRequired,
     selectComponent: PropTypes.func.isRequired,
+    dragEnter: PropTypes.func.isRequired,
   };
 
   onMouseDown(e) {
@@ -25,7 +26,6 @@ class DraggableComponent extends React.Component {
     this.props.moveComponent(
       e,
       this.props.uuid,
-      this.props.component,
       'component',
     );
   }

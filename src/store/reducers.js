@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 import { combineReducers } from 'redux';
 import {
   MOVE_COMPONENT,
+  SET_DRAGGING_COMPONENT,
   ADD_COMPONENT,
   START_NODE_CONNECTION,
   CONNECT_NODES,
@@ -11,7 +12,7 @@ import {
   TOGGLE_STATE,
   UPDATE_CONNECTIONS,
 } from './actions';
-import { getComponentIdFromNodeId, uuid, getOutputNodeId } from '../helpers';
+import { getComponentIdFromNodeId, createUuid, getOutputNodeId } from '../helpers';
 
 /*
   Component structure
@@ -120,9 +121,10 @@ import { NODE_OFFSET, LEG_LENGTH, STROKE_WIDTH } from '../components/componentCo
 // Define initial store state
 const initialState = Immutable.fromJS({
   movingComponent: false,
+  draggingComponent: null,
   activeNode: {
     id: '',
-    input: true
+    input: true,
   },
   activeWire: '',
   selectedComponent: {
@@ -323,8 +325,13 @@ function components(state = initialState, action) {
         );
       }
       break;
+    case SET_DRAGGING_COMPONENT: {
+      return state.set('draggingComponent', action.component);
+    }
     case ADD_COMPONENT: {
-      return state.set(action.uuid, action.component);
+      let newState = state.setIn(['components', action.uuid], action.component);
+      console.log('***', newState.toJS());
+      return newState;
     }
     case SELECT_COMPONENT: {
       return state.set('selectedComponent', Immutable.Map({
@@ -339,7 +346,7 @@ function components(state = initialState, action) {
         input: action.input
       }));
 
-      newState = newState.set('activeWire', uuid());
+      newState = newState.set('activeWire', createUuid());
 
       console.log(newState.toJS());
 

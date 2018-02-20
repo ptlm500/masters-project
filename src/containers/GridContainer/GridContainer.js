@@ -1,11 +1,13 @@
 import { connect } from 'react-redux';
-import { moveComponent, updateWire, selectComponent } from '../../store/actions';
+import { moveComponent, updateWire, selectComponent, addComponent, setDraggingComponent } from '../../store/actions';
 import Grid from '../../components/Grid/Grid';
 
 const mapStateToProps = (state, ownProps) => {
   return {
     components: state.components.get('components'),
     wires: state.components.get('wires'),
+    draggingComponent: state.components.get('draggingComponent'),
+    selectedComponent: state.components.get('selectedComponent'),
   };
 }
 
@@ -17,8 +19,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     updateWire: (wireId) => {
       dispatch(updateWire(wireId));
     },
-    selectComponent: () => {
-      dispatch(selectComponent('', ''));
+    selectComponent: uuid => {
+      dispatch(selectComponent(uuid, ''));
+    },
+    addComponent: (uuid, component) => {
+      dispatch(addComponent(uuid, component));
+    },
+    setDraggingComponent: () => {
+      dispatch(setDraggingComponent(null, null));
     },
   };
 };
