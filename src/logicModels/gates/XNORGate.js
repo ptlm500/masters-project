@@ -31,17 +31,23 @@ function generateNodes(uuid, inputNodeCount) {
   return nodes;
 }
 
-export default function generateORGate(uuid, x, y, inputNodeCount) {
+export default function generateXNORGate(uuid, x, y, inputNodeCount) {
   return Immutable.Map({
-    type: 'ORGate',
+    type: 'XNORGate',
     x,
     y,
     f: nodes => {
       let outputState = 0;
+      let prevState = nodes.first().get('state');
 
       nodes.forEach(node => {
-        if (node.get('input') && node.get('state') === 1) {
-          outputState = 1;
+        if (node.get('input')) {
+          if (node.get('state') === prevState) {
+            prevState = node.get('state');
+            outputState = 1;
+            return true;
+          }
+          outputState = 0;
           return false;
         }
         return true;

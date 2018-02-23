@@ -49,9 +49,9 @@ class XORGate extends React.Component {
           strokeWidth={STROKE_WIDTH}
         />
         <line
-          x1="40"
+          x1="50"
           y1={this.props.height / 2 + STROKE_WIDTH / 2}
-          x2={40 + LEG_LENGTH - NODE_RADIUS * 2}
+          x2={50 + LEG_LENGTH - NODE_RADIUS * 2}
           y2={this.props.height / 2 + STROKE_WIDTH / 2}
           stroke={this.props.colour}
           strokeWidth={STROKE_WIDTH}

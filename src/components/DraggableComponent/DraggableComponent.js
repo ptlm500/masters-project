@@ -7,6 +7,9 @@ import LogicGate from '../logic/LogicGate/LogicGate';
 import ANDGate from '../logic/ANDGate/ANDGate';
 import ORGate from '../logic/ORGate/ORGate';
 import XORGate from '../logic/XORGate/XORGate';
+import NANDGate from '../logic/NANDGate/NANDGate';
+import NORGate from '../logic/NORGate/NORGate';
+import XNORGate from '../logic/XNORGate/XNORGate';
 import ToggleSwitch from '../input/ToggleSwitch/ToggleSwitch';
 import LED from '../output/LED/LED';
 
@@ -84,6 +87,33 @@ class DraggableComponent extends React.Component {
           <LogicGate
             uuid={this.props.uuid}
             gateType={XORGate}
+            component={this.props.component}
+            selectedComponent={this.props.selectedComponent}
+          />
+        );
+      case 'NANDGate':
+        return (
+          <LogicGate
+            uuid={this.props.uuid}
+            gateType={NANDGate}
+            component={this.props.component}
+            selectedComponent={this.props.selectedComponent}
+          />
+        );
+      case 'NORGate':
+        return (
+          <LogicGate
+            uuid={this.props.uuid}
+            gateType={NORGate}
+            component={this.props.component}
+            selectedComponent={this.props.selectedComponent}
+          />
+        );
+      case 'XNORGate':
+        return (
+          <LogicGate
+            uuid={this.props.uuid}
+            gateType={XNORGate}
             component={this.props.component}
             selectedComponent={this.props.selectedComponent}
           />

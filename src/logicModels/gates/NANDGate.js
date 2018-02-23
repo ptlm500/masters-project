@@ -31,18 +31,21 @@ function generateNodes(uuid, inputNodeCount) {
   return nodes;
 }
 
-export default function generateORGate(uuid, x, y, inputNodeCount) {
+export default function generateNANDGate(uuid, x, y, inputNodeCount) {
   return Immutable.Map({
-    type: 'ORGate',
+    type: 'NANDGate',
     x,
     y,
     f: nodes => {
       let outputState = 0;
 
       nodes.forEach(node => {
-        if (node.get('input') && node.get('state') === 1) {
-          outputState = 1;
-          return false;
+        if (node.get('input')) {
+          if (node.get('state') === 0) {
+            outputState = 1;
+            return false;
+          }
+          return true;
         }
         return true;
       });

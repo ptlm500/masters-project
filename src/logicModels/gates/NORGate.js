@@ -33,15 +33,15 @@ function generateNodes(uuid, inputNodeCount) {
 
 export default function generateORGate(uuid, x, y, inputNodeCount) {
   return Immutable.Map({
-    type: 'ORGate',
+    type: 'NORGate',
     x,
     y,
     f: nodes => {
-      let outputState = 0;
+      let outputState = 1;
 
       nodes.forEach(node => {
         if (node.get('input') && node.get('state') === 1) {
-          outputState = 1;
+          outputState = 0;
           return false;
         }
         return true;

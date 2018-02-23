@@ -20,7 +20,7 @@ function generateNodes(uuid, inputNodeCount) {
   nodes = nodes.set(
     uuid.concat(`_${inputNodeCount}`),
     Immutable.Map({
-      x: 40 + LEG_LENGTH - NODE_OFFSET,
+      x: 50 + LEG_LENGTH - NODE_OFFSET,
       y: (inputNodeCount + 1) * 10 / 2 + STROKE_WIDTH / 2,
       input: false,
       connections: Immutable.Set(),
