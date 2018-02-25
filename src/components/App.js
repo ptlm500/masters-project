@@ -13,7 +13,7 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import appReducers from '../store/reducers';
 
-let store = createStore(appReducers);
+const store = createStore(appReducers);
 
 const ContextType = {
   // Enables critical path CSS rendering
