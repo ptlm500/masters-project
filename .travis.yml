@@ -14,3 +14,10 @@ addons:
 script:
   # - yarn lint
   - yarn test
+  - eval "$(ssh-agent -s)" #start the ssh agent
+  - echo -e $RESIN_DEPLOY_KEY > mastersKey
+  - chmod 0600 mastersKey
+  - ssh-add ./mastersKey
+  - cat resinkey >> ~/.ssh/known_hosts
+  - git remote add resin gh_ptlm500@git.resin.io:gh_ptlm500/mastersproject.git
+  - git push resin master

@@ -69,19 +69,18 @@ class Grid extends React.Component {
       point.y = moveEvent.clientY;
       const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
 
-      let newComponent = component.set(
-        'x',
-        Math.ceil((cursor.x - dragOffset.x) / qScale) * qScale,
-      );
-      newComponent = newComponent.set(
-        'y',
-        Math.ceil((cursor.y - dragOffset.y) / qScale) * qScale,
-      );
-      // Call reducer for component move
-      this.props.move(uuid, newComponent, type, vertexId);
-      // If component is moving, call wire updater
-      if (type === 'component') {
-        this.updateWires(newComponent);
+      const cX = Math.ceil((cursor.x - dragOffset.x) / qScale) * qScale;
+      const cY = Math.ceil((cursor.y - dragOffset.y) / qScale) * qScale;
+
+      if (cX > 0 && cY > 0) {
+        let newComponent = component.set('x', cX);
+        newComponent = newComponent.set('y', cY);
+        // Call reducer for component move
+        this.props.move(uuid, newComponent, type, vertexId);
+        // If component is moving, call wire updater
+        if (type === 'component') {
+          this.updateWires(newComponent);
+        }
       }
     };
 
@@ -140,7 +139,7 @@ class Grid extends React.Component {
   render() {
     return (
       <svg
-        viewBox="0 0 500 500"
+        viewBox="0 0 1000 1000"
         ref={svg => (this.svg = svg)}
         onMouseDown={e => this.onMouseDown(e)}
         onDragOver={e => e.preventDefault()}
