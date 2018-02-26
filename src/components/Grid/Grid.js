@@ -47,7 +47,10 @@ class Grid extends React.Component {
   }
 
   startComponentDrag(e, uuid, type, vertexId) {
-    const component = this.props.components.get(uuid);
+    let component = this.props.components.get(uuid);
+    if (type === 'vertex') {
+      component = this.props.wires.getIn([uuid, 'points', vertexId]);
+    }
     e.preventDefault();
     // Set quantise scale
     const qScale = type === 'component' ? 2 : 1;

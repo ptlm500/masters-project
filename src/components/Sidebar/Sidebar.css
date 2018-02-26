@@ -2,10 +2,18 @@
 
 .root {
   display: flex;
-  justify-content: space-between;
   flex: initial;
-  flex-wrap: wrap;
   width: 350px;
   height: auto;
   background-color: #F5F7FA;
+}
+
+.library {
+  display: flex;
+  justify-content: space-between;
+  flex: initial;
+  flex-wrap: wrap;
+  height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

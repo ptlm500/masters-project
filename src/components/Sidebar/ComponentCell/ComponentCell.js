@@ -21,7 +21,7 @@ class ComponentCell extends React.Component {
         }
       >
         {this.props.name}
-        <svg className={s.svg}>
+        <svg className={s.svg} viewbox="0 0 50 50">
           {this.props.componentModel.icon}
         </svg>
       </div>

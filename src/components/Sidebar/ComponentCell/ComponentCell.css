@@ -1,12 +1,17 @@
 @import '../../variables.css';
 
 .column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
   /* flex: 1; */
   width: 32%;
   height: 100px;
 }
 
 .svg {
-  width: auto;
-  height: auto;
+  display: block;
+  width: 80px;
+  height: 40px;
 }

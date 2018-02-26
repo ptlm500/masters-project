@@ -63,7 +63,7 @@ class Wire extends React.Component {
 
   moveVertex(e, vertex, vertexId) {
     e.stopPropagation();
-    this.props.moveVertex(e, this.props.uuid, vertex, 'vertex', vertexId);
+    this.props.moveVertex(e, this.props.uuid, 'vertex', vertexId);
   }
 
   renderVertices() {
