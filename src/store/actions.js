@@ -7,6 +7,7 @@ export const ADD_COMPONENT = 'ADD_COMPONENT';
 export const DELETE_COMPONENT = 'DELETE_COMPONENT';
 export const SELECT_COMPONENT = 'SELECT_COMPONENT';
 export const START_NODE_CONNECTION = 'START_NODE_CONNECTION';
+export const CANCEL_NODE_CONNECTION = 'CANCEL_NODE_CONNECTION';
 export const CONNECT_NODES = 'CONNECT_NODES';
 export const UPDATE_WIRE = 'UPDATE_WIRE';
 export const DELETE_WIRE = 'DELETE_WIRE';
@@ -55,11 +56,17 @@ export function deleteComponent(uuid) {
   };
 }
 
-export function startNodeConnection(nodeId, input) {
+export function startNodeConnection(nodeId, node) {
   return {
     type: START_NODE_CONNECTION,
     nodeId,
-    input,
+    node,
+  };
+}
+
+export function cancelNodeConnection() {
+  return {
+    type: CANCEL_NODE_CONNECTION,
   };
 }
 

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import Node from '../../components/Node/Node';
 import { getComponentIdFromNodeId } from '../../helpers';
-import { startNodeConnection, connectNodes } from '../../store/actions';
+import { startNodeConnection, cancelNodeConnection, connectNodes } from '../../store/actions';
 
 const mapStateToProps = (state, ownProps) => {
   return {
@@ -12,8 +12,11 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    startNodeConnection: (nodeId, input) => {
-      dispatch(startNodeConnection(nodeId, input));
+    startNodeConnection: (nodeId, node) => {
+      dispatch(startNodeConnection(nodeId, node));
+    },
+    cancelNodeConnection: () => {
+      dispatch(cancelNodeConnection());
     },
     connectNodes: nodes => {
       dispatch(connectNodes(nodes));

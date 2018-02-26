@@ -5,6 +5,7 @@ import {
   SET_DRAGGING_COMPONENT,
   ADD_COMPONENT,
   START_NODE_CONNECTION,
+  CANCEL_NODE_CONNECTION,
   CONNECT_NODES,
   UPDATE_WIRE,
   SELECT_COMPONENT,
@@ -126,6 +127,7 @@ const initialState = Immutable.fromJS({
   activeNode: {
     id: '',
     input: true,
+    connections: [],
   },
   activeWire: '',
   selectedComponent: {
@@ -171,12 +173,28 @@ function components(state = initialState, action) {
       let newState = state;
       newState = newState.set('activeNode', Immutable.Map({
         id: action.nodeId,
-        input: action.input
+        input: action.node.get('input'),
+        connections: action.node.get('connections'),
       }));
 
       newState = newState.set('activeWire', createUuid());
 
       console.log(newState.toJS());
+
+      return newState;
+    }
+    case CANCEL_NODE_CONNECTION: {
+      let newState = state;
+      newState = newState.set(
+        'activeNode',
+        Immutable.Map({
+          id: '',
+          input: true,
+          connections: [],
+        }),
+      );
+
+      newState = newState.set('activeWire', '');
 
       return newState;
     }
