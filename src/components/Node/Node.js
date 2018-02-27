@@ -58,7 +58,7 @@ class Node extends React.Component {
       this.props.connectNodes(nodes);
     } else if (activeNodeId !== '') {
       this.props.cancelNodeConnection();
-    } else if (!isConnected(this.props.node)) {
+    } else if (!this.props.node.get('input') || !isConnected(this.props.node)) {
       this.props.startNodeConnection(this.props.uuid, this.props.node);
     }
   }

@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 import WireContainer from '../../containers/WireContainer/WireContainer';
 import { createUuid } from '../../helpers';
+import s from './Grid.css';
 
 class Grid extends React.Component {
   static propTypes = {
@@ -20,10 +22,54 @@ class Grid extends React.Component {
     super();
 
     this.startComponentDrag = this.startComponentDrag.bind(this);
+
+    this.state = {
+      sX: null,
+      xY: null,
+      eX: null,
+      eY: null,
+    };
   }
 
   onMouseDown(e) {
     this.props.selectComponent();
+
+    let point = this.svg.createSVGPoint();
+
+    point.x = e.clientX;
+    point.y = e.clientY;
+    point = point.matrixTransform(this.svg.getScreenCTM().inverse());
+
+    this.setState({
+      sX: point.x,
+      sY: point.y,
+    });
+
+    const mousemove = moveEvent => {
+      moveEvent.preventDefault();
+      point.x = moveEvent.clientX;
+      point.y = moveEvent.clientY;
+      const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
+
+      this.setState({
+        eX: cursor.x,
+        eY: cursor.y,
+      });
+    };
+
+    const mouseup = () => {
+      this.setState({
+        sX: null,
+        sY: null,
+        eX: null,
+        eY: null,
+      });
+      document.removeEventListener('mousemove', mousemove);
+      document.removeEventListener('mouseup', mouseup);
+    };
+
+    document.addEventListener('mousemove', mousemove);
+    document.addEventListener('mouseup', mouseup);
   }
 
   onDrop(e) {
@@ -75,7 +121,12 @@ class Grid extends React.Component {
       const cX = Math.ceil((cursor.x - dragOffset.x) / qScale) * qScale;
       const cY = Math.ceil((cursor.y - dragOffset.y) / qScale) * qScale;
 
-      if (cX > 0 && cY > 0) {
+      if (
+        cursor.x > 0 &&
+        cursor.y > 0 &&
+        cursor.x < this.svg.getBoundingClientRect().right &&
+        cursor.y < this.svg.getBoundingClientRect().bottom
+      ) {
         let newComponent = component.set('x', cX);
         newComponent = newComponent.set('y', cY);
         // Call reducer for component move
@@ -139,10 +190,27 @@ class Grid extends React.Component {
     return wires;
   }
 
+  renderSelectionBox() {
+    if (this.state.sX && this.state.sY && this.state.eX && this.state.eY) {
+      return (
+        <polygon
+          points={`${this.state.sX} ${this.state.sY}
+                    ${this.state.eX} ${this.state.sY}
+                    ${this.state.eX} ${this.state.eY}
+                    ${this.state.sX} ${this.state.eY}`}
+          fill="blue"
+          opacity="0.3"
+        />
+      );
+    }
+
+    return null;
+  }
+
   render() {
     return (
       <svg
-        viewBox="0 0 1000 1000"
+        className={s.svg}
         ref={svg => (this.svg = svg)}
         onMouseDown={e => this.onMouseDown(e)}
         onDragOver={e => e.preventDefault()}
@@ -150,6 +218,7 @@ class Grid extends React.Component {
       >
         {this.renderComponents()}
         {this.renderWires()}
+        {this.renderSelectionBox()}
       </svg>
     );
   }
@@ -159,4 +228,4 @@ Grid.defaultProps = {
   draggingComponent: null,
 };
 
-export default Grid;
+export default withStyles(s)(Grid);
