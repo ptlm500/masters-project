@@ -13,7 +13,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     selectComponent: () => {
-      dispatch(selectComponent(ownProps.uuid));
+      dispatch(selectComponent(ownProps.uuid, true));
     },
     deleteComponent: () => {
       dispatch(deleteComponent(ownProps.uuid));

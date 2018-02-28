@@ -36,7 +36,9 @@ class DraggableComponent extends React.Component {
 
   onMouseDown(e) {
     e.stopPropagation();
-    this.props.selectComponent();
+    if (!this.isSelectedComponent()) {
+      this.props.selectComponent();
+    }
     this.props.moveComponent(
       e,
       this.props.uuid,

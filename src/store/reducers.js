@@ -164,7 +164,6 @@ function components(state = initialState, action) {
       return newState;
     }
     case SELECT_COMPONENT: {
-      console.log('fucking wit yo selected components', action.clearPrevious);
       let newState = state;
       if (action.clearPrevious) {
         // Clear all other selections
@@ -173,7 +172,7 @@ function components(state = initialState, action) {
       if (!action.uuid) {
         // Clear selections if no id given
         newState = newState.set('selectedComponents', Immutable.Set([]));
-      } else if (!state.get('selectedComponents').includes(action.uuid)) {
+      } else if (!newState.get('selectedComponents').includes(action.uuid)) {
         newState = newState.update('selectedComponents', selectedComponents =>
           selectedComponents.add(action.uuid),
         );

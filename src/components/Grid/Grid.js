@@ -91,8 +91,78 @@ class Grid extends React.Component {
 
   startComponentDrag(e, uuid, type, vertexId) {
     e.preventDefault();
+    if (type !== 'vertex') {
+      // Set quantise scale
+      const qScale = 2;
+
+      let point = this.svg.createSVGPoint();
+
+      point.x = e.clientX;
+      point.y = e.clientY;
+      point = point.matrixTransform(this.svg.getScreenCTM().inverse());
+
+      let dragOffsets = Immutable.Map({});
+      this.props.selectedComponents.forEach(componentUuid => {
+        // Calculate drag offsets for all selected components
+        dragOffsets = dragOffsets.setIn(
+          [componentUuid, 'x'],
+          point.x - this.props.components.getIn([componentUuid, 'x']),
+        );
+        dragOffsets = dragOffsets.setIn(
+          [componentUuid, 'y'],
+          point.y - this.props.components.getIn([componentUuid, 'y']),
+        );
+      });
+
+      const mousemove = moveEvent => {
+        moveEvent.preventDefault();
+        point.x = moveEvent.clientX;
+        point.y = moveEvent.clientY;
+        const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
+        // Iterate over all selected components
+        this.props.selectedComponents.forEach(componentUuid => {
+          const cX =
+            Math.ceil(
+              (cursor.x - dragOffsets.getIn([componentUuid, 'x'])) / qScale,
+            ) * qScale;
+          const cY =
+            Math.ceil(
+              (cursor.y - dragOffsets.getIn([componentUuid, 'y'])) / qScale,
+            ) * qScale;
+
+          if (
+            cX > 0 &&
+            cY > 0 &&
+            cX < this.svg.getBoundingClientRect().right &&
+            cY < this.svg.getBoundingClientRect().bottom
+          ) {
+            let newComponent = this.props.components.get(componentUuid);
+            newComponent = newComponent.set('x', cX);
+            newComponent = newComponent.set('y', cY);
+            // Call reducer for component move
+            this.props.move(componentUuid, newComponent, type, vertexId);
+            // Call wire updater
+            this.updateWires(newComponent);
+          }
+        });
+      };
+
+      const mouseup = () => {
+        document.removeEventListener('mousemove', mousemove);
+        document.removeEventListener('mouseup', mouseup);
+      };
+
+      document.addEventListener('mousemove', mousemove);
+      document.addEventListener('mouseup', mouseup);
+    } else {
+      this.moveVertex(e, uuid, type, vertexId);
+    }
+  }
+
+  moveVertex(e, uuid, type, vertexId) {
+    const vertex = this.props.wires.getIn([uuid, 'points', vertexId]);
     // Set quantise scale
-    const qScale = type === 'component' ? 2 : 1;
+    const qScale = 1;
 
     let point = this.svg.createSVGPoint();
 
@@ -100,57 +170,31 @@ class Grid extends React.Component {
     point.y = e.clientY;
     point = point.matrixTransform(this.svg.getScreenCTM().inverse());
 
-    let dragOffsets = Immutable.Map({});
-    this.props.selectedComponents.forEach(componentUuid => {
-      // Calculate drag offsets for all selected components
-      dragOffsets = dragOffsets.setIn(
-        [componentUuid, 'x'],
-        point.x - this.props.components.getIn([componentUuid, 'x']),
-      );
-      dragOffsets = dragOffsets.setIn(
-        [componentUuid, 'y'],
-        point.y - this.props.components.getIn([componentUuid, 'y']),
-      );
-    });
-
-    let vertex;
-    if (type === 'vertex') {
-      vertex = Immutable.Map(this.props.wires.getIn([uuid, 'points', vertexId]));
-    }
+    const dragOffset = {
+      x: point.x - vertex.get('x'),
+      y: point.y - vertex.get('y'),
+    };
 
     const mousemove = moveEvent => {
       moveEvent.preventDefault();
       point.x = moveEvent.clientX;
       point.y = moveEvent.clientY;
       const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
-      // Iterate over all selected components
-      this.props.selectedComponents.forEach(componentUuid => {
-        const cX =
-          Math.ceil(
-            (cursor.x - dragOffsets.getIn([componentUuid, 'x'])) / qScale,
-          ) * qScale;
-        const cY =
-          Math.ceil(
-            (cursor.y - dragOffsets.getIn([componentUuid, 'y'])) / qScale,
-          ) * qScale;
 
-        if (
-          cX > 0 &&
-          cY > 0 &&
-          cX < this.svg.getBoundingClientRect().right &&
-          cY < this.svg.getBoundingClientRect().bottom
-        ) {
-          let newComponent = this.props.components.get(componentUuid);
-          newComponent = newComponent.set('x', cX);
-          newComponent = newComponent.set('y', cY);
-          // Call reducer for component move
-          this.props.move(componentUuid, newComponent, type, vertexId);
-          // If component is moving, call wire updater
-          if (type === 'component') {
-            this.updateWires(newComponent);
-          }
-        }
-      });
+      const cX = Math.ceil((cursor.x - dragOffset.x) / qScale) * qScale;
+      const cY = Math.ceil((cursor.y - dragOffset.y) / qScale) * qScale;
+
+      if (
+        cursor.x > 0 &&
+        cursor.y > 0 &&
+        cursor.x < this.svg.getBoundingClientRect().right &&
+        cursor.y < this.svg.getBoundingClientRect().bottom
+      ) {
+        let newVertex = vertex.set('x', cX);
+        newVertex = newVertex.set('y', cY);
+        // Call reducer for component move
+        this.props.move(uuid, newVertex, type, vertexId);
+      }
     };
 
     const mouseup = () => {
