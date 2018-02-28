@@ -34,11 +34,11 @@ export function setDraggingComponent(component) {
   };
 }
 
-export function selectComponent(uuid, componentType) {
+export function selectComponent(uuid, clearPrevious) {
   return {
     type: SELECT_COMPONENT,
     uuid,
-    componentType,
+    clearPrevious,
   };
 }
 

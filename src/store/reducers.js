@@ -134,9 +134,9 @@ const initialState = Immutable.fromJS({
   selectedComponents: Immutable.Set([]),
   selectionBox: {
     sX: null,
-        sY: null,
-        eX: null,
-        eY: null,
+    sY: null,
+    eX: null,
+    eY: null,
   },
   components: {},
   wires: {},
@@ -160,31 +160,38 @@ function components(state = initialState, action) {
       return state.set('draggingComponent', action.component);
     }
     case ADD_COMPONENT: {
-      let newState = state.setIn(['components', action.uuid], action.component);
+      const newState = state.setIn(['components', action.uuid], action.component);
       return newState;
     }
     case SELECT_COMPONENT: {
+      let newState = state;
+      if (action.clearPrevious) {
+        // Clear all other selections
+        newState = newState.set('selectedComponents', Immutable.Set([]));
+      }
       if (!action.uuid) {
-        return state.set('selectedComponents', Immutable.Set([]));
+        // Clear selections if no id given
+        newState = newState.set('selectedComponents', Immutable.Set([]));
       } else if (!state.get('selectedComponents').includes(action.uuid)) {
-        console.log(state.get('selectedComponents').add(action.uuid))
-        return state.update(
-          'selectedComponents',
-          selectedComponents => selectedComponents.add(action.uuid),
+        newState = newState.update('selectedComponents', selectedComponents =>
+          selectedComponents.add(action.uuid),
         );
       }
-      return state;
+      return newState;
     }
     case DELETE_COMPONENT: {
       return state.deleteIn(['components', action.uuid]);
     }
     case START_NODE_CONNECTION: {
       let newState = state;
-      newState = newState.set('activeNode', Immutable.Map({
-        id: action.nodeId,
-        input: action.node.get('input'),
-        connections: action.node.get('connections'),
-      }));
+      newState = newState.set(
+        'activeNode',
+        Immutable.Map({
+          id: action.nodeId,
+          input: action.node.get('input'),
+          connections: action.node.get('connections'),
+        }),
+      );
 
       newState = newState.set('activeWire', createUuid());
 
@@ -270,7 +277,6 @@ function components(state = initialState, action) {
         }),
       );
       newState = newState.set('activeWire', '');
-      console.log(newState.toJS())
       return newState;
     }
     case UPDATE_WIRE: {
@@ -381,6 +387,11 @@ function components(state = initialState, action) {
 
       const selectionBox = newState.get('selectionBox');
 
+      const minX = Math.min(selectionBox.get('eX'), selectionBox.get('sX'));
+      const maxX = Math.max(selectionBox.get('eX'), selectionBox.get('sX'));
+      const minY = Math.min(selectionBox.get('eY'), selectionBox.get('sY'));
+      const maxY = Math.max(selectionBox.get('eY'), selectionBox.get('sY'));
+
       if (selectionBox.get('sX') && selectionBox.get('eX')) {
         newState
           .get('components')
@@ -388,10 +399,10 @@ function components(state = initialState, action) {
           .forEach(uuid => {
             const component = newState.getIn(['components', uuid]);
             if (
-              component.get('x') > selectionBox.get('sX') &&
-              component.get('x') < selectionBox.get('eX') &&
-              component.get('y') > selectionBox.get('sY') &&
-              component.get('y') < selectionBox.get('eY')
+              component.get('x') > minX &&
+              component.get('x') < maxX &&
+              component.get('y') > minY &&
+              component.get('y') < maxY
             ) {
               if (!newState.get('selectedComponents').includes(uuid)) {
                 newState = newState.update(
@@ -430,7 +441,7 @@ function components(state = initialState, action) {
 // }
 
 const appReducers = combineReducers({
-  components
+  components,
 });
 
 export default appReducers;

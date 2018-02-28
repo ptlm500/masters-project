@@ -26,8 +26,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     updateWire: wireId => {
       dispatch(updateWire(wireId));
     },
-    selectComponent: uuid => {
-      dispatch(selectComponent(uuid, ''));
+    selectComponent: (uuid, clearPrevious) => {
+      dispatch(selectComponent(uuid, clearPrevious));
     },
     addComponent: (uuid, component) => {
       dispatch(addComponent(uuid, component));
