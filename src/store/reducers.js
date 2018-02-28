@@ -164,6 +164,7 @@ function components(state = initialState, action) {
       return newState;
     }
     case SELECT_COMPONENT: {
+      console.log('fucking wit yo selected components', action.clearPrevious);
       let newState = state;
       if (action.clearPrevious) {
         // Clear all other selections

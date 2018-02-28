@@ -14,6 +14,7 @@ const mapStateToProps = (state, ownProps) => {
     components: state.components.get('components'),
     wires: state.components.get('wires'),
     draggingComponent: state.components.get('draggingComponent'),
+    selectedComponents: state.components.get('selectedComponents'),
     selectionBox: state.components.get('selectionBox'),
   };
 }
