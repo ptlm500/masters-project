@@ -31,11 +31,11 @@ class Grid extends React.Component {
   onMouseDown(e) {
     this.props.selectComponent();
 
-    let point = this.svg.createSVGPoint();
+    let point = this.grid.createSVGPoint();
 
     point.x = e.clientX;
     point.y = e.clientY;
-    point = point.matrixTransform(this.svg.getScreenCTM().inverse());
+    point = point.matrixTransform(this.grid.getScreenCTM().inverse());
 
     this.props.updateSelectionBox({
       sX: point.x,
@@ -46,7 +46,7 @@ class Grid extends React.Component {
       moveEvent.preventDefault();
       point.x = moveEvent.clientX;
       point.y = moveEvent.clientY;
-      const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
+      const cursor = point.matrixTransform(this.grid.getScreenCTM().inverse());
 
       this.props.updateSelectionBox({
         eX: cursor.x,
@@ -73,10 +73,10 @@ class Grid extends React.Component {
     e.preventDefault();
     if (this.props.draggingComponent) {
       // Initialize drop point
-      let point = this.svg.createSVGPoint();
+      let point = this.grid.createSVGPoint();
       point.x = e.clientX;
       point.y = e.clientY;
-      point = point.matrixTransform(this.svg.getScreenCTM().inverse());
+      point = point.matrixTransform(this.grid.getScreenCTM().inverse());
 
       const componentUuid = createUuid();
       // Create component
@@ -91,18 +91,25 @@ class Grid extends React.Component {
 
   startComponentDrag(e, uuid, type, vertexId) {
     e.preventDefault();
+    // Create reference point on grid
+    let point = this.grid.createSVGPoint();
+    point.x = e.clientX;
+    point.y = e.clientY;
+    point = point.matrixTransform(this.grid.getScreenCTM().inverse());
+
     if (type !== 'vertex') {
       // Set quantise scale
       const qScale = 2;
 
-      let point = this.svg.createSVGPoint();
-
-      point.x = e.clientX;
-      point.y = e.clientY;
-      point = point.matrixTransform(this.svg.getScreenCTM().inverse());
-
       let dragOffsets = Immutable.Map({});
-      this.props.selectedComponents.forEach(componentUuid => {
+      let { selectedComponents } = this.props;
+
+      // If a single component is selected, ignore store state and use directly passed uuid
+      if (selectedComponents.size <= 1 && uuid) {
+        selectedComponents = Immutable.Set([uuid]);
+      }
+
+      selectedComponents.forEach(componentUuid => {
         // Calculate drag offsets for all selected components
         dragOffsets = dragOffsets.setIn(
           [componentUuid, 'x'],
@@ -118,9 +125,9 @@ class Grid extends React.Component {
         moveEvent.preventDefault();
         point.x = moveEvent.clientX;
         point.y = moveEvent.clientY;
-        const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
+        const cursor = point.matrixTransform(this.grid.getScreenCTM().inverse());
         // Iterate over all selected components
-        this.props.selectedComponents.forEach(componentUuid => {
+        selectedComponents.forEach(componentUuid => {
           const cX =
             Math.ceil(
               (cursor.x - dragOffsets.getIn([componentUuid, 'x'])) / qScale,
@@ -133,8 +140,8 @@ class Grid extends React.Component {
           if (
             cX > 0 &&
             cY > 0 &&
-            cX < this.svg.getBoundingClientRect().right &&
-            cY < this.svg.getBoundingClientRect().bottom
+            cX < this.grid.getBoundingClientRect().right &&
+            cY < this.grid.getBoundingClientRect().bottom
           ) {
             let newComponent = this.props.components.get(componentUuid);
             newComponent = newComponent.set('x', cX);
@@ -155,20 +162,14 @@ class Grid extends React.Component {
       document.addEventListener('mousemove', mousemove);
       document.addEventListener('mouseup', mouseup);
     } else {
-      this.moveVertex(e, uuid, type, vertexId);
+      this.startVertexDrag(e, uuid, type, vertexId, point);
     }
   }
 
-  moveVertex(e, uuid, type, vertexId) {
+  startVertexDrag(e, uuid, type, vertexId, point) {
     const vertex = this.props.wires.getIn([uuid, 'points', vertexId]);
     // Set quantise scale
     const qScale = 1;
-
-    let point = this.svg.createSVGPoint();
-
-    point.x = e.clientX;
-    point.y = e.clientY;
-    point = point.matrixTransform(this.svg.getScreenCTM().inverse());
 
     const dragOffset = {
       x: point.x - vertex.get('x'),
@@ -179,7 +180,7 @@ class Grid extends React.Component {
       moveEvent.preventDefault();
       point.x = moveEvent.clientX;
       point.y = moveEvent.clientY;
-      const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
+      const cursor = point.matrixTransform(this.grid.getScreenCTM().inverse());
 
       const cX = Math.ceil((cursor.x - dragOffset.x) / qScale) * qScale;
       const cY = Math.ceil((cursor.y - dragOffset.y) / qScale) * qScale;
@@ -187,8 +188,8 @@ class Grid extends React.Component {
       if (
         cursor.x > 0 &&
         cursor.y > 0 &&
-        cursor.x < this.svg.getBoundingClientRect().right &&
-        cursor.y < this.svg.getBoundingClientRect().bottom
+        cursor.x < this.grid.getBoundingClientRect().right &&
+        cursor.y < this.grid.getBoundingClientRect().bottom
       ) {
         let newVertex = vertex.set('x', cX);
         newVertex = newVertex.set('y', cY);
@@ -277,7 +278,7 @@ class Grid extends React.Component {
     return (
       <svg
         className={s.svg}
-        ref={svg => (this.svg = svg)}
+        ref={grid => (this.grid = grid)}
         onMouseDown={e => this.onMouseDown(e)}
         onDragOver={e => e.preventDefault()}
         onDrop={e => this.onDrop(e)}

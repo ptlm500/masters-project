@@ -160,7 +160,10 @@ function components(state = initialState, action) {
       return state.set('draggingComponent', action.component);
     }
     case ADD_COMPONENT: {
-      const newState = state.setIn(['components', action.uuid], action.component);
+      const newState = state.setIn(
+        ['components', action.uuid],
+        action.component,
+      );
       return newState;
     }
     case SELECT_COMPONENT: {
