@@ -65,6 +65,10 @@ module.exports = {
       },
     ],
 
+    'no-return-assign': 0,
+
+    'react/forbid-prop-types': 0,
+
     // Ensure <a> tags are valid
     // https://github.com/evcohen/eslint-plugin-jsx-a11y/blob/master/docs/rules/anchor-is-valid.md
     'jsx-a11y/anchor-is-valid': [

@@ -123,9 +123,12 @@ class Grid extends React.Component {
 
       const mousemove = moveEvent => {
         moveEvent.preventDefault();
-        point.x = moveEvent.clientX;
-        point.y = moveEvent.clientY;
-        const cursor = point.matrixTransform(this.grid.getScreenCTM().inverse());
+        const mousePoint = point;
+        mousePoint.x = moveEvent.clientX;
+        mousePoint.y = moveEvent.clientY;
+        const cursor = mousePoint.matrixTransform(
+          this.grid.getScreenCTM().inverse(),
+        );
         // Iterate over all selected components
         selectedComponents.forEach(componentUuid => {
           const cX =
@@ -178,9 +181,10 @@ class Grid extends React.Component {
 
     const mousemove = moveEvent => {
       moveEvent.preventDefault();
-      point.x = moveEvent.clientX;
-      point.y = moveEvent.clientY;
-      const cursor = point.matrixTransform(this.grid.getScreenCTM().inverse());
+      const mousePoint = point;
+      mousePoint.x = moveEvent.clientX;
+      mousePoint.y = moveEvent.clientY;
+      const cursor = mousePoint.matrixTransform(this.grid.getScreenCTM().inverse());
 
       const cX = Math.ceil((cursor.x - dragOffset.x) / qScale) * qScale;
       const cY = Math.ceil((cursor.y - dragOffset.y) / qScale) * qScale;
