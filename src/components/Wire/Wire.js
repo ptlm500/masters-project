@@ -6,7 +6,7 @@ class Wire extends React.Component {
     uuid: PropTypes.string.isRequired,
     wire: PropTypes.object.isRequired,
     wireState: PropTypes.number.isRequired,
-    selectedComponent: PropTypes.object.isRequired,
+    selectedComponents: PropTypes.object.isRequired,
     selectComponent: PropTypes.func.isRequired,
     deleteWire: PropTypes.func.isRequired,
     moveVertex: PropTypes.func.isRequired,
@@ -46,7 +46,7 @@ class Wire extends React.Component {
   }
 
   isSelectedComponent() {
-    return this.props.selectedComponent.get('uuid') === this.props.uuid;
+    return this.props.selectedComponents.includes(this.props.uuid);
   }
 
   selectWire(e) {

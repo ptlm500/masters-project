@@ -14,7 +14,7 @@ const mapStateToProps = (state, ownProps) => {
       wire.get('inputNode'),
       'state',
     ]),
-    selectedComponent: state.components.get('selectedComponent'),
+    selectedComponents: state.components.get('selectedComponents'),
   };
 };
 

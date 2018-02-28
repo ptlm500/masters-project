@@ -17,7 +17,7 @@ class DraggableComponent extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
-    selectedComponent: PropTypes.object.isRequired,
+    selectedComponents: PropTypes.object.isRequired,
     moveComponent: PropTypes.func.isRequired,
     selectComponent: PropTypes.func.isRequired,
     deleteComponent: PropTypes.func.isRequired,
@@ -45,7 +45,7 @@ class DraggableComponent extends React.Component {
   }
 
   isSelectedComponent() {
-    return this.props.selectedComponent.get('uuid') === this.props.uuid;
+    return this.props.selectedComponents.includes(this.props.uuid);
   }
 
   keyDown(e) {
@@ -70,7 +70,7 @@ class DraggableComponent extends React.Component {
             uuid={this.props.uuid}
             gateType={ANDGate}
             component={this.props.component}
-            selectedComponent={this.props.selectedComponent}
+            selectedComponents={this.props.selectedComponents}
           />
         );
       case 'ORGate':
@@ -79,7 +79,7 @@ class DraggableComponent extends React.Component {
             uuid={this.props.uuid}
             gateType={ORGate}
             component={this.props.component}
-            selectedComponent={this.props.selectedComponent}
+            selectedComponents={this.props.selectedComponents}
           />
         );
       case 'XORGate':
@@ -88,7 +88,7 @@ class DraggableComponent extends React.Component {
             uuid={this.props.uuid}
             gateType={XORGate}
             component={this.props.component}
-            selectedComponent={this.props.selectedComponent}
+            selectedComponents={this.props.selectedComponents}
           />
         );
       case 'NANDGate':
@@ -97,7 +97,7 @@ class DraggableComponent extends React.Component {
             uuid={this.props.uuid}
             gateType={NANDGate}
             component={this.props.component}
-            selectedComponent={this.props.selectedComponent}
+            selectedComponents={this.props.selectedComponents}
           />
         );
       case 'NORGate':
@@ -106,7 +106,7 @@ class DraggableComponent extends React.Component {
             uuid={this.props.uuid}
             gateType={NORGate}
             component={this.props.component}
-            selectedComponent={this.props.selectedComponent}
+            selectedComponents={this.props.selectedComponents}
           />
         );
       case 'XNORGate':
@@ -115,7 +115,7 @@ class DraggableComponent extends React.Component {
             uuid={this.props.uuid}
             gateType={XNORGate}
             component={this.props.component}
-            selectedComponent={this.props.selectedComponent}
+            selectedComponents={this.props.selectedComponents}
           />
         );
       case 'ToggleSwitch':
@@ -123,7 +123,7 @@ class DraggableComponent extends React.Component {
           <ToggleSwitch
             uuid={this.props.uuid}
             component={this.props.component}
-            selectedComponent={this.props.selectedComponent}
+            selectedComponents={this.props.selectedComponents}
           />
         );
       case 'LED':
@@ -131,7 +131,7 @@ class DraggableComponent extends React.Component {
           <LED
             uuid={this.props.uuid}
             component={this.props.component}
-            selectedComponent={this.props.selectedComponent}
+            selectedComponents={this.props.selectedComponents}
           />
         )
       default:

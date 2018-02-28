@@ -10,25 +10,20 @@ class Grid extends React.Component {
   static propTypes = {
     components: PropTypes.object.isRequired,
     wires: PropTypes.object.isRequired,
+    selectionBox: PropTypes.object.isRequired,
     draggingComponent: PropTypes.func,
     move: PropTypes.func.isRequired,
     updateWire: PropTypes.func.isRequired,
     selectComponent: PropTypes.func.isRequired,
     addComponent: PropTypes.func.isRequired,
     setDraggingComponent: PropTypes.func.isRequired,
+    updateSelectionBox: PropTypes.func.isRequired,
   };
 
   constructor() {
     super();
 
     this.startComponentDrag = this.startComponentDrag.bind(this);
-
-    this.state = {
-      sX: null,
-      xY: null,
-      eX: null,
-      eY: null,
-    };
   }
 
   onMouseDown(e) {
@@ -40,7 +35,7 @@ class Grid extends React.Component {
     point.y = e.clientY;
     point = point.matrixTransform(this.svg.getScreenCTM().inverse());
 
-    this.setState({
+    this.props.updateSelectionBox({
       sX: point.x,
       sY: point.y,
     });
@@ -51,14 +46,14 @@ class Grid extends React.Component {
       point.y = moveEvent.clientY;
       const cursor = point.matrixTransform(this.svg.getScreenCTM().inverse());
 
-      this.setState({
+      this.props.updateSelectionBox({
         eX: cursor.x,
         eY: cursor.y,
       });
     };
 
     const mouseup = () => {
-      this.setState({
+      this.props.updateSelectionBox({
         sX: null,
         sY: null,
         eX: null,
@@ -191,13 +186,20 @@ class Grid extends React.Component {
   }
 
   renderSelectionBox() {
-    if (this.state.sX && this.state.sY && this.state.eX && this.state.eY) {
+    const box = this.props.selectionBox;
+    if (
+      box &&
+      box.get('sX') &&
+      box.get('sY') &&
+      box.get('eX') &&
+      box.get('eY')
+    ) {
       return (
         <polygon
-          points={`${this.state.sX} ${this.state.sY}
-                    ${this.state.eX} ${this.state.sY}
-                    ${this.state.eX} ${this.state.eY}
-                    ${this.state.sX} ${this.state.eY}`}
+          points={`${box.get('sX')} ${box.get('sY')}
+                    ${box.get('eX')} ${box.get('sY')}
+                    ${box.get('eX')} ${box.get('eY')}
+                    ${box.get('sX')} ${box.get('eY')}`}
           fill="blue"
           opacity="0.3"
         />

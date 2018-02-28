@@ -11,7 +11,7 @@ class LogicGate extends React.Component {
     gateType: PropTypes.func.isRequired,
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
-    selectedComponent: PropTypes.object.isRequired,
+    selectedComponents: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
 
@@ -52,7 +52,7 @@ class LogicGate extends React.Component {
   }
 
   isSelectedComponent() {
-    return this.props.selectedComponent.get('uuid') === this.props.uuid;
+    return this.props.selectedComponents.includes(this.props.uuid);
   }
 
   render() {

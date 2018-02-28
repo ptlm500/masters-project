@@ -7,7 +7,7 @@ class LED extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
-    selectedComponent: PropTypes.object.isRequired,
+    selectedComponents: PropTypes.object.isRequired,
   };
 
   getComponentColour() {
@@ -19,7 +19,7 @@ class LED extends React.Component {
   }
 
   isSelectedComponent() {
-    return this.props.selectedComponent.get('uuid') === this.props.uuid;
+    return this.props.selectedComponents.includes(this.props.uuid);
   }
 
   renderNodes() {

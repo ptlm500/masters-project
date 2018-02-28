@@ -13,6 +13,7 @@ import {
   TOGGLE_STATE,
   UPDATE_CONNECTIONS,
   DELETE_COMPONENT,
+  UPDATE_SELECTION_BOX,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId } from '../helpers';
 
@@ -130,9 +131,12 @@ const initialState = Immutable.fromJS({
     connections: [],
   },
   activeWire: '',
-  selectedComponent: {
-    id: '',
-    type: '',
+  selectedComponents: Immutable.Set([]),
+  selectionBox: {
+    sX: null,
+        sY: null,
+        eX: null,
+        eY: null,
   },
   components: {},
   wires: {},
@@ -157,14 +161,19 @@ function components(state = initialState, action) {
     }
     case ADD_COMPONENT: {
       let newState = state.setIn(['components', action.uuid], action.component);
-      console.log('***', newState.toJS());
       return newState;
     }
     case SELECT_COMPONENT: {
-      return state.set('selectedComponent', Immutable.Map({
-        uuid: action.uuid,
-        type: action.componentType,
-      }));
+      if (!action.uuid) {
+        return state.set('selectedComponents', Immutable.Set([]));
+      } else if (!state.get('selectedComponents').includes(action.uuid)) {
+        console.log(state.get('selectedComponents').add(action.uuid))
+        return state.update(
+          'selectedComponents',
+          selectedComponents => selectedComponents.add(action.uuid),
+        );
+      }
+      return state;
     }
     case DELETE_COMPONENT: {
       return state.deleteIn(['components', action.uuid]);
@@ -360,21 +369,43 @@ function components(state = initialState, action) {
           ],
           action.wireState,
         );
+      }
 
-        // for (let i = 1; i < wire.get('nodes').size; i += 1) {
-        //   const nodeId = wire.getIn(['nodes', i]);
-        //   // Update connected node with wire state
-        //   newState = newState.setIn(
-        //     [
-        //       'components',
-        //       getComponentIdFromNodeId(nodeId),
-        //       'nodes',
-        //       nodeId,
-        //       'state',
-        //     ],
-        //     action.wireState,
-        //   );
-        // }
+      return newState;
+    }
+    case UPDATE_SELECTION_BOX: {
+      let newState = state;
+      newState = state.update('selectionBox', original =>
+        original.merge(Immutable.Map(action.coords)),
+      );
+
+      const selectionBox = newState.get('selectionBox');
+
+      if (selectionBox.get('sX') && selectionBox.get('eX')) {
+        newState
+          .get('components')
+          .keySeq()
+          .forEach(uuid => {
+            const component = newState.getIn(['components', uuid]);
+            if (
+              component.get('x') > selectionBox.get('sX') &&
+              component.get('x') < selectionBox.get('eX') &&
+              component.get('y') > selectionBox.get('sY') &&
+              component.get('y') < selectionBox.get('eY')
+            ) {
+              if (!newState.get('selectedComponents').includes(uuid)) {
+                newState = newState.update(
+                  'selectedComponents',
+                  selectedComponents => selectedComponents.add(uuid),
+                );
+              }
+            } else if (newState.get('selectedComponents').includes(uuid)) {
+              newState = newState.update(
+                'selectedComponents',
+                selectedComponents => selectedComponents.delete(uuid),
+              );
+            }
+          });
       }
 
       return newState;

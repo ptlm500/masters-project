@@ -6,7 +6,7 @@ const mapStateToProps = (state, ownProps) => {
   // console.log(state.components.getIn(['components', ownProps.uuid]).toJS())
   return {
     component: state.components.getIn(['components', ownProps.uuid]),
-    selectedComponent: state.components.get('selectedComponent'),
+    selectedComponents: state.components.get('selectedComponents'),
   };
 };
 
