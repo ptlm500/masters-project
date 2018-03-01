@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types';
 import { NODE_RADIUS, STROKE_WIDTH } from '../componentConstants';
+import { getComponentIdFromNodeId } from '../../helpers';
 
 function isConnected(node) {
   return node.get('connections').size !== 0;
@@ -32,6 +33,8 @@ class Node extends React.Component {
     if (
       activeNode.get('id') !== this.props.uuid &&
       activeNode.get('input') !== this.props.node.get('input') &&
+      getComponentIdFromNodeId(activeNode.get('id')) !==
+        getComponentIdFromNodeId(this.props.uuid) &&
       !inputNodeConnected
     ) {
       return true;
