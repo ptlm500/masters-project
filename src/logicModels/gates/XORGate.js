@@ -37,22 +37,18 @@ export default function generateXORGate(uuid, x, y, inputNodeCount) {
     x,
     y,
     f: nodes => {
-      let outputState = 0;
+      let nodeTotal = 0;
 
       nodes.forEach(node => {
         if (node.get('input')) {
-          if (node.get('state') === 1 && outputState === 0) {
-            outputState = 1;
-            return true;
-          } else if (node.get('state') === 1 && outputState === 1) {
-            outputState = 0;
-            return false;
-          }
+          nodeTotal += node.get('state');
         }
-        return true;
       });
 
-      return outputState;
+      if (nodeTotal === 1 || (nodes.size > 3 && nodeTotal === nodes.size - 1)) {
+        return 1;
+      }
+      return 0;
     },
     nodes: generateNodes(uuid, inputNodeCount),
   });

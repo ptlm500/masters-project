@@ -37,23 +37,18 @@ export default function generateXNORGate(uuid, x, y, inputNodeCount) {
     x,
     y,
     f: nodes => {
-      let outputState = 0;
-      let prevState = nodes.first().get('state');
+      let nodeTotal = 0;
 
       nodes.forEach(node => {
         if (node.get('input')) {
-          if (node.get('state') === prevState) {
-            prevState = node.get('state');
-            outputState = 1;
-            return true;
-          }
-          outputState = 0;
-          return false;
+          nodeTotal += node.get('state');
         }
-        return true;
       });
 
-      return outputState;
+      if (nodeTotal === 0 || nodeTotal % 2 === 0) {
+        return 1;
+      }
+      return 0;
     },
     nodes: generateNodes(uuid, inputNodeCount),
   });
