@@ -23,8 +23,28 @@ import { getComponentIdFromNodeId, createUuid, getOutputNodeId } from '../helper
   uuid: {
     x: "",
     y: "",
-    component: < />,
+    type: '',
     function: func,
+    nodes: {
+      nodeId: {
+        input: bool,
+        connections: Set,
+        state: 0
+      }
+    }
+  }
+*/
+
+/*
+  Component block structure
+
+  uuid: {
+    x: "",
+    y: "",
+    type: 'componentBlock',
+    components: {
+      componentId: component
+    },
     nodes: {
       nodeId: {
         input: bool,
@@ -138,7 +158,47 @@ const initialState = Immutable.fromJS({
     eX: null,
     eY: null,
   },
-  components: {},
+  components: {
+    a: {
+      x: '20',
+      y: '20',
+      type: 'ComponentBlock',
+      // components: {
+      //   componentId: component
+      // },
+      inputNodes: 3,
+      nodes: {
+        a_1: {
+          x: NODE_OFFSET,
+          y: 6,
+          input: true,
+          connections: Immutable.Set([]),
+          state: 0,
+        },
+        a_2: {
+          x: NODE_OFFSET,
+          y: 26,
+          input: true,
+          connections: Immutable.Set([]),
+          state: 0,
+        },
+        a_3: {
+          x: NODE_OFFSET,
+          y: 46,
+          input: true,
+          connections: Immutable.Set([]),
+          state: 0,
+        },
+        a_4: {
+          x: 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
+          y: 26,
+          input: false,
+          connections: Immutable.Set([]),
+          state: 0,
+        },
+      },
+    },
+  },
   wires: {},
 });
 

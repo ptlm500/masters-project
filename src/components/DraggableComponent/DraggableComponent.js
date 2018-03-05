@@ -12,6 +12,7 @@ import NORGate from '../logic/NORGate/NORGate';
 import XNORGate from '../logic/XNORGate/XNORGate';
 import ToggleSwitch from '../input/ToggleSwitch/ToggleSwitch';
 import LED from '../output/LED/LED';
+import ComponentBlock from '../ComponentBlock/ComponentBlock';
 
 class DraggableComponent extends React.Component {
   static propTypes = {
@@ -135,7 +136,15 @@ class DraggableComponent extends React.Component {
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
           />
-        )
+        );
+      case 'ComponentBlock':
+        return (
+          <ComponentBlock
+            uuid={this.props.uuid}
+            component={this.props.component}
+            selectedComponents={this.props.selectedComponents}
+          />
+        );
       default:
         return null;
     }
