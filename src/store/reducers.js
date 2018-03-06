@@ -14,6 +14,7 @@ import {
   UPDATE_CONNECTIONS,
   DELETE_COMPONENT,
   UPDATE_SELECTION_BOX,
+  UPDATE_BLOCK,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId } from '../helpers';
 
@@ -163,35 +164,145 @@ const initialState = Immutable.fromJS({
       x: '20',
       y: '20',
       type: 'ComponentBlock',
-      // components: {
-      //   componentId: component
-      // },
-      inputNodes: 3,
+      components: {
+        'or': {
+          type: 'ORGate',
+          f: nodes => {
+            let outputState = 0;
+
+            nodes.forEach(node => {
+              if (node.get('input') && node.get('state') === 1) {
+                outputState = 1;
+                return false;
+              }
+              return true;
+            });
+
+            return outputState;
+          },
+          nodes: {
+            'or_1': {
+              input: true,
+              connections: Immutable.Set(['a_3']),
+              state: 0,
+            },
+            'or_2': {
+              input: true,
+              connections: Immutable.Set(['a_4']),
+              state: 0,
+            },
+            'or_3': {
+              input: false,
+              connections: Immutable.Set(['xor_2']),
+              state: 0,
+            },
+          }
+        },
+        'and': {
+          type: 'ANDGate',
+          f: nodes => {
+            let outputState = 1;
+
+            nodes.forEach(node => {
+              if (node.get('input')) {
+                if (node.get('state') === 0) {
+                  outputState = 0;
+                  return false;
+                }
+                return true;
+              }
+              return true;
+            });
+
+            return outputState;
+          },
+          nodes: {
+            'and_1': {
+              input: true,
+              connections: Immutable.Set(['a_1']),
+              state: 0,
+            },
+            'and_2': {
+              input: true,
+              connections: Immutable.Set(['a_2']),
+              state: 0,
+            },
+            'and_3': {
+              input: false,
+              connections: Immutable.Set(['xor_1']),
+              state: 0,
+            },
+          }
+        },
+        'xor': {
+          type: 'XORGate',
+          f: nodes => {
+            let nodeTotal = 0;
+
+            nodes.forEach(node => {
+              if (node.get('input')) {
+                nodeTotal += node.get('state');
+              }
+            });
+
+            if (nodeTotal === 1 || (nodes.size > 3 && nodeTotal === nodes.size - 1)) {
+              return 1;
+            }
+            return 0;
+          },
+          nodes: {
+            'xor_1': {
+              input: true,
+              connections: Immutable.Set(['and_3']),
+              state: 0,
+            },
+            'xor_2': {
+              input: true,
+              connections: Immutable.Set(['or_3']),
+              state: 0,
+            },
+            'xor_3': {
+              input: false,
+              connections: Immutable.Set(['a_5']),
+              state: 0,
+            },
+          }
+        },
+      },
+      inputNodes: 4,
+
       nodes: {
         a_1: {
           x: NODE_OFFSET,
           y: 6,
           input: true,
-          connections: Immutable.Set([]),
+          connections: Immutable.Set(['and_1']),
           state: 0,
         },
         a_2: {
           x: NODE_OFFSET,
           y: 26,
           input: true,
-          connections: Immutable.Set([]),
+          connections: Immutable.Set(['and_2']),
           state: 0,
         },
         a_3: {
           x: NODE_OFFSET,
           y: 46,
           input: true,
-          connections: Immutable.Set([]),
+          connections: Immutable.Set(['or_1']),
           state: 0,
         },
         a_4: {
+          x: NODE_OFFSET,
+          y: 66,
+          input: true,
+          connections: Immutable.Set(['or_2']),
+          state: 0,
+        },
+        a_5: {
           x: 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
-          y: 26,
+          y: 37,
           input: false,
           connections: Immutable.Set([]),
           state: 0,
@@ -344,10 +455,13 @@ function components(state = initialState, action) {
     }
     case UPDATE_WIRE: {
       const wire = state.getIn(['wires', action.wireId]);
-      return state.setIn(
-        ['wires', action.wireId, 'points'],
-        getWirePoints(state, wire.get('inputNode'), wire.get('outputNode')),
-      );
+      if (wire) {
+        return state.setIn(
+          ['wires', action.wireId, 'points'],
+          getWirePoints(state, wire.get('inputNode'), wire.get('outputNode')),
+        );
+      }
+      return state;
     }
     case DELETE_WIRE: {
       let newState = state;
@@ -439,6 +553,38 @@ function components(state = initialState, action) {
           action.wireState,
         );
       }
+
+      return newState;
+    }
+    case UPDATE_BLOCK: {
+      let newState = state;
+
+      newState.getIn(['components', action.uuid, 'nodes']).forEach(node => {
+        node.get('connections').forEach(connection => {
+          if (
+            newState.getIn([
+              'components',
+              action.uuid,
+              'components',
+              getComponentIdFromNodeId(connection),
+            ])
+          ) {
+            newState = newState.setIn(
+              [
+                'components',
+                action.uuid,
+                'components',
+                getComponentIdFromNodeId(connection),
+                'nodes',
+                connection,
+                'state',
+              ],
+              node.get('state'));
+          }
+        });
+      });
+
+      console.log(newState.toJS());
 
       return newState;
     }

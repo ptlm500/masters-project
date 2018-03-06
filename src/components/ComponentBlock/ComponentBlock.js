@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import Immutable from 'immutable';
 import NodeContainer from '../../containers/NodeContainer/NodeContainer';
-import {toggleState } from '../../store/actions';
+import { updateBlock } from '../../store/actions';
 import { STROKE_WIDTH, LEG_LENGTH, NODE_RADIUS, LEG_SPACING } from '../componentConstants';
 
 const WIDTH = 40;
@@ -15,6 +16,14 @@ class ComponentBlock extends React.Component {
     dispatch: PropTypes.func.isRequired,
   };
 
+  componentDidUpdate() {
+    // Check if we need to update component output state
+    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
+      this.props.dispatch(updateBlock(this.props.uuid));
+      this.nodes = this.props.component.get('nodes');
+    }
+  }
+
   getComponentColour() {
     if (this.isSelectedComponent()) {
       return 'blue';
@@ -25,11 +34,6 @@ class ComponentBlock extends React.Component {
 
   isSelectedComponent() {
     return this.props.selectedComponents.includes(this.props.uuid);
-  }
-
-  switchPressed(e) {
-    e.stopPropagation();
-    this.props.dispatch(toggleState(this.props.uuid));
   }
 
   renderNodes() {
