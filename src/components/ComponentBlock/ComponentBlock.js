@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import NodeContainer from '../../containers/NodeContainer/NodeContainer';
+import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 import { updateBlock } from '../../store/actions';
 import { STROKE_WIDTH, LEG_LENGTH, NODE_RADIUS, LEG_SPACING } from '../componentConstants';
 
@@ -14,6 +15,7 @@ class ComponentBlock extends React.Component {
     component: PropTypes.object.isRequired,
     selectedComponents: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
+    parents: PropTypes.array,
   };
 
   componentDidUpdate() {
@@ -78,6 +80,24 @@ class ComponentBlock extends React.Component {
     return legs;
   }
 
+  renderComponents() {
+    const components = [];
+
+    this.props.component.get('components').forEach((component, uuid) => {
+      components.push(
+        <DraggableComponentContainer
+          key={uuid}
+          uuid={uuid}
+          component={component}
+          moveComponent={() => console.log('plz no drag')}
+          parents={this.props.parents.concat([this.props.uuid])}
+        />,
+      );
+    });
+
+    return components;
+  }
+
   render() {
     const HEIGHT =
       10 + (this.props.component.get('inputNodes') - 1) * LEG_SPACING;
@@ -94,9 +114,14 @@ class ComponentBlock extends React.Component {
         />
         {this.renderLegs()}
         {this.renderNodes()}
+        {this.renderComponents()}
       </g>
     );
   }
 }
+
+ComponentBlock.defaultProps = {
+  parents: [],
+};
 
 export default connect()(ComponentBlock);

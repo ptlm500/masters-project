@@ -37,6 +37,7 @@ export default function generateORGate(uuid, x, y, inputNodeCount) {
     x,
     y,
     f: nodes => {
+      console.log(nodes.toJS())
       let outputState = 0;
 
       nodes.forEach(node => {

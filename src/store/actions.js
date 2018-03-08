@@ -100,12 +100,13 @@ export function toggleState(uuid) {
   };
 }
 
-export function updateConnections(uuid, startType, wireState) {
+export function updateConnections(uuid, startType, wireState, parents) {
   return {
     type: UPDATE_CONNECTIONS,
     uuid,
     startType,
     wireState,
+    parents,
   };
 }
 

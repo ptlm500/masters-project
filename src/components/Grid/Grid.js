@@ -224,11 +224,12 @@ class Grid extends React.Component {
   renderComponents() {
     const components = [];
 
-    this.props.components.keySeq().forEach(uuid => {
+    this.props.components.forEach((component, uuid) => {
       components.push(
         <DraggableComponentContainer
           key={uuid}
           uuid={uuid}
+          component={component}
           moveComponent={this.startComponentDrag}
         />,
       );

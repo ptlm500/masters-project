@@ -23,6 +23,7 @@ class DraggableComponent extends React.Component {
     selectComponent: PropTypes.func.isRequired,
     deleteComponent: PropTypes.func.isRequired,
     deleteWire: PropTypes.func.isRequired,
+    parents: PropTypes.array,
   };
 
   constructor() {
@@ -74,6 +75,7 @@ class DraggableComponent extends React.Component {
             gateType={ANDGate}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
+            parents={this.props.parents}
           />
         );
       case 'ORGate':
@@ -83,6 +85,7 @@ class DraggableComponent extends React.Component {
             gateType={ORGate}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
+            parents={this.props.parents}
           />
         );
       case 'XORGate':
@@ -92,6 +95,7 @@ class DraggableComponent extends React.Component {
             gateType={XORGate}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
+            parents={this.props.parents}
           />
         );
       case 'NANDGate':
@@ -101,6 +105,7 @@ class DraggableComponent extends React.Component {
             gateType={NANDGate}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
+            parents={this.props.parents}
           />
         );
       case 'NORGate':
@@ -110,6 +115,7 @@ class DraggableComponent extends React.Component {
             gateType={NORGate}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
+            parents={this.props.parents}
           />
         );
       case 'XNORGate':
@@ -119,6 +125,7 @@ class DraggableComponent extends React.Component {
             gateType={XNORGate}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
+            parents={this.props.parents}
           />
         );
       case 'ToggleSwitch':
@@ -143,6 +150,7 @@ class DraggableComponent extends React.Component {
             uuid={this.props.uuid}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
+            parents={this.props.parents}
           />
         );
       default:
@@ -167,5 +175,9 @@ class DraggableComponent extends React.Component {
     );
   }
 }
+
+DraggableComponent.defaultProps = {
+  parents: [],
+};
 
 export default withStyles(s)(DraggableComponent);

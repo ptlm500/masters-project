@@ -5,7 +5,7 @@ import DraggableComponent from '../../components/DraggableComponent/DraggableCom
 const mapStateToProps = (state, ownProps) => {
   // console.log(state.components.getIn(['components', ownProps.uuid]).toJS())
   return {
-    component: state.components.getIn(['components', ownProps.uuid]),
+    // component: state.components.getIn(['components', ownProps.uuid]),
     selectedComponents: state.components.get('selectedComponents'),
   };
 };

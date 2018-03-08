@@ -13,12 +13,14 @@ class LogicGate extends React.Component {
     component: PropTypes.object.isRequired,
     selectedComponents: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
+    parents: PropTypes.array,
   };
 
   componentDidUpdate() {
     // Check if we need to update component output state
     if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
-      this.props.dispatch(updateConnections(this.props.uuid, 'component'));
+      console.log('updating', this.props.uuid);
+      this.props.dispatch(updateConnections(this.props.uuid, 'component', null, this.props.parents));
       this.nodes = this.props.component.get('nodes');
     }
   }
@@ -71,5 +73,9 @@ class LogicGate extends React.Component {
     return null;
   }
 }
+
+LogicGate.defaultProps = {
+  parents: [],
+};
 
 export default connect()(LogicGate);

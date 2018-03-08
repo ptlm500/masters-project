@@ -167,6 +167,8 @@ const initialState = Immutable.fromJS({
       components: {
         'or': {
           type: 'ORGate',
+          x: '40',
+          y: '40',
           f: nodes => {
             let outputState = 0;
 
@@ -200,6 +202,8 @@ const initialState = Immutable.fromJS({
         },
         'and': {
           type: 'ANDGate',
+          x: '40',
+          y: '40',
           f: nodes => {
             let outputState = 1;
 
@@ -236,6 +240,8 @@ const initialState = Immutable.fromJS({
         },
         'xor': {
           type: 'XORGate',
+          x: '40',
+          y: '40',
           f: nodes => {
             let nodeTotal = 0;
 
@@ -276,28 +282,28 @@ const initialState = Immutable.fromJS({
           x: NODE_OFFSET,
           y: 6,
           input: true,
-          connections: Immutable.Set(['and_1']),
+          connections: Immutable.Set([]),
           state: 0,
         },
         a_2: {
           x: NODE_OFFSET,
           y: 26,
           input: true,
-          connections: Immutable.Set(['and_2']),
+          connections: Immutable.Set([]),
           state: 0,
         },
         a_3: {
           x: NODE_OFFSET,
           y: 46,
           input: true,
-          connections: Immutable.Set(['or_1']),
+          connections: Immutable.Set([]),
           state: 0,
         },
         a_4: {
           x: NODE_OFFSET,
           y: 66,
           input: true,
-          connections: Immutable.Set(['or_2']),
+          connections: Immutable.Set([]),
           state: 0,
         },
         a_5: {
@@ -524,19 +530,29 @@ function components(state = initialState, action) {
       let newState = state;
 
       if (action.startType === 'component') {
-        const f = newState.getIn(['components', action.uuid, 'f']);
+        let componentLocation = ['components'];
+        if (action.parents.length !== 0) {
+          action.parents.forEach(parent => {
+            componentLocation = componentLocation.concat([parent, 'components']);
+          });
+        }
+
+        componentLocation = componentLocation.concat([action.uuid]);
+
+        console.log(componentLocation.concat(['f']));
+
+        const f = newState.getIn(componentLocation.concat(['f']));
 
         if (f) {
+          console.log('found f, evaluating', getOutputNodeId(newState.getIn(componentLocation)));
           // Evaluate component function, f and set output state
           newState = newState.setIn(
-            [
-              'components',
-              action.uuid,
+            componentLocation.concat([
               'nodes',
-              getOutputNodeId(newState.getIn(['components', action.uuid])),
+              getOutputNodeId(newState.getIn(componentLocation)),
               'state',
-            ],
-            f(newState.getIn(['components', action.uuid, 'nodes'])),
+            ]),
+            f(newState.getIn(componentLocation.concat(['nodes']))),
           );
         }
       } else if (action.startType === 'wire') {
@@ -554,35 +570,45 @@ function components(state = initialState, action) {
         );
       }
 
+      console.log('***', newState.toJS());
+
       return newState;
     }
     case UPDATE_BLOCK: {
       let newState = state;
 
-      newState.getIn(['components', action.uuid, 'nodes']).forEach(node => {
-        node.get('connections').forEach(connection => {
-          if (
-            newState.getIn([
-              'components',
-              action.uuid,
-              'components',
-              getComponentIdFromNodeId(connection),
-            ])
-          ) {
-            newState = newState.setIn(
-              [
-                'components',
-                action.uuid,
-                'components',
-                getComponentIdFromNodeId(connection),
-                'nodes',
-                connection,
-                'state',
-              ],
-              node.get('state'));
-          }
+      // Update internal input nodes connected to external input nodes
+      newState
+        .getIn(['components', action.uuid, 'components'])
+        .forEach((component, componentId) => {
+          component.get('nodes').forEach((node, nodeId) => {
+            if (node.get('input')) {
+              node.get('connections').forEach((connection, connectionId) => {
+                // Check if node is connected to an external connection
+                if (getComponentIdFromNodeId(connectionId) === action.uuid) {
+                  newState = newState.setIn(
+                    [
+                      'components',
+                      action.uuid,
+                      'components',
+                      componentId,
+                      'nodes',
+                      nodeId,
+                      'state',
+                    ],
+                    newState.getIn([
+                      'components',
+                      action.uuid,
+                      'nodes',
+                      connectionId,
+                      'state',
+                    ]),
+                  );
+                }
+              });
+            }
+          });
         });
-      });
 
       console.log(newState.toJS());
 
