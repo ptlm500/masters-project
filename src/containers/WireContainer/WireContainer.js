@@ -4,16 +4,29 @@ import { selectComponent, deleteWire, updateConnections } from '../../store/acti
 import { getComponentIdFromNodeId } from '../../helpers';
 
 const mapStateToProps = (state, ownProps) => {
-  const wire = state.components.getIn(['wires', ownProps.uuid])
+  let wireLocation = ['wires', ownProps.uuid];
+  let inputNodeLocation = ['components'];
+  if (ownProps.parents && ownProps.parents.length !== 0) {
+    wireLocation = ['components']
+    ownProps.parents.forEach(parent => {
+      wireLocation = wireLocation.concat([parent, 'wires']);
+      inputNodeLocation = inputNodeLocation.concat([parent, 'components']);
+    });
+
+    wireLocation = wireLocation.concat([ownProps.uuid]);
+  }
+  const wire = state.components.getIn(wireLocation);
+
   return {
     wire,
-    wireState: state.components.getIn([
-      'components',
-      getComponentIdFromNodeId(wire.get('inputNode')),
-      'nodes',
-      wire.get('inputNode'),
-      'state',
-    ]),
+    wireState: state.components.getIn(
+      inputNodeLocation.concat([
+        getComponentIdFromNodeId(wire.get('inputNode')),
+        'nodes',
+        wire.get('inputNode'),
+        'state',
+      ]),
+    ),
     selectedComponents: state.components.get('selectedComponents'),
   };
 };
@@ -27,7 +40,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(deleteWire(uuid));
     },
     updateConnections: wireState => {
-      dispatch(updateConnections(ownProps.uuid, 'wire', wireState));
+      dispatch(
+        updateConnections(ownProps.uuid, 'wire', wireState, ownProps.parents),
+      );
     },
   };
 };

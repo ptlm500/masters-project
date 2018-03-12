@@ -195,7 +195,7 @@ const initialState = Immutable.fromJS({
             },
             'or_3': {
               input: false,
-              connections: Immutable.Set(['xor_2']),
+              connections: Immutable.Set(['w_2']),
               state: 0,
             },
           }
@@ -233,7 +233,7 @@ const initialState = Immutable.fromJS({
             },
             'and_3': {
               input: false,
-              connections: Immutable.Set(['xor_1']),
+              connections: Immutable.Set(['w_1']),
               state: 0,
             },
           }
@@ -259,12 +259,12 @@ const initialState = Immutable.fromJS({
           nodes: {
             'xor_1': {
               input: true,
-              connections: Immutable.Set(['and_3']),
+              connections: Immutable.Set(['w_1']),
               state: 0,
             },
             'xor_2': {
               input: true,
-              connections: Immutable.Set(['or_3']),
+              connections: Immutable.Set(['w_2']),
               state: 0,
             },
             'xor_3': {
@@ -275,8 +275,24 @@ const initialState = Immutable.fromJS({
           }
         },
       },
+      wires: {
+        w_1: {
+          inputNode: 'and_3',
+          outputNode: 'xor_1',
+          points: Immutable.fromJS([{x: 0, y: 0}])
+        },
+        w_2: {
+          inputNode: 'or_3',
+          outputNode: 'xor_2',
+          points: Immutable.fromJS([{x: 0, y: 0}])
+        },
+        w_3: {
+          inputNode: 'xor_3',
+          outputNode: 'a_5',
+          points: Immutable.fromJS([{x: 0, y: 0}])
+        },
+      },
       inputNodes: 4,
-
       nodes: {
         a_1: {
           x: NODE_OFFSET,
@@ -531,20 +547,18 @@ function components(state = initialState, action) {
 
       if (action.startType === 'component') {
         let componentLocation = ['components'];
+        // If this component has parents, update the location
         if (action.parents.length !== 0) {
           action.parents.forEach(parent => {
             componentLocation = componentLocation.concat([parent, 'components']);
           });
         }
 
+        // Get the component function
         componentLocation = componentLocation.concat([action.uuid]);
-
-        console.log(componentLocation.concat(['f']));
-
         const f = newState.getIn(componentLocation.concat(['f']));
 
         if (f) {
-          console.log('found f, evaluating', getOutputNodeId(newState.getIn(componentLocation)));
           // Evaluate component function, f and set output state
           newState = newState.setIn(
             componentLocation.concat([
@@ -556,21 +570,47 @@ function components(state = initialState, action) {
           );
         }
       } else if (action.startType === 'wire') {
-        const wireOutputNode = newState.getIn(['wires', action.uuid, 'outputNode']);
+        let wireLocation = ['wires', action.uuid];
+        let outputNodeLocation = ['components'];
+        // If this wire has parents, update the locations
+        if (action.parents && action.parents.length !== 0) {
+          wireLocation = ['components']
+          action.parents.forEach(parent => {
+            wireLocation = wireLocation.concat([parent, 'wires']);
+            outputNodeLocation = outputNodeLocation.concat([
+              parent,
+              'components',
+            ]);
+          });
+
+          wireLocation = wireLocation.concat([action.uuid]);
+        }
+
+        const wireOutputNode = newState.getIn(
+          wireLocation.concat(['outputNode']),
+        );
+
+        // If the wire output node is attached to a parent component
+        // set the output node location accordingly
+        if (
+          action.parents &&
+          getComponentIdFromNodeId(wireOutputNode) ===
+            action.parents.slice(-1)[0]
+        ) {
+          outputNodeLocation.splice(-2, 2);
+        }
+
         // Update wire output node
         newState = newState.setIn(
-          [
-            'components',
+          outputNodeLocation.concat([
             getComponentIdFromNodeId(wireOutputNode),
             'nodes',
             wireOutputNode,
             'state',
-          ],
+          ]),
           action.wireState,
         );
       }
-
-      console.log('***', newState.toJS());
 
       return newState;
     }
@@ -609,8 +649,6 @@ function components(state = initialState, action) {
             }
           });
         });
-
-      console.log(newState.toJS());
 
       return newState;
     }

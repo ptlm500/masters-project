@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import NodeContainer from '../../containers/NodeContainer/NodeContainer';
 import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
+import WireContainer from '../../containers/WireContainer/WireContainer';
 import { updateBlock } from '../../store/actions';
 import { STROKE_WIDTH, LEG_LENGTH, NODE_RADIUS, LEG_SPACING } from '../componentConstants';
 
@@ -98,6 +99,24 @@ class ComponentBlock extends React.Component {
     return components;
   }
 
+  renderWires() {
+    const wires = [];
+
+    this.props.component.get('wires').forEach((wire, uuid) => {
+      if (wire.get('points')) {
+        wires.push(
+          <WireContainer
+            key={uuid}
+            uuid={uuid}
+            moveVertex={() => console.log('plz no drag')}
+            parents={this.props.parents.concat([this.props.uuid])}
+          />,
+        );
+      }
+    });
+    return wires;
+  }
+
   render() {
     const HEIGHT =
       10 + (this.props.component.get('inputNodes') - 1) * LEG_SPACING;
@@ -115,6 +134,7 @@ class ComponentBlock extends React.Component {
         {this.renderLegs()}
         {this.renderNodes()}
         {this.renderComponents()}
+        {this.renderWires()}
       </g>
     );
   }
