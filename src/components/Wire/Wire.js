@@ -11,6 +11,7 @@ class Wire extends React.Component {
     deleteWire: PropTypes.func.isRequired,
     moveVertex: PropTypes.func.isRequired,
     updateConnections: PropTypes.func.isRequired,
+    hidden: PropTypes.bool,
   };
 
   constructor() {
@@ -88,6 +89,10 @@ class Wire extends React.Component {
   }
 
   render() {
+    if (this.props.hidden) {
+      return null;
+    }
+
     if (this.isSelectedComponent()) {
       document.addEventListener('keydown', this.keyDown);
     }
@@ -109,5 +114,9 @@ class Wire extends React.Component {
     );
   }
 }
+
+Wire.defaultProps = {
+  hidden: false,
+};
 
 export default Wire;

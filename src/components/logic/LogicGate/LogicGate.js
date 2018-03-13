@@ -14,6 +14,7 @@ class LogicGate extends React.Component {
     selectedComponents: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     parents: PropTypes.array,
+    hidden: PropTypes.bool,
   };
 
   componentDidUpdate() {
@@ -58,7 +59,9 @@ class LogicGate extends React.Component {
   }
 
   render() {
-    if (this.props.gateType) {
+    if (this.props.hidden) {
+      return null;
+    } else if (this.props.gateType) {
       return (
         <this.props.gateType
           height={this.props.component.get('nodes').size * 10}
@@ -70,12 +73,14 @@ class LogicGate extends React.Component {
     console.error(
       `[LogicGate] No gate type provided for component ${this.props.uuid}`,
     );
+
     return null;
   }
 }
 
 LogicGate.defaultProps = {
   parents: [],
+  hidden: false,
 };
 
 export default connect()(LogicGate);

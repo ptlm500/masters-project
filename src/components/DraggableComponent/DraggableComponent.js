@@ -24,6 +24,7 @@ class DraggableComponent extends React.Component {
     deleteComponent: PropTypes.func.isRequired,
     deleteWire: PropTypes.func.isRequired,
     parents: PropTypes.array,
+    hidden: PropTypes.bool,
   };
 
   constructor() {
@@ -71,6 +72,7 @@ class DraggableComponent extends React.Component {
       case 'ANDGate':
         return (
           <LogicGate
+            hidden={this.props.hidden}
             uuid={this.props.uuid}
             gateType={ANDGate}
             component={this.props.component}
@@ -81,6 +83,7 @@ class DraggableComponent extends React.Component {
       case 'ORGate':
         return (
           <LogicGate
+            hidden={this.props.hidden}
             uuid={this.props.uuid}
             gateType={ORGate}
             component={this.props.component}
@@ -91,6 +94,7 @@ class DraggableComponent extends React.Component {
       case 'XORGate':
         return (
           <LogicGate
+            hidden={this.props.hidden}
             uuid={this.props.uuid}
             gateType={XORGate}
             component={this.props.component}
@@ -101,6 +105,7 @@ class DraggableComponent extends React.Component {
       case 'NANDGate':
         return (
           <LogicGate
+            hidden={this.props.hidden}
             uuid={this.props.uuid}
             gateType={NANDGate}
             component={this.props.component}
@@ -111,6 +116,7 @@ class DraggableComponent extends React.Component {
       case 'NORGate':
         return (
           <LogicGate
+            hidden={this.props.hidden}
             uuid={this.props.uuid}
             gateType={NORGate}
             component={this.props.component}
@@ -121,6 +127,7 @@ class DraggableComponent extends React.Component {
       case 'XNORGate':
         return (
           <LogicGate
+            hidden={this.props.hidden}
             uuid={this.props.uuid}
             gateType={XNORGate}
             component={this.props.component}
@@ -162,7 +169,6 @@ class DraggableComponent extends React.Component {
     if (this.isSelectedComponent()) {
       document.addEventListener('keydown', this.keyDown);
     }
-
     return (
       <svg
         x={this.props.component.get('x')}
@@ -178,6 +184,7 @@ class DraggableComponent extends React.Component {
 
 DraggableComponent.defaultProps = {
   parents: [],
+  hidden: false,
 };
 
 export default withStyles(s)(DraggableComponent);

@@ -87,6 +87,7 @@ class ComponentBlock extends React.Component {
     this.props.component.get('components').forEach((component, uuid) => {
       components.push(
         <DraggableComponentContainer
+          hidden
           key={uuid}
           uuid={uuid}
           component={component}
