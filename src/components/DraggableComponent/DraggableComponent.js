@@ -166,9 +166,14 @@ class DraggableComponent extends React.Component {
   }
 
   render() {
-    if (this.isSelectedComponent()) {
+    if (this.isSelectedComponent() && !this.keyListener) {
       document.addEventListener('keydown', this.keyDown);
+      this.keyListener = true;
+    } else if (!this.isSelectedComponent() && this.keyListener) {
+      document.removeEventListener('keydown', this.keyDown);
+      this.keyListener = false;
     }
+
     return (
       <svg
         x={this.props.component.get('x')}

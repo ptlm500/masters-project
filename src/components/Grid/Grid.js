@@ -26,6 +26,7 @@ class Grid extends React.Component {
     super();
 
     this.startComponentDrag = this.startComponentDrag.bind(this);
+    this.keyDown = this.keyDown.bind(this);
   }
 
   onMouseDown(e) {
@@ -211,6 +212,11 @@ class Grid extends React.Component {
     document.addEventListener('mouseup', mouseup);
   }
 
+  keyDown(e) {
+    e.stopPropagation();
+    console.log('key down', e);
+  }
+
   updateWires(component) {
     component.get('nodes').forEach(node => {
       if (node.get('connections').size > 0) {
@@ -280,6 +286,14 @@ class Grid extends React.Component {
   }
 
   render() {
+    if (this.props.selectedComponents.size !== 0 && !this.keyListener) {
+      document.addEventListener('keydown', this.keyDown);
+      this.keyListener = true;
+    } else if (this.props.selectedComponents.size === 0 && this.keyListener) {
+      document.removeEventListener('keydown', this.keyDown);
+      this.keyListener = false;
+    }
+
     return (
       <svg
         className={s.svg}
