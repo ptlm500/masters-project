@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import Wire from '../../components/Wire/Wire';
-import { selectComponent, deleteWire, updateConnections } from '../../store/actions';
+import { selectWire, deleteWire, updateConnections } from '../../store/actions';
 import { getComponentIdFromNodeId } from '../../helpers';
 
 const mapStateToProps = (state, ownProps) => {
@@ -27,14 +27,14 @@ const mapStateToProps = (state, ownProps) => {
         'state',
       ]),
     ),
-    selectedComponents: state.components.get('selectedComponents'),
+    selectedWires: state.components.get('selectedWires'),
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    selectComponent: uuid => {
-      dispatch(selectComponent(uuid, 'wire'));
+    selectWire: uuid => {
+      dispatch(selectWire(uuid, 'wire'));
     },
     deleteWire: uuid => {
       dispatch(deleteWire(uuid));

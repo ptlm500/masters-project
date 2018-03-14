@@ -6,8 +6,8 @@ class Wire extends React.Component {
     uuid: PropTypes.string.isRequired,
     wire: PropTypes.object.isRequired,
     wireState: PropTypes.number.isRequired,
-    selectedComponents: PropTypes.object.isRequired,
-    selectComponent: PropTypes.func.isRequired,
+    selectedWires: PropTypes.object.isRequired,
+    selectWire: PropTypes.func.isRequired,
     deleteWire: PropTypes.func.isRequired,
     moveVertex: PropTypes.func.isRequired,
     updateConnections: PropTypes.func.isRequired,
@@ -39,25 +39,25 @@ class Wire extends React.Component {
   }
 
   getWireColour() {
-    if (this.isSelectedComponent()) {
+    if (this.isSelectedWire()) {
       return "blue";
     }
 
     return this.props.wireState === 0 ? 'black' : 'green';
   }
 
-  isSelectedComponent() {
-    return this.props.selectedComponents.includes(this.props.uuid);
+  isSelectedWire() {
+    return this.props.selectedWires.includes(this.props.uuid);
   }
 
   selectWire(e) {
     e.stopPropagation();
-    this.props.selectComponent(this.props.uuid);
+    this.props.selectWire(this.props.uuid);
   }
 
   keyDown(e) {
     console.log(e);
-    if (this.isSelectedComponent() && (e.key === 'Delete' || e.key === 'Backspace')) {
+    if (this.isSelectedWire() && (e.key === 'Delete' || e.key === 'Backspace')) {
       this.props.deleteWire(this.props.uuid);
     }
   }
@@ -93,10 +93,10 @@ class Wire extends React.Component {
       return null;
     }
 
-    if (this.isSelectedComponent() && !this.keyListener) {
+    if (this.isSelectedWire() && !this.keyListener) {
       document.addEventListener('keydown', this.keyDown);
       this.keyListener = true;
-    } else if (!this.isSelectedComponent() && this.keyListener) {
+    } else if (!this.isSelectedWire() && this.keyListener) {
       document.removeEventListener('keydown', this.keyDown);
       this.keyListener = false;
     }

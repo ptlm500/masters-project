@@ -4,8 +4,10 @@
 export const MOVE_COMPONENT = 'MOVE_COMPONENT';
 export const SET_DRAGGING_COMPONENT = 'SET_DRAGGING_COMPONENT';
 export const ADD_COMPONENT = 'ADD_COMPONENT';
+export const CREATE_COMPONENT_BLOCK = 'CREATE_COMPONENT_BLOCK';
 export const DELETE_COMPONENT = 'DELETE_COMPONENT';
 export const SELECT_COMPONENT = 'SELECT_COMPONENT';
+export const SELECT_WIRE = 'SELECT_WIRE';
 export const START_NODE_CONNECTION = 'START_NODE_CONNECTION';
 export const CANCEL_NODE_CONNECTION = 'CANCEL_NODE_CONNECTION';
 export const CONNECT_NODES = 'CONNECT_NODES';
@@ -43,11 +45,27 @@ export function selectComponent(uuid, clearPrevious) {
   };
 }
 
+export function selectWire(uuid, clearPrevious) {
+  return {
+    type: SELECT_WIRE,
+    uuid,
+    clearPrevious,
+  };
+}
+
 export function addComponent(uuid, component) {
   return {
     type: ADD_COMPONENT,
     uuid,
     component,
+  };
+}
+
+export function createComponentBlock(uuid, componentUuids) {
+  return {
+    type: CREATE_COMPONENT_BLOCK,
+    uuid,
+    componentUuids,
   };
 }
 

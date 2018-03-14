@@ -3,7 +3,9 @@ import {
   moveComponent,
   updateWire,
   selectComponent,
+  selectWire,
   addComponent,
+  createComponentBlock,
   setDraggingComponent,
   updateSelectionBox,
 } from '../../store/actions';
@@ -30,8 +32,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     selectComponent: (uuid, clearPrevious) => {
       dispatch(selectComponent(uuid, clearPrevious));
     },
+    selectWire: (uuid, clearPrevious) => {
+      dispatch(selectWire(uuid, clearPrevious));
+    },
     addComponent: (uuid, component) => {
       dispatch(addComponent(uuid, component));
+    },
+    createComponentBlock: (uuid, componentUuids) => {
+      dispatch(createComponentBlock(uuid, componentUuids));
     },
     setDraggingComponent: () => {
       dispatch(setDraggingComponent(null, null));

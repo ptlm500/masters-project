@@ -17,7 +17,9 @@ class Grid extends React.Component {
     move: PropTypes.func.isRequired,
     updateWire: PropTypes.func.isRequired,
     selectComponent: PropTypes.func.isRequired,
+    selectWire: PropTypes.func.isRequired,
     addComponent: PropTypes.func.isRequired,
+    createComponentBlock: PropTypes.func.isRequired,
     setDraggingComponent: PropTypes.func.isRequired,
     updateSelectionBox: PropTypes.func.isRequired,
   };
@@ -30,7 +32,9 @@ class Grid extends React.Component {
   }
 
   onMouseDown(e) {
+    // Clear all selected components and wires
     this.props.selectComponent();
+    this.props.selectWire();
 
     let point = this.grid.createSVGPoint();
 
@@ -214,7 +218,8 @@ class Grid extends React.Component {
 
   keyDown(e) {
     e.stopPropagation();
-    console.log('key down', e);
+    console.log('Should create a component from', this.props.selectedComponents.toJS());
+    this.props.createComponentBlock(createUuid(), this.props.selectedComponents);
   }
 
   updateWires(component) {
