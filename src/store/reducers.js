@@ -80,6 +80,18 @@ function getComponentLocation(parents) {
   return componentLocation;
 }
 
+function getWireLocation(parents) {
+  let wireLocation = ['wires'];
+  // If this wire has parents, update the location
+  if (parents && parents.length !== 0) {
+    wireLocation = getComponentLocation(parents);
+     // Replace the last value in the array with 'wires' to get correct location
+    wireLocation[wireLocation.length - 1] = 'wires';
+  }
+
+  return wireLocation;
+}
+
 function getNodeInfo(state, nodeId) {
   const component = state.getIn(['components', getComponentIdFromNodeId(nodeId)]);
   const node = {
@@ -376,17 +388,26 @@ function components(state = initialState, action) {
     }
     case CREATE_COMPONENT_BLOCK: {
       const componentLocation = getComponentLocation(action.parents);
+      const wireLocation = getWireLocation(action.parents);
       let newState = state;
       let componentsToMove = Immutable.Map({});
+      let wiresToMove = Immutable.Map({});
 
-      action.componentUuids.forEach(componentUuid => {
+      newState.get('selectedComponents').forEach(componentUuid => {
         componentsToMove = componentsToMove.set(
           componentUuid,
           newState.getIn(componentLocation.concat([componentUuid])),
         );
       });
 
-      console.log(componentsToMove.toJS());
+      newState.get('selectedWires').forEach(wireUuid => {
+        wiresToMove = wiresToMove.set(
+          wireUuid,
+          newState.getIn(wireLocation.concat(wireUuid)),
+        );
+      });
+
+      console.log(componentsToMove.toJS(), wiresToMove.toJS());
 
       return newState;
     }
@@ -614,21 +635,10 @@ function components(state = initialState, action) {
           );
         }
       } else if (action.startType === 'wire') {
-        let wireLocation = ['wires', action.uuid];
-        let outputNodeLocation = ['components'];
-        // If this wire has parents, update the locations
-        if (action.parents && action.parents.length !== 0) {
-          wireLocation = ['components']
-          action.parents.forEach(parent => {
-            wireLocation = wireLocation.concat([parent, 'wires']);
-            outputNodeLocation = outputNodeLocation.concat([
-              parent,
-              'components',
-            ]);
-          });
-
-          wireLocation = wireLocation.concat([action.uuid]);
-        }
+        const wireLocation = getWireLocation(action.parents).concat([
+          action.uuid,
+        ]);
+        const outputNodeLocation = getComponentLocation(action.parents);
 
         const wireOutputNode = newState.getIn(
           wireLocation.concat(['outputNode']),
@@ -746,13 +756,11 @@ function components(state = initialState, action) {
 
           if (minPX > minX && maxPX < maxX && minPY > minY && maxPY < maxY) {
             if (!newState.get('selectedWires').includes(uuid)) {
-              console.log('adding', uuid);
               newState = newState.update('selectedWires', selectedWires =>
                 selectedWires.add(uuid),
               );
             }
           } else if (newState.get('selectedWires').includes(uuid)) {
-            console.log('deleting', uuid);
             newState = newState.update('selectedWires', selectedWires =>
               selectedWires.delete(uuid),
             );

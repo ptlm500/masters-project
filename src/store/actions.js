@@ -61,11 +61,10 @@ export function addComponent(uuid, component) {
   };
 }
 
-export function createComponentBlock(uuid, componentUuids) {
+export function createComponentBlock(uuid) {
   return {
     type: CREATE_COMPONENT_BLOCK,
     uuid,
-    componentUuids,
   };
 }
 

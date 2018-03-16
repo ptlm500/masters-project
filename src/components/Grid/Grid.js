@@ -219,7 +219,7 @@ class Grid extends React.Component {
   keyDown(e) {
     e.stopPropagation();
     console.log('Should create a component from', this.props.selectedComponents.toJS());
-    this.props.createComponentBlock(createUuid(), this.props.selectedComponents);
+    this.props.createComponentBlock(createUuid());
   }
 
   updateWires(component) {

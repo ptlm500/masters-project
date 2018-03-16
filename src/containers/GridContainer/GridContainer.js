@@ -38,8 +38,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     addComponent: (uuid, component) => {
       dispatch(addComponent(uuid, component));
     },
-    createComponentBlock: (uuid, componentUuids) => {
-      dispatch(createComponentBlock(uuid, componentUuids));
+    createComponentBlock: (uuid) => {
+      dispatch(createComponentBlock(uuid));
     },
     setDraggingComponent: () => {
       dispatch(setDraggingComponent(null, null));
