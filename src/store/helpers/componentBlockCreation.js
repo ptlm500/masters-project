@@ -6,28 +6,18 @@ import {
 } from '../../components/componentConstants';
 import { createUuid } from '../../helpers';
 
-export function getComponentBlockNode(
-  newBlock,
-  action,
-  node,
-  nodeUuid,
-  nodeCounters,
-) {
-  const nodeTotal = nodeCounters.input + nodeCounters.output;
-  return newBlock.setIn(
-    ['nodes', `${action.uuid}_${nodeTotal}`],
-    Immutable.Map({
-      x: node.get('input')
-        ? NODE_OFFSET
-        : 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
-      y: node.get('input')
-        ? 6 + nodeCounters.input * 20
-        : 6 + nodeCounters.output * 2,
-      input: node.get('input'),
-      connections: node.get('connections'),
-      state: node.get('state'),
-    }),
-  );
+export function getComponentBlockNode(node, nodeUuid, nodeCounters) {
+  return Immutable.Map({
+    x: node.get('input')
+      ? NODE_OFFSET
+      : 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
+    y: node.get('input')
+      ? 6 + nodeCounters.input * 20
+      : 6 + nodeCounters.output * 2,
+    input: node.get('input'),
+    connections: node.get('connections'),
+    state: node.get('state'),
+  });
 }
 
 export function updateComponentNode(
@@ -42,6 +32,7 @@ export function updateComponentNode(
   if (
     !newBlock.getIn(['components', componentUuid, 'nodes', nodeUuid, 'input'])
   ) {
+    // Add wire
     modifiedBlock = modifiedBlock.setIn(
       ['wires', createUuid()],
       Immutable.Map({
@@ -51,6 +42,7 @@ export function updateComponentNode(
       }),
     );
   }
+  // Remap component connections with new wire
   modifiedBlock = modifiedBlock.setIn(
     ['components', componentUuid, 'nodes', nodeUuid, 'connections'],
     Immutable.Set([

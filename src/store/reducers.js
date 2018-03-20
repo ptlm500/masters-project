@@ -52,7 +52,6 @@ import {
     }
   }
 */
-
 /*
   Component block structure
 
@@ -72,7 +71,6 @@ import {
     }
   }
 */
-
 /*
   Wire structure
   uuid: {
@@ -309,19 +307,23 @@ function components(state = initialState, action) {
       let componentsToMove = Immutable.Map({});
       let wiresToMove = Immutable.Map({});
 
+      // Add selected components to componentsToMove
       newState.get('selectedComponents').forEach(componentUuid => {
         componentsToMove = componentsToMove.set(
           componentUuid,
           newState.getIn(componentLocation.concat([componentUuid])),
         );
+        // Delete component from old position
         newState = newState.deleteIn(['components', componentUuid]);
       });
 
+      // Add selected wires to wiresToMove
       newState.get('selectedWires').forEach(wireUuid => {
         wiresToMove = wiresToMove.set(
           wireUuid,
           newState.getIn(wireLocation.concat(wireUuid)),
         );
+        // Delete wire from old position
         newState = newState.deleteIn(['wires', wireUuid]);
       });
 
@@ -334,20 +336,19 @@ function components(state = initialState, action) {
         input: 0,
         output: 0,
       };
-      // Examine componentsToMove, if there are any nodes without a wire in wiresToMove, then they are an external input/output
+      // Examine componentsToMove, if there are any nodes without a wire in
+      // wiresToMove, then they are an external input/output
       componentsToMove.forEach((component, componentUuid) => {
         component.get('nodes').forEach((node, nodeUuid) => {
           if (node.get('connections').size === 0) {
+            const nodeTotal = nodeCounters.input + nodeCounters.output;
             node.get('input')
               ? inputNodes.push(nodeUuid)
               : outputNodes.push(nodeUuid);
 
-            newBlock = getComponentBlockNode(
-              newBlock,
-              action,
-              node,
-              nodeUuid,
-              nodeCounters,
+            newBlock = newBlock.setIn(
+              ['nodes', `${action.uuid}_${nodeTotal}`],
+              getComponentBlockNode(node, nodeUuid, nodeCounters),
             );
             newBlock = updateComponentNode(
               newBlock,
@@ -360,18 +361,16 @@ function components(state = initialState, action) {
               ? (nodeCounters.input += 1)
               : (nodeCounters.ouptut += 1);
           } else {
+            const nodeTotal = nodeCounters.input + nodeCounters.output;
             node.get('connections').forEach(connection => {
               if (!wiresToMove.has(connection)) {
                 node.get('input')
                   ? inputNodes.push(nodeUuid)
                   : outputNodes.push(nodeUuid);
 
-                newBlock = getComponentBlockNode(
-                  newBlock,
-                  action,
-                  node,
-                  nodeUuid,
-                  nodeCounters,
+                newBlock = newBlock.setIn(
+                  ['nodes', `${action.uuid}_${nodeTotal}`],
+                  getComponentBlockNode(node, nodeUuid, nodeCounters),
                 );
                 newBlock = updateComponentNode(
                   newBlock,
@@ -636,14 +635,12 @@ function components(state = initialState, action) {
 
         // If the wire output node is attached to a parent component
         // set the output node location accordingly
-        console.log('updating output node', action.parents);
         if (
           action.parents &&
           getComponentIdFromNodeId(wireOutputNode) ===
             action.parents.slice(-1)[0]
         ) {
           outputNodeLocation.splice(-2, 2);
-          console.log('updated location');
         }
 
         // Update wire output node
