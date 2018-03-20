@@ -18,7 +18,22 @@ import {
   CREATE_COMPONENT_BLOCK,
   SELECT_WIRE,
 } from './actions';
-import { getComponentIdFromNodeId, createUuid, getOutputNodeId } from '../helpers';
+import { getComponentIdFromNodeId, createUuid, getOutputNodeId, } from '../helpers';
+import {
+  getComponentLocation,
+  getWireLocation,
+  getNodeInfo,
+  getWirePoints,
+} from './helpers/utils';
+import {
+  getComponentBlockNode,
+  updateComponentNode,
+} from './helpers/componentBlockCreation';
+import {
+  NODE_OFFSET,
+  LEG_LENGTH,
+  STROKE_WIDTH,
+} from '../components/componentConstants';
 
 /*
   Component structure
@@ -67,106 +82,6 @@ import { getComponentIdFromNodeId, createUuid, getOutputNodeId } from '../helper
   }
 
 */
-
-function getComponentLocation(parents) {
-  let componentLocation = ['components'];
-  // If this component has parents, update the location
-  if (parents && parents.length !== 0) {
-    parents.forEach(parent => {
-      componentLocation = componentLocation.concat([parent, 'components']);
-    });
-  }
-
-  return componentLocation;
-}
-
-function getWireLocation(parents) {
-  let wireLocation = ['wires'];
-  // If this wire has parents, update the location
-  if (parents && parents.length !== 0) {
-    wireLocation = getComponentLocation(parents);
-     // Replace the last value in the array with 'wires' to get correct location
-    wireLocation[wireLocation.length - 1] = 'wires';
-  }
-
-  return wireLocation;
-}
-
-function getNodeInfo(state, nodeId) {
-  const component = state.getIn(['components', getComponentIdFromNodeId(nodeId)]);
-  const node = {
-    x: component.get('x') + component.getIn(['nodes', nodeId, 'x']),
-    y: component.get('y') + component.getIn(['nodes', nodeId, 'y']),
-    input: component.getIn(['nodes', nodeId, 'input']),
-  };
-
-  return node;
-}
-
-function getWirePoints(state, startNodeId, endNodeId) {
-  const startNode = getNodeInfo(state, startNodeId);
-  const endNode = getNodeInfo(state, endNodeId);
-
-  const points = [];
-
-  if (!startNode.input) {
-    points.push({ x: startNode.x + 4, y: startNode.y });
-    if (startNode.y !== endNode.y) {
-      if (startNode.x < endNode.x) {
-        points.push({
-          x: startNode.x + (endNode.x - startNode.x) / 2,
-          y: startNode.y,
-        });
-        points.push({
-          x: startNode.x + (endNode.x - startNode.x) / 2,
-          y: endNode.y,
-        });
-      } else if (startNode.x > endNode.x) {
-        points.push({ x: startNode.x + 10, y: startNode.y });
-        points.push({
-          x: startNode.x + 10,
-          y: startNode.y + (endNode.y - startNode.y) / 2,
-        });
-        points.push({
-          x: endNode.x - 10,
-          y: startNode.y + (endNode.y - startNode.y) / 2,
-        });
-        points.push({ x: endNode.x - 10, y: endNode.y });
-      }
-    }
-    points.push({ x: endNode.x - 4, y: endNode.y });
-  } else if (startNode.input) {
-    points.push({ x: startNode.x - 4, y: startNode.y });
-    if (startNode.y !== endNode.y) {
-      if (startNode.x < endNode.x) {
-        points.push({ x: startNode.x - 10, y: startNode.y });
-        points.push({
-          x: startNode.x - 10,
-          y: startNode.y + (endNode.y - startNode.y) / 2,
-        });
-        points.push({
-          x: endNode.x + 10,
-          y: startNode.y + (endNode.y - startNode.y) / 2,
-        });
-        points.push({ x: endNode.x + 10, y: endNode.y });
-      } else if (startNode.x > endNode.x) {
-        points.push({
-          x: startNode.x - (startNode.x - endNode.x) / 2,
-          y: startNode.y,
-        });
-        points.push({
-          x: startNode.x - (startNode.x - endNode.x) / 2,
-          y: endNode.y,
-        });
-      }
-    }
-    points.push({ x: endNode.x + 4, y: endNode.y });
-  }
-
-  return Immutable.fromJS(points);
-}
-
-import { NODE_OFFSET, LEG_LENGTH, STROKE_WIDTH } from '../components/componentConstants';
 
 // Define initial store state
 const initialState = Immutable.fromJS({
@@ -361,55 +276,6 @@ const initialState = Immutable.fromJS({
   },
   wires: {},
 });
-
-function getComponentBlockNode(newBlock, action, node, nodeUuid, nodeCounters) {
-  const nodeTotal = nodeCounters.input + nodeCounters.output;
-  return newBlock.setIn(
-    ['nodes', `${action.uuid}_${nodeTotal}`],
-    Immutable.Map({
-      x: node.get('input')
-        ? NODE_OFFSET
-        : 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
-      y: node.get('input')
-        ? 6 + nodeCounters.input * 20
-        : 6 + nodeCounters.output * 2,
-      input: node.get('input'),
-      connections: node.get('connections'),
-      state: node.get('state'),
-    }),
-  );
-}
-
-function updateComponentNode(
-  newBlock,
-  componentUuid,
-  nodeUuid,
-  action,
-  nodeCounters,
-) {
-  const nodeTotal = nodeCounters.input + nodeCounters.output;
-  let modifiedBlock = newBlock;
-  if (
-    !newBlock.getIn(['components', componentUuid, 'nodes', nodeUuid, 'input'])
-  ) {
-    modifiedBlock = modifiedBlock.setIn(
-      ['wires', createUuid()],
-      Immutable.Map({
-        inputNode: nodeUuid,
-        outputNode: `${action.uuid}_${nodeTotal}`,
-        points: Immutable.fromJS([{x: 0, y: 0}]),
-      }),
-    );
-  }
-  modifiedBlock = modifiedBlock.setIn(
-    ['components', componentUuid, 'nodes', nodeUuid, 'connections'],
-    Immutable.Set([
-      `${action.uuid}_${nodeCounters.input + nodeCounters.output}`,
-    ]),
-  );
-
-  return modifiedBlock;
-}
 
 // Component action reducers
 function components(state = initialState, action) {
