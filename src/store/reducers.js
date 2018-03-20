@@ -362,6 +362,55 @@ const initialState = Immutable.fromJS({
   wires: {},
 });
 
+function getComponentBlockNode(newBlock, action, node, nodeUuid, nodeCounters) {
+  const nodeTotal = nodeCounters.input + nodeCounters.output;
+  return newBlock.setIn(
+    ['nodes', `${action.uuid}_${nodeTotal}`],
+    Immutable.Map({
+      x: node.get('input')
+        ? NODE_OFFSET
+        : 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
+      y: node.get('input')
+        ? 6 + nodeCounters.input * 20
+        : 6 + nodeCounters.output * 2,
+      input: node.get('input'),
+      connections: node.get('connections'),
+      state: node.get('state'),
+    }),
+  );
+}
+
+function updateComponentNode(
+  newBlock,
+  componentUuid,
+  nodeUuid,
+  action,
+  nodeCounters,
+) {
+  const nodeTotal = nodeCounters.input + nodeCounters.output;
+  let modifiedBlock = newBlock;
+  if (
+    !newBlock.getIn(['components', componentUuid, 'nodes', nodeUuid, 'input'])
+  ) {
+    modifiedBlock = modifiedBlock.setIn(
+      ['wires', createUuid()],
+      Immutable.Map({
+        inputNode: nodeUuid,
+        outputNode: `${action.uuid}_${nodeTotal}`,
+        points: Immutable.fromJS([{x: 0, y: 0}]),
+      }),
+    );
+  }
+  modifiedBlock = modifiedBlock.setIn(
+    ['components', componentUuid, 'nodes', nodeUuid, 'connections'],
+    Immutable.Set([
+      `${action.uuid}_${nodeCounters.input + nodeCounters.output}`,
+    ]),
+  );
+
+  return modifiedBlock;
+}
+
 // Component action reducers
 function components(state = initialState, action) {
   switch (action.type) {
@@ -390,6 +439,7 @@ function components(state = initialState, action) {
       const componentLocation = getComponentLocation(action.parents);
       const wireLocation = getWireLocation(action.parents);
       let newState = state;
+      let newBlock = Immutable.Map({ x: 10, y: 10, type: 'ComponentBlock'});
       let componentsToMove = Immutable.Map({});
       let wiresToMove = Immutable.Map({});
 
@@ -407,7 +457,79 @@ function components(state = initialState, action) {
         );
       });
 
-      console.log(componentsToMove.toJS(), wiresToMove.toJS());
+      newBlock = newBlock.set('components', componentsToMove);
+      newBlock = newBlock.set('wires', wiresToMove);
+
+      const inputNodes = [];
+      const outputNodes = [];
+      const nodeCounters = {
+        input: 0,
+        output: 0,
+      };
+      // Examine componentsToMove, if there are any nodes without a wire in wiresToMove, then they are an external input/output
+      componentsToMove.forEach((component, componentUuid) => {
+        component.get('nodes').forEach((node, nodeUuid) => {
+          if (node.get('connections').size === 0) {
+            node.get('input')
+              ? inputNodes.push(nodeUuid)
+              : outputNodes.push(nodeUuid);
+
+            newBlock = getComponentBlockNode(
+              newBlock,
+              action,
+              node,
+              nodeUuid,
+              nodeCounters,
+            );
+            newBlock = updateComponentNode(
+              newBlock,
+              componentUuid,
+              nodeUuid,
+              action,
+              nodeCounters,
+            );
+            node.get('input')
+              ? (nodeCounters.input += 1)
+              : (nodeCounters.ouptut += 1);
+          } else {
+            node.get('connections').forEach(connection => {
+              if (!wiresToMove.has(connection)) {
+                node.get('input')
+                  ? inputNodes.push(nodeUuid)
+                  : outputNodes.push(nodeUuid);
+
+                newBlock = getComponentBlockNode(
+                  newBlock,
+                  action,
+                  node,
+                  nodeUuid,
+                  nodeCounters,
+                );
+                newBlock = updateComponentNode(
+                  newBlock,
+                  componentUuid,
+                  nodeUuid,
+                  action,
+                  nodeCounters,
+                );
+                node.get('input')
+                  ? (nodeCounters.input += 1)
+                  : (nodeCounters.ouptut += 1);
+                return false;
+              }
+              return true;
+            });
+          }
+        });
+      });
+
+      newBlock = newBlock.set('inputNodes', inputNodes.length);
+
+      console.log(newBlock.toJS());
+
+      newState = newState.setIn(['components', action.uuid], newBlock);
+
+      console.log(newState.toJS());
 
       return newState;
     }
@@ -646,12 +768,14 @@ function components(state = initialState, action) {
 
         // If the wire output node is attached to a parent component
         // set the output node location accordingly
+        console.log('updating output node', action.parents);
         if (
           action.parents &&
           getComponentIdFromNodeId(wireOutputNode) ===
             action.parents.slice(-1)[0]
         ) {
           outputNodeLocation.splice(-2, 2);
+          console.log('updated location');
         }
 
         // Update wire output node
