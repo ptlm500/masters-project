@@ -448,6 +448,7 @@ function components(state = initialState, action) {
           componentUuid,
           newState.getIn(componentLocation.concat([componentUuid])),
         );
+        newState = newState.deleteIn(['components', componentUuid]);
       });
 
       newState.get('selectedWires').forEach(wireUuid => {
@@ -455,6 +456,7 @@ function components(state = initialState, action) {
           wireUuid,
           newState.getIn(wireLocation.concat(wireUuid)),
         );
+        newState = newState.deleteIn(['wires', wireUuid]);
       });
 
       newBlock = newBlock.set('components', componentsToMove);

@@ -107,6 +107,7 @@ class ComponentBlock extends React.Component {
       if (wire.get('points')) {
         wires.push(
           <WireContainer
+            hidden
             key={uuid}
             uuid={uuid}
             moveVertex={() => console.log('plz no drag')}
