@@ -436,7 +436,12 @@ function components(state = initialState, action) {
     }
     case DELETE_COMPONENT: {
       const componentLocation = getComponentLocation(action.parents);
-      return state.deleteIn(componentLocation.concat([action.uuid]));
+      let newState = state;
+      newState = newState.set('selectedWires', Immutable.Set([]));
+      newState = newState.set('selectedComponents', Immutable.Set([]));
+      newState = newState.deleteIn(componentLocation.concat([action.uuid]));
+
+      return newState;
     }
     case START_NODE_CONNECTION: {
       let newState = state;
