@@ -3,6 +3,7 @@
 .root {
   display: flex;
   flex: initial;
+  flex-direction: column;
   width: 350px;
   height: auto;
   background-color: #F5F7FA;

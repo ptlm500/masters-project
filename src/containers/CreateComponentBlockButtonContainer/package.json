@@ -1,0 +1,6 @@
+{
+  "name": "CreateComponentBlockButtonContainer",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ComponentCellContainer.js"
+}

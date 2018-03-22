@@ -19,7 +19,6 @@ class Grid extends React.Component {
     selectComponent: PropTypes.func.isRequired,
     selectWire: PropTypes.func.isRequired,
     addComponent: PropTypes.func.isRequired,
-    createComponentBlock: PropTypes.func.isRequired,
     setDraggingComponent: PropTypes.func.isRequired,
     updateSelectionBox: PropTypes.func.isRequired,
   };
@@ -28,7 +27,6 @@ class Grid extends React.Component {
     super();
 
     this.startComponentDrag = this.startComponentDrag.bind(this);
-    this.keyDown = this.keyDown.bind(this);
   }
 
   onMouseDown(e) {
@@ -216,14 +214,6 @@ class Grid extends React.Component {
     document.addEventListener('mouseup', mouseup);
   }
 
-  keyDown(e) {
-    e.stopPropagation();
-    if (e.key === "c" ) {
-      console.log('Should create a component from', this.props.selectedComponents.toJS());
-    this.props.createComponentBlock(createUuid());
-    }
-  }
-
   updateWires(component) {
     component.get('nodes').forEach(node => {
       if (node.get('connections').size > 0) {
@@ -293,14 +283,6 @@ class Grid extends React.Component {
   }
 
   render() {
-    if (this.props.selectedComponents.size !== 0 && !this.keyListener) {
-      document.addEventListener('keydown', this.keyDown);
-      this.keyListener = true;
-    } else if (this.props.selectedComponents.size === 0 && this.keyListener) {
-      document.removeEventListener('keydown', this.keyDown);
-      this.keyListener = false;
-    }
-
     return (
       <svg
         className={s.svg}

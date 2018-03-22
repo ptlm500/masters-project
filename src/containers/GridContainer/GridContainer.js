@@ -5,7 +5,6 @@ import {
   selectComponent,
   selectWire,
   addComponent,
-  createComponentBlock,
   setDraggingComponent,
   updateSelectionBox,
 } from '../../store/actions';
@@ -19,7 +18,7 @@ const mapStateToProps = (state, ownProps) => {
     selectedComponents: state.components.get('selectedComponents'),
     selectionBox: state.components.get('selectionBox'),
   };
-}
+};
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
@@ -37,9 +36,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     addComponent: (uuid, component) => {
       dispatch(addComponent(uuid, component));
-    },
-    createComponentBlock: uuid => {
-      dispatch(createComponentBlock(uuid));
     },
     setDraggingComponent: () => {
       dispatch(setDraggingComponent(null, null));
