@@ -1,0 +1,14 @@
+.tab-active {
+  width: 100px;
+  height: 42px;
+  line-height: 40px;
+  text-align: center;
+  background-color: #f0f3f6;
+}
+
+.tab-inactive {
+  width: 100px;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+}

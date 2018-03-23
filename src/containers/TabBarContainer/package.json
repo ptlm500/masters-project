@@ -1,0 +1,6 @@
+{
+  "name": "TabBarContainer",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./TabBarContainer.js"
+}

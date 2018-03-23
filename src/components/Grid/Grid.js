@@ -14,6 +14,7 @@ class Grid extends React.Component {
     selectionBox: PropTypes.object.isRequired,
     draggingComponent: PropTypes.func,
     selectedComponents: PropTypes.object.isRequired,
+    activeTab: PropTypes.object.isRequired,
     move: PropTypes.func.isRequired,
     updateWire: PropTypes.func.isRequired,
     selectComponent: PropTypes.func.isRequired,
@@ -225,9 +226,11 @@ class Grid extends React.Component {
   }
 
   renderComponents() {
+    const path = this.props.activeTab.get('path');
     const components = [];
+    const componentsAtPath = path ? this.props.components.getIn(path.concat(['components'])) : this.props.components;
 
-    this.props.components.forEach((component, uuid) => {
+    componentsAtPath.forEach((component, uuid) => {
       components.push(
         <DraggableComponentContainer
           key={uuid}

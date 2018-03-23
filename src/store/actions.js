@@ -18,6 +18,7 @@ export const UPDATE_CONNECTIONS = 'UPDATE_CONNECTIONS';
 export const UPDATE_BLOCK = 'UPDATE_BLOCK';
 export const UPDATE_COMPONENT_OUTPUT = 'UPDATE_COMPONENT_OUTPUT';
 export const UPDATE_SELECTION_BOX = 'UPDATE_SELECTION_BOX';
+export const SET_VIEW_CONTEXT = 'SET_VIEW_CONTEXT';
 
 // Action creators
 export function moveComponent(uuid, component, moveType, vertexId) {
@@ -146,5 +147,12 @@ export function updateSelectionBox(coords) {
   return {
     type: UPDATE_SELECTION_BOX,
     coords,
+  };
+}
+
+export function setViewContext(path) {
+  return {
+    type: SET_VIEW_CONTEXT,
+    path,
   };
 }

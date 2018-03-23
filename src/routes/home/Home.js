@@ -14,6 +14,7 @@ import s from './Home.css';
 // import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 import GridContainer from '../../containers/GridContainer/GridContainer';
 import Sidebar from '../../components/Sidebar/Sidebar';
+import TabBarContainer from '../../containers/TabBarContainer/TabBarContainer';
 
 class Home extends React.Component {
   render() {
@@ -21,7 +22,10 @@ class Home extends React.Component {
       <div className={s.root}>
         <Sidebar/>
         <div className={s.container}>
-          <GridContainer/>
+          <TabBarContainer/>
+          <div className={s['grid-container']}>
+            <GridContainer/>
+          </div>
         </div>
       </div>
     );

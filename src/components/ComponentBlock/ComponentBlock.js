@@ -5,8 +5,8 @@ import Immutable from 'immutable';
 import NodeContainer from '../../containers/NodeContainer/NodeContainer';
 import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 import WireContainer from '../../containers/WireContainer/WireContainer';
-import { updateBlock } from '../../store/actions';
-import { STROKE_WIDTH, LEG_LENGTH, NODE_RADIUS, LEG_SPACING } from '../componentConstants';
+import { updateBlock, setViewContext } from '../../store/actions';
+import { STROKE_WIDTH, LEG_LENGTH, LEG_SPACING } from '../componentConstants';
 
 const WIDTH = 40;
 
@@ -18,6 +18,12 @@ class ComponentBlock extends React.Component {
     dispatch: PropTypes.func.isRequired,
     parents: PropTypes.array,
   };
+
+  constructor() {
+    super();
+
+    this.doubleClick = this.doubleClick.bind(this);
+  }
 
   componentDidUpdate() {
     // Check if we need to update component output state
@@ -37,6 +43,17 @@ class ComponentBlock extends React.Component {
 
   isSelectedComponent() {
     return this.props.selectedComponents.includes(this.props.uuid);
+  }
+
+  doubleClick() {
+    console.log('double clicked');
+    let path = [];
+
+    this.props.parents.forEach(parent => {
+      path = path.concat([parent, 'components']);
+    });
+
+    this.props.dispatch(setViewContext(path.concat([this.props.uuid])));
   }
 
   renderNodes() {
@@ -123,7 +140,7 @@ class ComponentBlock extends React.Component {
     const HEIGHT =
       10 + (this.props.component.get('inputNodes') - 1) * LEG_SPACING;
     return (
-      <g>
+      <g onDoubleClick={this.doubleClick}>
         <rect
           x={STROKE_WIDTH + LEG_LENGTH}
           y={STROKE_WIDTH / 2}

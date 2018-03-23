@@ -18,7 +18,12 @@ class CreateComponentBlockButton extends React.Component {
 
   canCreateBlock() {
     if (this.props.selectedComponents.size !== 0) {
-      return true;
+      // if (
+      //   this.props.selectedComponents.forEach(
+      //     component => !component.get('type') === 'ToggleSwitch' || 'LED',
+      //   )
+      // )
+        return true;
     }
     return false;
   }

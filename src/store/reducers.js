@@ -17,6 +17,7 @@ import {
   UPDATE_BLOCK,
   CREATE_COMPONENT_BLOCK,
   SELECT_WIRE,
+  SET_VIEW_CONTEXT,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId, } from '../helpers';
 import {
@@ -83,6 +84,14 @@ import {
 
 // Define initial store state
 const initialState = Immutable.fromJS({
+  // SHOULD SPLIT
+  activeTab: 'Root',
+  tabs: {
+    'Root': {
+      path: '',
+    },
+  },
+  //
   movingComponent: false,
   draggingComponent: null,
   activeNode: {
@@ -761,6 +770,30 @@ function components(state = initialState, action) {
           }
         });
       }
+
+      return newState;
+    }
+    case SET_VIEW_CONTEXT: {
+      let newState = state;
+      let tabExists;
+
+      newState.get('tabs').forEach((tab, tabName) => {
+        if (tab.get('path') === action.path) {
+          tabExists = tabName;
+          newState = newState.setIn(['tabs', tabName, 'active'], true);
+        }
+      });
+
+      if (!tabExists) {
+        newState = newState.setIn(
+          ['tabs', `Block ${newState.get('tabs').size}`],
+          Immutable.Map({
+            path: action.path,
+          }),
+        );
+      }
+
+      newState = newState.set('activeTab', tabExists || `Block ${newState.get('tabs').size - 1}`);
 
       return newState;
     }

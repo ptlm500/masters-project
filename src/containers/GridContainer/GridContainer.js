@@ -17,6 +17,10 @@ const mapStateToProps = (state, ownProps) => {
     draggingComponent: state.components.get('draggingComponent'),
     selectedComponents: state.components.get('selectedComponents'),
     selectionBox: state.components.get('selectionBox'),
+    activeTab: state.components.getIn([
+      'tabs',
+      state.components.get('activeTab'),
+    ]),
   };
 };
 
