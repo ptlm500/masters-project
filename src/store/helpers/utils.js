@@ -18,15 +18,17 @@ export function getWireLocation(parents) {
   // If this wire has parents, update the location
   if (parents && parents.length !== 0) {
     wireLocation = getComponentLocation(parents);
-     // Replace the last value in the array with 'wires' to get correct location
+    // Replace the last value in the array with 'wires' to get correct location
     wireLocation[wireLocation.length - 1] = 'wires';
   }
 
   return wireLocation;
 }
 
-export function getNodeInfo(state, nodeId) {
-  const component = state.getIn(['components', getComponentIdFromNodeId(nodeId)]);
+export function getNodeInfo(state, nodeId, parents) {
+  const component = state.getIn(
+    getComponentLocation(parents).concat([getComponentIdFromNodeId(nodeId)]),
+  );
   const node = {
     x: component.get('x') + component.getIn(['nodes', nodeId, 'x']),
     y: component.get('y') + component.getIn(['nodes', nodeId, 'y']),
@@ -36,9 +38,9 @@ export function getNodeInfo(state, nodeId) {
   return node;
 }
 
-export function getWirePoints(state, startNodeId, endNodeId) {
-  const startNode = getNodeInfo(state, startNodeId);
-  const endNode = getNodeInfo(state, endNodeId);
+export function getWirePoints(state, startNodeId, endNodeId, parents) {
+  const startNode = getNodeInfo(state, startNodeId, parents);
+  const endNode = getNodeInfo(state, endNodeId, parents);
 
   const points = [];
 

@@ -26,11 +26,11 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    move: (uuid, component, moveType, vertexId) => {
-      dispatch(moveComponent(uuid, component, moveType, vertexId));
+    move: (uuid, component, moveType, vertexId, parents) => {
+      dispatch(moveComponent(uuid, component, moveType, vertexId, parents));
     },
-    updateWire: wireId => {
-      dispatch(updateWire(wireId));
+    updateWire: (wireId, parents) => {
+      dispatch(updateWire(wireId, parents));
     },
     selectComponent: (uuid, clearPrevious) => {
       dispatch(selectComponent(uuid, clearPrevious));

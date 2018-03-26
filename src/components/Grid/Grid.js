@@ -93,6 +93,14 @@ class Grid extends React.Component {
     }
   }
 
+  getComponentsAtPath() {
+    const path = this.props.activeTab.get('path');
+
+    return path
+      ? this.props.components.getIn(path.concat(['components']))
+      : this.props.components;
+  }
+
   startComponentDrag(e, uuid, type, vertexId) {
     e.preventDefault();
     // Create reference point on grid
@@ -100,6 +108,8 @@ class Grid extends React.Component {
     point.x = e.clientX;
     point.y = e.clientY;
     point = point.matrixTransform(this.grid.getScreenCTM().inverse());
+
+    const componentsAtPath = this.getComponentsAtPath();
 
     if (type !== 'vertex') {
       // Set quantise scale
@@ -117,11 +127,11 @@ class Grid extends React.Component {
         // Calculate drag offsets for all selected components
         dragOffsets = dragOffsets.setIn(
           [componentUuid, 'x'],
-          point.x - this.props.components.getIn([componentUuid, 'x']),
+          point.x - componentsAtPath.getIn([componentUuid, 'x']),
         );
         dragOffsets = dragOffsets.setIn(
           [componentUuid, 'y'],
-          point.y - this.props.components.getIn([componentUuid, 'y']),
+          point.y - componentsAtPath.getIn([componentUuid, 'y']),
         );
       });
 
@@ -150,11 +160,17 @@ class Grid extends React.Component {
             cX < this.grid.getBoundingClientRect().right &&
             cY < this.grid.getBoundingClientRect().bottom
           ) {
-            let newComponent = this.props.components.get(componentUuid);
+            let newComponent = componentsAtPath.get(componentUuid);
             newComponent = newComponent.set('x', cX);
             newComponent = newComponent.set('y', cY);
             // Call reducer for component move
-            this.props.move(componentUuid, newComponent, type, vertexId);
+            this.props.move(
+              componentUuid,
+              newComponent,
+              type,
+              vertexId,
+              this.props.activeTab.get('componentParents'),
+            );
             // Call wire updater
             this.updateWires(newComponent);
           }
@@ -219,18 +235,19 @@ class Grid extends React.Component {
     component.get('nodes').forEach(node => {
       if (node.get('connections').size > 0) {
         node.get('connections').forEach(connection => {
-          this.props.updateWire(connection);
+          this.props.updateWire(
+            connection,
+            this.props.activeTab.get('componentParents'),
+          );
         });
       }
     });
   }
 
   renderComponents() {
-    const path = this.props.activeTab.get('path');
-    const componentsAtPath = path ? this.props.components.getIn(path.concat(['components'])) : this.props.components;
     const components = [];
 
-    componentsAtPath.forEach((component, uuid) => {
+    this.getComponentsAtPath().forEach((component, uuid) => {
       components.push(
         <DraggableComponentContainer
           key={uuid}

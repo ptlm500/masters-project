@@ -21,13 +21,14 @@ export const UPDATE_SELECTION_BOX = 'UPDATE_SELECTION_BOX';
 export const SET_VIEW_CONTEXT = 'SET_VIEW_CONTEXT';
 
 // Action creators
-export function moveComponent(uuid, component, moveType, vertexId) {
+export function moveComponent(uuid, component, moveType, vertexId, parents) {
   return {
     type: MOVE_COMPONENT,
     uuid,
     component,
     moveType,
     vertexId,
+    parents,
   };
 }
 
@@ -97,10 +98,11 @@ export function connectNodes(nodes) {
   };
 }
 
-export function updateWire(wireId) {
+export function updateWire(wireId, parents) {
   return {
     type: UPDATE_WIRE,
     wireId,
+    parents,
   };
 }
 

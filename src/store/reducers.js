@@ -289,16 +289,25 @@ const initialState = Immutable.fromJS({
 function components(state = initialState, action) {
   switch (action.type) {
     // NB: reducer composition may remove the need for 'components'
-    case MOVE_COMPONENT:
+    case MOVE_COMPONENT: {
+      const componentLocation = getComponentLocation(action.parents);
+      const wireLocation = getWireLocation(action.parents);
+
       if (action.moveType === 'component') {
-        return state.setIn(['components', action.uuid], action.component);
-      } else if (action.moveType === 'vertex') {
+        // This is a component move
         return state.setIn(
-          ['wires', action.uuid, 'points', action.vertexId],
+          componentLocation.concat([action.uuid]),
+          action.component,
+        );
+      } else if (action.moveType === 'vertex') {
+        // This is a wire move
+        return state.setIn(
+          wireLocation.concat([action.uuid, 'points', action.vertexId]),
           action.component,
         );
       }
-      break;
+      return state;
+    }
     case SET_DRAGGING_COMPONENT: {
       return state.set('draggingComponent', action.component);
     }
@@ -551,11 +560,17 @@ function components(state = initialState, action) {
       return newState;
     }
     case UPDATE_WIRE: {
-      const wire = state.getIn(['wires', action.wireId]);
+      const wireLocation = getWireLocation(action.parents);
+      const wire = state.getIn(wireLocation.concat([action.wireId]));
       if (wire) {
         return state.setIn(
-          ['wires', action.wireId, 'points'],
-          getWirePoints(state, wire.get('inputNode'), wire.get('outputNode')),
+          wireLocation.concat([action.wireId, 'points']),
+          getWirePoints(
+            state,
+            wire.get('inputNode'),
+            wire.get('outputNode'),
+            action.parents,
+          ),
         );
       }
       return state;

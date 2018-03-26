@@ -94,8 +94,6 @@ class Wire extends React.Component {
       return null;
     }
 
-    console.log('*** wirepoints', this.getPoints())
-
     if (this.isSelectedWire() && !this.keyListener) {
       document.addEventListener('keydown', this.keyDown);
       this.keyListener = true;
