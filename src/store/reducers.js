@@ -89,6 +89,7 @@ const initialState = Immutable.fromJS({
   tabs: {
     'Root': {
       path: '',
+      componentParents: '',
     },
   },
   //
@@ -789,6 +790,7 @@ function components(state = initialState, action) {
           ['tabs', `Block ${newState.get('tabs').size}`],
           Immutable.Map({
             path: action.path,
+            componentParents: action.componentParents,
           }),
         );
       }

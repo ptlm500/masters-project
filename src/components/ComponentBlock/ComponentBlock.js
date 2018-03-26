@@ -52,8 +52,10 @@ class ComponentBlock extends React.Component {
     this.props.parents.forEach(parent => {
       path = path.concat([parent, 'components']);
     });
+    path = path.concat([this.props.uuid]);
+    const componentParents = this.props.parents.concat([this.props.uuid]);
 
-    this.props.dispatch(setViewContext(path.concat([this.props.uuid])));
+    this.props.dispatch(setViewContext(path, componentParents));
   }
 
   renderNodes() {

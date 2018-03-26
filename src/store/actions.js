@@ -150,9 +150,10 @@ export function updateSelectionBox(coords) {
   };
 }
 
-export function setViewContext(path) {
+export function setViewContext(path, componentParents) {
   return {
     type: SET_VIEW_CONTEXT,
     path,
+    componentParents,
   };
 }

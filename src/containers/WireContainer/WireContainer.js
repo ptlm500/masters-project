@@ -17,6 +17,8 @@ const mapStateToProps = (state, ownProps) => {
   }
   const wire = state.components.getIn(wireLocation);
 
+  // console.log('*** wire', wire, wireLocation);
+
   return {
     wire,
     wireState: state.components.getIn(

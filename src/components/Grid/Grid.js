@@ -227,8 +227,8 @@ class Grid extends React.Component {
 
   renderComponents() {
     const path = this.props.activeTab.get('path');
-    const components = [];
     const componentsAtPath = path ? this.props.components.getIn(path.concat(['components'])) : this.props.components;
+    const components = [];
 
     componentsAtPath.forEach((component, uuid) => {
       components.push(
@@ -245,18 +245,20 @@ class Grid extends React.Component {
   }
 
   renderWires() {
+    const path = this.props.activeTab.get('path');
+    const wiresAtPath = path ? this.props.components.getIn(path.concat(['wires'])) : this.props.wires;
     const wires = [];
 
-    this.props.wires.keySeq().forEach(uuid => {
-      if (this.props.wires.getIn([uuid, 'points'])) {
+    wiresAtPath.forEach((wire, uuid) => {
+      if (wire.get('points'))
         wires.push(
           <WireContainer
             key={uuid}
             uuid={uuid}
+            parents={this.props.activeTab.get('componentParents')}
             moveVertex={this.startComponentDrag}
           />,
         );
-      }
     });
     return wires;
   }
