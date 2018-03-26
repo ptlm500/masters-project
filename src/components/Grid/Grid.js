@@ -101,6 +101,14 @@ class Grid extends React.Component {
       : this.props.components;
   }
 
+  getWiresAtPath() {
+    const path = this.props.activeTab.get('path');
+
+    return path
+      ? this.props.components.getIn(path.concat(['wires']))
+      : this.props.wires;
+  }
+
   startComponentDrag(e, uuid, type, vertexId) {
     e.preventDefault();
     // Create reference point on grid
@@ -190,7 +198,8 @@ class Grid extends React.Component {
   }
 
   startVertexDrag(e, uuid, type, vertexId, point) {
-    const vertex = this.props.wires.getIn([uuid, 'points', vertexId]);
+    const wiresAtPath = this.getWiresAtPath();
+    const vertex = wiresAtPath.getIn([uuid, 'points', vertexId]);
     // Set quantise scale
     const qScale = 1;
 
@@ -218,7 +227,13 @@ class Grid extends React.Component {
         let newVertex = vertex.set('x', cX);
         newVertex = newVertex.set('y', cY);
         // Call reducer for component move
-        this.props.move(uuid, newVertex, type, vertexId);
+        this.props.move(
+          uuid,
+          newVertex,
+          type,
+          vertexId,
+          this.props.activeTab.get('componentParents'),
+        );
       }
     };
 
@@ -262,11 +277,9 @@ class Grid extends React.Component {
   }
 
   renderWires() {
-    const path = this.props.activeTab.get('path');
-    const wiresAtPath = path ? this.props.components.getIn(path.concat(['wires'])) : this.props.wires;
     const wires = [];
 
-    wiresAtPath.forEach((wire, uuid) => {
+    this.getWiresAtPath().forEach((wire, uuid) => {
       if (wire.get('points'))
         wires.push(
           <WireContainer
