@@ -1,8 +1,14 @@
 export function getComponentIdFromNodeId(nodeId) {
+  if (!nodeId) {
+    console.error('helpers [getComponentIdFromNodeId]: No node id supplied');
+    return '';
+  }
   if (nodeId.indexOf('_') > -1) {
     return nodeId.split('_')[0];
   }
-  console.error(`helpers [getComponentIdFromNodeId]: Node id ${nodeId} Invalid`);
+  console.error(
+    `helpers [getComponentIdFromNodeId]: Node id ${nodeId} Invalid`,
+  );
   return '';
 }
 

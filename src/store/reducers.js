@@ -773,7 +773,18 @@ function components(state = initialState, action) {
           const minPY = Math.min(...yPoints);
           const maxPY = Math.max(...yPoints);
 
-          if (minPX > minX && maxPX < maxX && minPY > minY && maxPY < maxY) {
+          if (
+            minPX > minX &&
+            maxPX < maxX &&
+            minPY > minY &&
+            maxPY < maxY &&
+            newState
+              .get('selectedComponents')
+              .includes(getComponentIdFromNodeId(wire.get('inputNode'))) &&
+            newState
+              .get('selectedComponents')
+              .includes(getComponentIdFromNodeId(wire.get('outputNode')))
+          ) {
             if (!newState.get('selectedWires').includes(uuid)) {
               newState = newState.update('selectedWires', selectedWires =>
                 selectedWires.add(uuid),
