@@ -6,8 +6,9 @@ import { getComponentIdFromNodeId } from '../../helpers';
 const mapStateToProps = (state, ownProps) => {
   let wireLocation = ['wires', ownProps.uuid];
   let inputNodeLocation = ['components'];
-  if (ownProps.parents && ownProps.parents.length !== 0) {
-    wireLocation = ['components']
+  if (ownProps.parents && Array.isArray(ownProps.parents)) {
+    wireLocation = ['components'];
+
     ownProps.parents.forEach(parent => {
       wireLocation = wireLocation.concat([parent, 'wires']);
       inputNodeLocation = inputNodeLocation.concat([parent, 'components']);
@@ -37,7 +38,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(selectWire(uuid, 'wire'));
     },
     deleteWire: uuid => {
-      dispatch(deleteWire(uuid));
+      dispatch(deleteWire(uuid, ownProps.parents));
     },
     updateConnections: wireState => {
       dispatch(

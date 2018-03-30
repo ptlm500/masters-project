@@ -121,6 +121,7 @@ class Wire extends React.Component {
 }
 
 Wire.defaultProps = {
+  parents: [],
   hidden: false,
 };
 

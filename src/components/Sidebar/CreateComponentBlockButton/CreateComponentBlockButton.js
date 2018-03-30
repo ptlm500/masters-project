@@ -7,13 +7,12 @@ import { createUuid } from '../../../helpers';
 class CreateComponentBlockButton extends React.Component {
   static propTypes = {
     selectedComponents: PropTypes.object.isRequired,
+    parents: PropTypes.array,
     createComponentBlock: PropTypes.func.isRequired,
   };
 
   onClick() {
-    if (this.canCreateBlock()) {
-      this.props.createComponentBlock(createUuid());
-    }
+    this.props.createComponentBlock(createUuid(), this.props.parents);
   }
 
   canCreateBlock() {
@@ -23,20 +22,22 @@ class CreateComponentBlockButton extends React.Component {
       //     component => !component.get('type') === 'ToggleSwitch' || 'LED',
       //   )
       // )
-        return true;
+      return true;
     }
     return false;
   }
 
   render() {
-    const className = this.canCreateBlock() ? s.button : s['button-disabled'];
-
     return(
-      <div className={className} onClick={() => this.onClick()}>
+      <div className={s['button']} onClick={() => this.onClick()}>
         Create component block
       </div>
     );
   }
 }
+
+CreateComponentBlockButton.defaultProps = {
+  parents: [],
+};
 
 export default withStyles(s)(CreateComponentBlockButton);

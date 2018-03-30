@@ -5,6 +5,8 @@ export const MOVE_COMPONENT = 'MOVE_COMPONENT';
 export const SET_DRAGGING_COMPONENT = 'SET_DRAGGING_COMPONENT';
 export const ADD_COMPONENT = 'ADD_COMPONENT';
 export const CREATE_COMPONENT_BLOCK = 'CREATE_COMPONENT_BLOCK';
+export const CREATE_COMPONENT_BLOCK_FROM_SELECTED =
+  'CREATE_COMPONENT_BLOCK_FROM_SELECTED';
 export const DELETE_COMPONENT = 'DELETE_COMPONENT';
 export const SELECT_COMPONENT = 'SELECT_COMPONENT';
 export const SELECT_WIRE = 'SELECT_WIRE';
@@ -55,18 +57,28 @@ export function selectWire(uuid, clearPrevious) {
   };
 }
 
-export function addComponent(uuid, component) {
+export function addComponent(uuid, component, parents) {
   return {
     type: ADD_COMPONENT,
     uuid,
     component,
+    parents,
   };
 }
 
-export function createComponentBlock(uuid) {
+export function createComponentBlock(uuid, parents) {
   return {
     type: CREATE_COMPONENT_BLOCK,
     uuid,
+    parents,
+  };
+}
+
+export function createComponentBlockFromSelected(uuid, parents) {
+  return {
+    type: CREATE_COMPONENT_BLOCK_FROM_SELECTED,
+    uuid,
+    parents,
   };
 }
 
@@ -91,10 +103,11 @@ export function cancelNodeConnection() {
   };
 }
 
-export function connectNodes(nodes) {
+export function connectNodes(nodes, parents) {
   return {
     type: CONNECT_NODES,
     nodes,
+    parents,
   };
 }
 
@@ -106,10 +119,11 @@ export function updateWire(wireId, parents) {
   };
 }
 
-export function deleteWire(wireId) {
+export function deleteWire(wireId, parents) {
   return {
     type: DELETE_WIRE,
     wireId,
+    parents,
   };
 }
 

@@ -5,13 +5,18 @@ import CreateComponentBlockButton from '../../components/Sidebar/CreateComponent
 const mapStateToProps = (state, ownProps) => {
   return {
     selectedComponents: state.components.get('selectedComponents'),
+    parents: state.components.getIn([
+      'tabs',
+      state.components.get('activeTab'),
+      'componentParents',
+    ]),
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    createComponentBlock: uuid => {
-      dispatch(createComponentBlock(uuid));
+    createComponentBlock: (uuid, parents) => {
+      dispatch(createComponentBlock(uuid, parents));
     },
   };
 };

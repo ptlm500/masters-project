@@ -60,16 +60,18 @@ class ComponentBlock extends React.Component {
 
   renderNodes() {
     const nodes = [];
-    this.props.component.get('nodes').keySeq().forEach(uuid => {
-      nodes.push(
-        <NodeContainer
-          x={this.props.component.getIn(['nodes', uuid, 'x'])}
-          y={this.props.component.getIn(['nodes', uuid, 'y'])}
-          uuid={uuid}
-          key={uuid}
-        />
-      );
-    });
+    if (this.props.component.get('nodes')) {
+      this.props.component.get('nodes').keySeq().forEach(uuid => {
+        nodes.push(
+          <NodeContainer
+            x={this.props.component.getIn(['nodes', uuid, 'x'])}
+            y={this.props.component.getIn(['nodes', uuid, 'y'])}
+            uuid={uuid}
+            key={uuid}
+          />
+        );
+      });
+    }
 
     return nodes;
   }
@@ -77,25 +79,31 @@ class ComponentBlock extends React.Component {
   renderLegs() {
     const legs = [];
 
-    this.props.component.get('nodes').keySeq().forEach(uuid => {
-      const nodeX = this.props.component.getIn(['nodes', uuid, 'x']);
-      const nodeY = this.props.component.getIn(['nodes', uuid, 'y']);
-        const endX = this.props.component.getIn(['nodes', uuid, 'input'])
-          ? nodeX + LEG_LENGTH - STROKE_WIDTH
-          : nodeX - LEG_LENGTH + STROKE_WIDTH;
+    if (this.props.component.get('nodes')) {
+      this.props.component.get('nodes').keySeq().forEach(uuid => {
+        const nodeX = this.props.component.getIn(['nodes', uuid, 'x']);
+        const nodeY = this.props.component.getIn(['nodes', uuid, 'y']);
+          const endX = this.props.component.getIn(['nodes', uuid, 'input'])
+            ? nodeX + LEG_LENGTH - STROKE_WIDTH
+            : nodeX - LEG_LENGTH + STROKE_WIDTH;
 
-      legs.push(
-        <line
-          key={uuid}
-          x1={nodeX}
-          y1={nodeY}
-          x2={endX}
-          y2={nodeY}
-          stroke={this.props.component.getIn(['nodes', uuid, 'state']) === 0 ? 'black' : 'green'}
-          strokeWidth={STROKE_WIDTH}
-        />
-      );
-    });
+        legs.push(
+          <line
+            key={uuid}
+            x1={nodeX}
+            y1={nodeY}
+            x2={endX}
+            y2={nodeY}
+              stroke={
+                this.props.component.getIn(['nodes', uuid, 'state']) === 0
+                  ? 'black'
+                  : 'green'
+              }
+            strokeWidth={STROKE_WIDTH}
+          />
+        );
+      });
+    }
 
     return legs;
   }
@@ -103,18 +111,20 @@ class ComponentBlock extends React.Component {
   renderComponents() {
     const components = [];
 
-    this.props.component.get('components').forEach((component, uuid) => {
-      components.push(
-        <DraggableComponentContainer
-          hidden
-          key={uuid}
-          uuid={uuid}
-          component={component}
-          moveComponent={() => console.log('plz no drag')}
-          parents={this.props.parents.concat([this.props.uuid])}
-        />,
-      );
-    });
+    if (this.props.component.get('components')) {
+      this.props.component.get('components').forEach((component, uuid) => {
+        components.push(
+          <DraggableComponentContainer
+            hidden
+            key={uuid}
+            uuid={uuid}
+            component={component}
+            moveComponent={() => console.log('plz no drag')}
+            parents={this.props.parents.concat([this.props.uuid])}
+          />,
+        );
+      });
+    }
 
     return components;
   }
@@ -122,25 +132,29 @@ class ComponentBlock extends React.Component {
   renderWires() {
     const wires = [];
 
-    this.props.component.get('wires').forEach((wire, uuid) => {
-      if (wire.get('points')) {
-        wires.push(
-          <WireContainer
-            hidden
-            key={uuid}
-            uuid={uuid}
-            moveVertex={() => console.log('plz no drag')}
-            parents={this.props.parents.concat([this.props.uuid])}
-          />,
-        );
-      }
-    });
+    if (this.props.component.get('wires')) {
+      this.props.component.get('wires').forEach((wire, uuid) => {
+        if (wire.get('points')) {
+          wires.push(
+            <WireContainer
+              hidden
+              key={uuid}
+              uuid={uuid}
+              moveVertex={() => console.log('plz no drag')}
+              parents={this.props.parents.concat([this.props.uuid])}
+            />,
+          );
+        }
+      });
+    }
+
     return wires;
   }
 
   render() {
-    const HEIGHT =
-      10 + (this.props.component.get('inputNodes') - 1) * LEG_SPACING;
+    const HEIGHT = this.props.component.get('inputNodes')
+      ? 10 + (this.props.component.get('inputNodes') - 1) * LEG_SPACING
+      : 30;
     return (
       <g onDoubleClick={this.doubleClick}>
         <rect

@@ -38,8 +38,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     selectWire: (uuid, clearPrevious) => {
       dispatch(selectWire(uuid, clearPrevious));
     },
-    addComponent: (uuid, component) => {
-      dispatch(addComponent(uuid, component));
+    addComponent: (uuid, component, parents) => {
+      dispatch(addComponent(uuid, component, parents));
     },
     setDraggingComponent: () => {
       dispatch(setDraggingComponent(null, null));

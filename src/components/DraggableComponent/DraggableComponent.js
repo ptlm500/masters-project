@@ -54,12 +54,12 @@ class DraggableComponent extends React.Component {
   }
 
   keyDown(e) {
-    console.log(e);
+    console.log(e, this.props.parents);
     if (this.isSelectedComponent() && (e.key === 'Delete' || e.key === 'Backspace')) {
       this.props.component.get('nodes').forEach(node => {
         if (node.get('connections').size !== 0) {
           node.get('connections').forEach(connection => {
-            this.props.deleteWire(connection);
+            this.props.deleteWire(connection, this.props.parents);
           });
         }
       });

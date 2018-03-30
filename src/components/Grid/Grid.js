@@ -87,6 +87,7 @@ class Grid extends React.Component {
       this.props.addComponent(
         componentUuid,
         this.props.draggingComponent(componentUuid, point.x, point.y, 2),
+        this.props.activeTab.get('componentParents'),
       );
       this.props.selectComponent(componentUuid, true);
       this.props.setDraggingComponent();
@@ -247,49 +248,59 @@ class Grid extends React.Component {
   }
 
   updateWires(component) {
-    component.get('nodes').forEach(node => {
-      if (node.get('connections').size > 0) {
-        node.get('connections').forEach(connection => {
-          this.props.updateWire(
-            connection,
-            this.props.activeTab.get('componentParents'),
-          );
-        });
-      }
-    });
+    if (component.get('nodes')) {
+      component.get('nodes').forEach(node => {
+        if (node.get('connections').size > 0) {
+          node.get('connections').forEach(connection => {
+            this.props.updateWire(
+              connection,
+              this.props.activeTab.get('componentParents'),
+            );
+          });
+        }
+      });
+    }
   }
 
   renderComponents() {
     const components = [];
+    const componentsAtPath = this.getComponentsAtPath();
 
-    this.getComponentsAtPath().forEach((component, uuid) => {
-      components.push(
-        <DraggableComponentContainer
-          key={uuid}
-          uuid={uuid}
-          component={component}
-          moveComponent={this.startComponentDrag}
-        />,
-      );
-    });
+    if (componentsAtPath) {
+      componentsAtPath.forEach((component, uuid) => {
+        components.push(
+          <DraggableComponentContainer
+            key={uuid}
+            uuid={uuid}
+            component={component}
+            parents={this.props.activeTab.get('componentParents')}
+            moveComponent={this.startComponentDrag}
+          />,
+        );
+      });
+    }
 
     return components;
   }
 
   renderWires() {
     const wires = [];
+    const wiresAtPath = this.getWiresAtPath();
 
-    this.getWiresAtPath().forEach((wire, uuid) => {
-      if (wire.get('points'))
-        wires.push(
-          <WireContainer
-            key={uuid}
-            uuid={uuid}
-            parents={this.props.activeTab.get('componentParents')}
-            moveVertex={this.startComponentDrag}
-          />,
-        );
-    });
+    if (wiresAtPath) {
+      wiresAtPath.forEach((wire, uuid) => {
+        if (wire.get('points'))
+          wires.push(
+            <WireContainer
+              key={uuid}
+              uuid={uuid}
+              parents={this.props.activeTab.get('componentParents')}
+              moveVertex={this.startComponentDrag}
+            />,
+          );
+      });
+    }
+
     return wires;
   }
 

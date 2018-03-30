@@ -16,6 +16,7 @@ import {
   UPDATE_SELECTION_BOX,
   UPDATE_BLOCK,
   CREATE_COMPONENT_BLOCK,
+  CREATE_COMPONENT_BLOCK_FROM_SELECTED,
   SELECT_WIRE,
   SET_VIEW_CONTEXT,
 } from './actions';
@@ -89,7 +90,6 @@ const initialState = Immutable.fromJS({
   tabs: {
     'Root': {
       path: '',
-      componentParents: '',
     },
   },
   //
@@ -285,6 +285,14 @@ const initialState = Immutable.fromJS({
   wires: {},
 });
 
+// function initialiseState(state) {
+//   let newState = state;
+
+//   newState = newState.setIn(['tabs', 'Root', 'componentParents'], []);
+
+//   return newState;
+// }
+
 // Component action reducers
 function components(state = initialState, action) {
   switch (action.type) {
@@ -312,13 +320,30 @@ function components(state = initialState, action) {
       return state.set('draggingComponent', action.component);
     }
     case ADD_COMPONENT: {
+      const componentLocation = getComponentLocation(action.parents);
       const newState = state.setIn(
-        ['components', action.uuid],
+        componentLocation.concat([action.uuid]),
         action.component,
       );
       return newState;
     }
     case CREATE_COMPONENT_BLOCK: {
+      let newState = state;
+      const componentLocation = getComponentLocation(action.parents);
+
+      let newBlock = Immutable.Map({ x: 10, y: 10, type: 'ComponentBlock'});
+
+
+      newState = newState.setIn(
+        componentLocation.concat([action.uuid]),
+        newBlock,
+      );
+
+      console.log(newState.toJS());
+
+      return newState;
+    }
+    case CREATE_COMPONENT_BLOCK_FROM_SELECTED: {
       const componentLocation = getComponentLocation(action.parents);
       const wireLocation = getWireLocation(action.parents);
       let newState = state;
@@ -411,8 +436,6 @@ function components(state = initialState, action) {
 
       newBlock = newBlock.set('inputNodes', inputNodes.length);
 
-      console.log(newBlock.toJS());
-
       newState = newState.setIn(['components', action.uuid], newBlock);
 
       console.log(newState.toJS());
@@ -496,48 +519,49 @@ function components(state = initialState, action) {
     }
     case CONNECT_NODES: {
       let newState = state;
+      const componentLocation = getComponentLocation(action.parents);
+      const wireLocation = getWireLocation(action.parents);
+
       // Update input node connection info
       newState = newState.updateIn(
-        [
-          'components',
+        componentLocation.concat([
           getComponentIdFromNodeId(action.nodes.inputNodeId),
           'nodes',
           action.nodes.inputNodeId,
           'connections',
-        ],
+        ]),
         connections => connections.add(newState.get('activeWire')),
       );
       // Update output node connection info
       newState = newState.updateIn(
-        [
-          'components',
+        componentLocation.concat([
           getComponentIdFromNodeId(action.nodes.outputNodeId),
           'nodes',
           action.nodes.outputNodeId,
           'connections',
-        ],
+        ]),
         connections => connections.add(newState.get('activeWire')),
       );
       // Set output node initial state
       newState = newState.setIn(
-        [
-          'components',
+        componentLocation.concat([
           getComponentIdFromNodeId(action.nodes.outputNodeId),
           'nodes',
           action.nodes.outputNodeId,
           'state',
-        ],
-        newState.getIn([
-          'components',
-          getComponentIdFromNodeId(action.nodes.inputNodeId),
-          'nodes',
-          action.nodes.inputNodeId,
-          'state',
         ]),
+        newState.getIn(
+          componentLocation.concat([
+            getComponentIdFromNodeId(action.nodes.inputNodeId),
+            'nodes',
+            action.nodes.inputNodeId,
+            'state',
+          ]),
+        ),
       );
       // Set wire info
       newState = newState.setIn(
-        ['wires', newState.get('activeWire')],
+        wireLocation.concat([newState.get('activeWire')]),
         Immutable.Map({
           inputNode: action.nodes.inputNodeId,
           outputNode: action.nodes.outputNodeId,
@@ -545,6 +569,7 @@ function components(state = initialState, action) {
             newState,
             action.nodes.inputNodeId,
             action.nodes.outputNodeId,
+            action.parents,
           ),
         }),
       );
@@ -576,21 +601,25 @@ function components(state = initialState, action) {
       return state;
     }
     case DELETE_WIRE: {
+      const wireLocation = getWireLocation(action.parents);
+      const componentLocation = getComponentLocation(action.parents);
+      console.log('***', action.parents, wireLocation);
       let newState = state;
 
-      const wire = newState.getIn(['wires', action.wireId]);
+      // TODO: IN COMPONENT BLOCKS, COMPONENTS CONNECTED TO BLOCK I/O HAVE NO WIRE, SO THIS WILL FAIL
+      const wire = newState.getIn(wireLocation.concat([action.wireId]));
+      console.log('***', wire, action.wireId);
       const wireNodes = [wire.get('inputNode'), wire.get('outputNode')];
       // Iterate through wire connections
       wireNodes.forEach(nodeId => {
         // Delete connection record for nodes
         newState = newState.updateIn(
-          [
-            'components',
+          componentLocation.concat([
             getComponentIdFromNodeId(nodeId),
             'nodes',
             nodeId,
             'connections',
-          ],
+          ]),
           connections => connections.delete(action.wireId),
         );
       });

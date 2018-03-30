@@ -18,8 +18,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     deleteComponent: () => {
       dispatch(deleteComponent(ownProps.uuid));
     },
-    deleteWire: wireId => {
-      dispatch(deleteWire(wireId));
+    deleteWire: (uuid, parents) => {
+      dispatch(deleteWire(uuid, parents));
     },
   };
 };

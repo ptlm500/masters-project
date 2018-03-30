@@ -37,19 +37,18 @@ class LogicGate extends React.Component {
   getNodes() {
     const nodes = [];
 
-    this.props.component
-      .get('nodes')
-      .keySeq()
-      .forEach(uuid => {
-        nodes.push(
-          <NodeContainer
-            x={this.props.component.getIn(['nodes', uuid, 'x'])}
-            y={this.props.component.getIn(['nodes', uuid, 'y'])}
-            uuid={uuid}
-            key={uuid}
-          />,
-        );
-      });
+    this.props.component.get('nodes').forEach((node, uuid) => {
+      nodes.push(
+        <NodeContainer
+          x={this.props.component.getIn(['nodes', uuid, 'x'])}
+          y={this.props.component.getIn(['nodes', uuid, 'y'])}
+          uuid={uuid}
+          key={uuid}
+          node={node}
+          parents={this.props.parents}
+        />,
+      );
+    });
 
     return nodes;
   }
