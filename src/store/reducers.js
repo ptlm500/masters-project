@@ -479,9 +479,12 @@ function components(state = initialState, action) {
     case DELETE_COMPONENT: {
       const componentLocation = getComponentLocation(action.parents);
       let newState = state;
-      newState = newState.set('selectedWires', Immutable.Set([]));
+
+      newState.get('selectedComponents').forEach(componentUuid => {
+        newState = newState.deleteIn(componentLocation.concat([componentUuid]));
+      });
+
       newState = newState.set('selectedComponents', Immutable.Set([]));
-      newState = newState.deleteIn(componentLocation.concat([action.uuid]));
 
       return newState;
     }
@@ -603,12 +606,11 @@ function components(state = initialState, action) {
     case DELETE_WIRE: {
       const wireLocation = getWireLocation(action.parents);
       const componentLocation = getComponentLocation(action.parents);
-      console.log('***', action.parents, wireLocation);
       let newState = state;
 
       // TODO: IN COMPONENT BLOCKS, COMPONENTS CONNECTED TO BLOCK I/O HAVE NO WIRE, SO THIS WILL FAIL
       const wire = newState.getIn(wireLocation.concat([action.wireId]));
-      console.log('***', wire, action.wireId);
+
       const wireNodes = [wire.get('inputNode'), wire.get('outputNode')];
       // Iterate through wire connections
       wireNodes.forEach(nodeId => {
@@ -626,17 +628,21 @@ function components(state = initialState, action) {
 
       // Reset output node state to 0
       newState = newState.setIn(
-        [
-          'components',
+        componentLocation.concat([
           getComponentIdFromNodeId(wire.get('outputNode')),
           'nodes',
           wire.get('outputNode'),
           'state',
-        ],
+        ]),
         0,
       );
 
-      newState = newState.deleteIn(['wires', action.wireId]);
+      // Delete wire from store
+      newState = newState.deleteIn(wireLocation.concat([action.wireId]));
+      // Remove wire ID from selectedWires
+      newState = newState.update('selectedWires', selectedWires =>
+        selectedWires.delete(action.wireId),
+      );
       return newState;
     }
     case TOGGLE_STATE: {
