@@ -761,6 +761,13 @@ function components(state = initialState, action) {
       return newState;
     }
     case UPDATE_SELECTION_BOX: {
+      const componentLocation = getComponentLocation(
+        state.getIn(['tabs', state.get('activeTab'), 'componentParents']),
+      );
+      const wireLocation = getWireLocation(
+        state.getIn(['tabs', state.get('activeTab'), 'componentParents']),
+      );
+
       let newState = state;
       newState = state.update('selectionBox', original =>
         original.merge(Immutable.Map(action.coords)),
@@ -774,7 +781,7 @@ function components(state = initialState, action) {
       const maxY = Math.max(selectionBox.get('eY'), selectionBox.get('sY'));
 
       if (selectionBox.get('sX') && selectionBox.get('eX')) {
-        newState.get('components').forEach((component, uuid) => {
+        newState.getIn(componentLocation).forEach((component, uuid) => {
           if (
             component.get('x') > minX &&
             component.get('x') < maxX &&
@@ -795,7 +802,7 @@ function components(state = initialState, action) {
           }
         });
 
-        newState.get('wires').forEach((wire, uuid) => {
+        newState.getIn(wireLocation).forEach((wire, uuid) => {
           const xPoints = [];
           const yPoints = [];
           wire.get('points').forEach(point => {

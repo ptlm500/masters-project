@@ -82,10 +82,11 @@ export function createComponentBlockFromSelected(uuid, parents) {
   };
 }
 
-export function deleteComponent(uuid) {
+export function deleteComponent(uuid, parents) {
   return {
     type: DELETE_COMPONENT,
     uuid,
+    parents,
   };
 }
 
