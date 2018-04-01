@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import NodeContainer from '../../../containers/NodeContainer/NodeContainer';
-import { STROKE_WIDTH, LEG_LENGTH } from '../../componentConstants';
+import Immutable from 'immutable';
+import NodeContainer from '../../containers/NodeContainer/NodeContainer';
+import { STROKE_WIDTH, LEG_LENGTH } from '../componentConstants';
 
-class LED extends React.Component {
+class ComponentBlockInput extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
     selectedComponents: PropTypes.object.isRequired,
+    parents: PropTypes.array,
   };
 
   getComponentColour() {
@@ -41,27 +43,15 @@ class LED extends React.Component {
 
   render() {
     const state = this.props.component.get('nodes').first().get('state');
-    let fill = 'grey';
-
-    if (state === 1) {
-      fill = 'green';
-    }
 
     return (
       <g>
-        <circle
-          cx={STROKE_WIDTH + LEG_LENGTH + 10}
-          cy={STROKE_WIDTH + 10}
-          r={10}
-          stroke={this.getComponentColour()}
-          strokeWidth={STROKE_WIDTH}
-          fill={fill}
-        />
+        <polygon points="0,0 0,21, 21,11 21,10" fill={this.getComponentColour()} />
         <line
-          x1={STROKE_WIDTH}
-          y1={STROKE_WIDTH + 10}
-          x2={STROKE_WIDTH + LEG_LENGTH}
-          y2={STROKE_WIDTH + 10}
+          x1={20}
+          y1={STROKE_WIDTH + 9}
+          x2={20 + LEG_LENGTH}
+          y2={STROKE_WIDTH + 9}
           stroke={state === 0 ? 'black' : 'green'}
           strokeWidth={STROKE_WIDTH}
         />
@@ -71,4 +61,8 @@ class LED extends React.Component {
   }
 }
 
-export default LED;
+ComponentBlockInput.defaultProps = {
+  parents: [],
+};
+
+export default ComponentBlockInput;

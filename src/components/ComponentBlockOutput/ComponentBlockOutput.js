@@ -1,13 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import NodeContainer from '../../../containers/NodeContainer/NodeContainer';
-import { STROKE_WIDTH, LEG_LENGTH } from '../../componentConstants';
+import Immutable from 'immutable';
+import NodeContainer from '../../containers/NodeContainer/NodeContainer';
+import { STROKE_WIDTH, LEG_LENGTH, NODE_OFFSET, NODE_RADIUS } from '../componentConstants';
 
-class LED extends React.Component {
+class ComponentBlockOutput extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
     selectedComponents: PropTypes.object.isRequired,
+    parents: PropTypes.array,
   };
 
   getComponentColour() {
@@ -41,29 +43,25 @@ class LED extends React.Component {
 
   render() {
     const state = this.props.component.get('nodes').first().get('state');
-    let fill = 'grey';
-
-    if (state === 1) {
-      fill = 'green';
-    }
 
     return (
       <g>
-        <circle
-          cx={STROKE_WIDTH + LEG_LENGTH + 10}
-          cy={STROKE_WIDTH + 10}
-          r={10}
-          stroke={this.getComponentColour()}
-          strokeWidth={STROKE_WIDTH}
-          fill={fill}
-        />
         <line
-          x1={STROKE_WIDTH}
-          y1={STROKE_WIDTH + 10}
-          x2={STROKE_WIDTH + LEG_LENGTH}
-          y2={STROKE_WIDTH + 10}
+          x1={NODE_OFFSET}
+          y1={STROKE_WIDTH + 9}
+          x2={20 + LEG_LENGTH}
+          y2={STROKE_WIDTH + 9}
           stroke={state === 0 ? 'black' : 'green'}
           strokeWidth={STROKE_WIDTH}
+        />
+        <polygon
+          points={`
+            ${NODE_RADIUS * 2 + LEG_LENGTH},0
+            ${NODE_RADIUS * 2 + LEG_LENGTH},21,
+            ${NODE_RADIUS * 2 + LEG_LENGTH + 21},11
+            ${NODE_RADIUS * 2 + LEG_LENGTH + 21},10
+          `}
+          fill={this.getComponentColour()}
         />
         {this.renderNodes()}
       </g>
@@ -71,4 +69,8 @@ class LED extends React.Component {
   }
 }
 
-export default LED;
+ComponentBlockOutput.defaultProps = {
+  parents: [],
+};
+
+export default ComponentBlockOutput;

@@ -13,6 +13,8 @@ import XNORGate from '../logic/XNORGate/XNORGate';
 import ToggleSwitch from '../input/ToggleSwitch/ToggleSwitch';
 import LED from '../output/LED/LED';
 import ComponentBlock from '../ComponentBlock/ComponentBlock';
+import ComponentBlockInput from '../ComponentBlockInput/ComponentBlockInput';
+import ComponentBlockOutput from '../ComponentBlockOutput/ComponentBlockOutput';
 
 class DraggableComponent extends React.Component {
   static propTypes = {
@@ -154,6 +156,24 @@ class DraggableComponent extends React.Component {
       case 'ComponentBlock':
         return (
           <ComponentBlock
+            uuid={this.props.uuid}
+            component={this.props.component}
+            selectedComponents={this.props.selectedComponents}
+            parents={this.props.parents}
+          />
+        );
+      case 'ComponentBlockInput':
+        return (
+          <ComponentBlockInput
+            uuid={this.props.uuid}
+            component={this.props.component}
+            selectedComponents={this.props.selectedComponents}
+            parents={this.props.parents}
+          />
+        );
+      case 'ComponentBlockOutput':
+        return (
+          <ComponentBlockOutput
             uuid={this.props.uuid}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
