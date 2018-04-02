@@ -13,14 +13,14 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Home.css';
 // import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 import GridContainer from '../../containers/GridContainer/GridContainer';
-import Sidebar from '../../components/Sidebar/Sidebar';
+import SidebarContainer from '../../containers/SidebarContainer/SidebarContainer';
 import TabBarContainer from '../../containers/TabBarContainer/TabBarContainer';
 
 class Home extends React.Component {
   render() {
     return (
       <div className={s.root}>
-        <Sidebar/>
+        <SidebarContainer />
         <div className={s.container}>
           <TabBarContainer/>
           <div className={s['grid-container']}>

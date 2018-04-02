@@ -13,6 +13,14 @@ import generateXNORGate from './gates/XNORGate';
 import XNORGate from '../components/logic/XNORGate/XNORGate';
 import { generateToggleSwitch, ToggleSwitchIcon } from './inputs/ToggleSwitch';
 import { generateLED, LEDIcon } from './outputs/LED';
+import {
+  generateComponentBlockInput,
+  ComponentBlockInputIcon,
+} from './componentBlock/ComponentBlockInput';
+import {
+  generateComponentBlockOutput,
+  ComponentBlockOutputIcon,
+} from './componentBlock/ComponentBlockOutput';
 
 const models = {
   'AND Gate': {
@@ -42,10 +50,22 @@ const models = {
   'Toggle Switch': {
     generator: generateToggleSwitch,
     icon: <ToggleSwitchIcon />,
+    hideInBlock: true,
   },
   'LED': {
     generator: generateLED,
     icon: <LEDIcon />,
+    hideInBlock: true,
+  },
+  'Component Block Input': {
+    generator: generateComponentBlockInput,
+    icon: <ComponentBlockInputIcon />,
+    hideInRoot: true,
+  },
+  'Component Block Output': {
+    generator: generateComponentBlockOutput,
+    icon: <ComponentBlockOutputIcon />,
+    hideInRoot: true,
   },
 };
 

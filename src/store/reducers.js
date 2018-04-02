@@ -111,32 +111,6 @@ const initialState = Immutable.fromJS({
     eY: null,
   },
   components: {
-    b: {
-      x: "100",
-      y: "100",
-      type: "ComponentBlockInput",
-      nodes: {
-        b_1: {
-          input: false,
-          connections: Immutable.Set([]),
-          x: 21 + LEG_LENGTH + NODE_RADIUS,
-          y: 11,
-        },
-      },
-    },
-    c: {
-      x: "200",
-      y: "200",
-      type: "ComponentBlockOutput",
-      nodes: {
-        c_1: {
-          input: false,
-          connections: Immutable.Set([]),
-          x: NODE_OFFSET,
-          y: 11,
-        },
-      },
-    },
     a: {
       x: '20',
       y: '20',

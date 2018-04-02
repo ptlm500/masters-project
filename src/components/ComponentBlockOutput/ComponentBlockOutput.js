@@ -27,14 +27,15 @@ class ComponentBlockOutput extends React.Component {
   renderNodes() {
     const nodes = [];
 
-    this.props.component.get('nodes').keySeq().forEach(uuid => {
+    this.props.component.get('nodes').forEach((node, uuid) => {
       nodes.push(
         <NodeContainer
-          x={this.props.component.getIn(['nodes', uuid, 'x'])}
-          y={this.props.component.getIn(['nodes', uuid, 'y'])}
+          x={node.get('x')}
+          y={node.get('y')}
           uuid={uuid}
           key={uuid}
-        />
+          node={node}
+        />,
       );
     });
 
