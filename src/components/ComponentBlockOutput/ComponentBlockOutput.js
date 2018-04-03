@@ -1,8 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Immutable from 'immutable';
+import { connect } from 'react-redux';
 import NodeContainer from '../../containers/NodeContainer/NodeContainer';
-import { STROKE_WIDTH, LEG_LENGTH, NODE_OFFSET, NODE_RADIUS } from '../componentConstants';
+import {
+  STROKE_WIDTH,
+  LEG_LENGTH,
+  NODE_OFFSET,
+  NODE_RADIUS,
+} from '../componentConstants';
+import { addBlockNode } from '../../store/actions';
 
 class ComponentBlockOutput extends React.Component {
   static propTypes = {
@@ -10,7 +16,15 @@ class ComponentBlockOutput extends React.Component {
     component: PropTypes.object.isRequired,
     selectedComponents: PropTypes.object.isRequired,
     parents: PropTypes.array,
+    hidden: PropTypes.bool,
+    dispatch: PropTypes.func.isRequired,
   };
+
+  componentDidMount() {
+    this.props.dispatch(
+      addBlockNode(this.props.uuid, this.props.component, this.props.parents),
+    );
+  }
 
   getComponentColour() {
     if (this.isSelectedComponent()) {
@@ -35,6 +49,7 @@ class ComponentBlockOutput extends React.Component {
           uuid={uuid}
           key={uuid}
           node={node}
+          parents={this.props.parents}
         />,
       );
     });
@@ -43,35 +58,40 @@ class ComponentBlockOutput extends React.Component {
   }
 
   render() {
-    const state = this.props.component.get('nodes').first().get('state');
+    if (!this.props.hidden) {
+      const state = this.props.component.get('nodes').first().get('state');
 
-    return (
-      <g>
-        <line
-          x1={NODE_OFFSET}
-          y1={STROKE_WIDTH + 9}
-          x2={20 + LEG_LENGTH}
-          y2={STROKE_WIDTH + 9}
-          stroke={state === 0 ? 'black' : 'green'}
-          strokeWidth={STROKE_WIDTH}
-        />
-        <polygon
-          points={`
-            ${NODE_RADIUS * 2 + LEG_LENGTH},0
-            ${NODE_RADIUS * 2 + LEG_LENGTH},21,
-            ${NODE_RADIUS * 2 + LEG_LENGTH + 21},11
-            ${NODE_RADIUS * 2 + LEG_LENGTH + 21},10
-          `}
-          fill={this.getComponentColour()}
-        />
-        {this.renderNodes()}
-      </g>
-    );
+      return (
+        <g>
+          <line
+            x1={NODE_OFFSET}
+            y1={STROKE_WIDTH + 9}
+            x2={20 + LEG_LENGTH}
+            y2={STROKE_WIDTH + 9}
+            stroke={state === 0 ? 'black' : 'green'}
+            strokeWidth={STROKE_WIDTH}
+          />
+          <polygon
+            points={`
+              ${NODE_RADIUS * 2 + LEG_LENGTH},0
+              ${NODE_RADIUS * 2 + LEG_LENGTH},21,
+              ${NODE_RADIUS * 2 + LEG_LENGTH + 21},11
+              ${NODE_RADIUS * 2 + LEG_LENGTH + 21},10
+            `}
+            fill={this.getComponentColour()}
+          />
+          {this.renderNodes()}
+        </g>
+      );
+    }
+
+    return null;
   }
 }
 
 ComponentBlockOutput.defaultProps = {
   parents: [],
+  hidden: false,
 };
 
-export default ComponentBlockOutput;
+export default connect()(ComponentBlockOutput);

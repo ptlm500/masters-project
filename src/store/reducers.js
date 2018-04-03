@@ -19,6 +19,7 @@ import {
   CREATE_COMPONENT_BLOCK_FROM_SELECTED,
   SELECT_WIRE,
   SET_VIEW_CONTEXT,
+  ADD_BLOCK_NODE,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId, } from '../helpers';
 import {
@@ -30,6 +31,7 @@ import {
 import {
   getComponentBlockNode,
   updateComponentNode,
+  getNodeTotals,
 } from './helpers/componentBlockCreation';
 import {
   NODE_OFFSET,
@@ -393,7 +395,7 @@ function components(state = initialState, action) {
 
             newBlock = newBlock.setIn(
               ['nodes', `${action.uuid}_${nodeTotal}`],
-              getComponentBlockNode(node, nodeUuid, nodeCounters),
+              getComponentBlockNode(node, nodeCounters),
             );
             newBlock = updateComponentNode(
               newBlock,
@@ -415,7 +417,7 @@ function components(state = initialState, action) {
 
                 newBlock = newBlock.setIn(
                   ['nodes', `${action.uuid}_${nodeTotal}`],
-                  getComponentBlockNode(node, nodeUuid, nodeCounters),
+                  getComponentBlockNode(node, nodeCounters),
                 );
                 newBlock = updateComponentNode(
                   newBlock,
@@ -526,6 +528,10 @@ function components(state = initialState, action) {
       const componentLocation = getComponentLocation(action.parents);
       const wireLocation = getWireLocation(action.parents);
 
+
+      console.log('***', action.parents, newState.getIn(componentLocation.concat([
+        getComponentIdFromNodeId(action.nodes.inputNodeId)
+      ])));
       // Update input node connection info
       newState = newState.updateIn(
         componentLocation.concat([
@@ -761,6 +767,38 @@ function components(state = initialState, action) {
 
       return newState;
     }
+    case ADD_BLOCK_NODE: {
+      let newState = state;
+      const path = action.parents;
+      const blockUuid = path.pop();
+      const componentLocation = getComponentLocation(path);
+
+      console.log(action.node.toJS(), action.node.getIn(['nodes']));
+
+      newState = newState.setIn(
+        componentLocation.concat([blockUuid, 'nodes', action.uuid]),
+        getComponentBlockNode(
+          action.node.get('nodes').first(),
+          getNodeTotals(
+            newState.getIn(componentLocation.concat([blockUuid, 'nodes'])),
+          ),
+          true,
+        ),
+      );
+
+      if (action.node.get('input')) {
+        let inputNodes = newState.getIn(
+          componentLocation.concat([blockUuid, 'inputNodes']),
+        );
+        inputNodes = inputNodes ? 1 : (inputNodes += 1);
+
+        newState = newState.setIn(
+          componentLocation.concat([blockUuid, 'inputNodes'], inputNodes),
+        );
+      }
+
+      return newState;
+    }
     case UPDATE_SELECTION_BOX: {
       const componentLocation = getComponentLocation(
         state.getIn(['tabs', state.get('activeTab'), 'componentParents']),
@@ -781,7 +819,11 @@ function components(state = initialState, action) {
       const minY = Math.min(selectionBox.get('eY'), selectionBox.get('sY'));
       const maxY = Math.max(selectionBox.get('eY'), selectionBox.get('sY'));
 
-      if (selectionBox.get('sX') && selectionBox.get('eX')) {
+      if (
+        selectionBox.get('sX') &&
+        selectionBox.get('eX') &&
+        newState.getIn(componentLocation)
+      ) {
         newState.getIn(componentLocation).forEach((component, uuid) => {
           if (
             component.get('x') > minX &&
@@ -803,42 +845,44 @@ function components(state = initialState, action) {
           }
         });
 
-        newState.getIn(wireLocation).forEach((wire, uuid) => {
-          const xPoints = [];
-          const yPoints = [];
-          wire.get('points').forEach(point => {
-            xPoints.push(point.get('x'));
-            yPoints.push(point.get('y'));
-          });
+        if (newState.getIn(wireLocation)) {
+          newState.getIn(wireLocation).forEach((wire, uuid) => {
+            const xPoints = [];
+            const yPoints = [];
+            wire.get('points').forEach(point => {
+              xPoints.push(point.get('x'));
+              yPoints.push(point.get('y'));
+            });
 
-          const minPX = Math.min(...xPoints);
-          const maxPX = Math.max(...xPoints);
-          const minPY = Math.min(...yPoints);
-          const maxPY = Math.max(...yPoints);
+            const minPX = Math.min(...xPoints);
+            const maxPX = Math.max(...xPoints);
+            const minPY = Math.min(...yPoints);
+            const maxPY = Math.max(...yPoints);
 
-          if (
-            minPX > minX &&
-            maxPX < maxX &&
-            minPY > minY &&
-            maxPY < maxY &&
-            newState
-              .get('selectedComponents')
-              .includes(getComponentIdFromNodeId(wire.get('inputNode'))) &&
-            newState
-              .get('selectedComponents')
-              .includes(getComponentIdFromNodeId(wire.get('outputNode')))
-          ) {
-            if (!newState.get('selectedWires').includes(uuid)) {
+            if (
+              minPX > minX &&
+              maxPX < maxX &&
+              minPY > minY &&
+              maxPY < maxY &&
+              newState
+                .get('selectedComponents')
+                .includes(getComponentIdFromNodeId(wire.get('inputNode'))) &&
+              newState
+                .get('selectedComponents')
+                .includes(getComponentIdFromNodeId(wire.get('outputNode')))
+            ) {
+              if (!newState.get('selectedWires').includes(uuid)) {
+                newState = newState.update('selectedWires', selectedWires =>
+                  selectedWires.add(uuid),
+                );
+              }
+            } else if (newState.get('selectedWires').includes(uuid)) {
               newState = newState.update('selectedWires', selectedWires =>
-                selectedWires.add(uuid),
+                selectedWires.delete(uuid),
               );
             }
-          } else if (newState.get('selectedWires').includes(uuid)) {
-            newState = newState.update('selectedWires', selectedWires =>
-              selectedWires.delete(uuid),
-            );
-          }
-        });
+          });
+        }
       }
 
       return newState;

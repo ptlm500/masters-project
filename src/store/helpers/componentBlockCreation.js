@@ -6,15 +6,12 @@ import {
 } from '../../components/componentConstants';
 import { createUuid } from '../../helpers';
 
-export function getComponentBlockNode(node, nodeUuid, nodeCounters) {
+export function getComponentBlockNode(node, nodeCounters, invert) {
+  const input = invert ? !node.get('input') : node.get('input');
   return Immutable.Map({
-    x: node.get('input')
-      ? NODE_OFFSET
-      : 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
-    y: node.get('input')
-      ? 6 + nodeCounters.input * 20
-      : 6 + nodeCounters.output * 2,
-    input: node.get('input'),
+    x: input ? NODE_OFFSET : 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
+    y: input ? 6 + nodeCounters.input * 20 : 6 + nodeCounters.output * 20,
+    input,
     connections: node.get('connections'),
     state: node.get('state'),
   });
@@ -51,4 +48,21 @@ export function updateComponentNode(
   );
 
   return modifiedBlock;
+}
+
+export function getNodeTotals(nodes) {
+  const nodeCounters = {
+    input: 0,
+    output: 0,
+  };
+
+  if (nodes) {
+    nodes.forEach(node => {
+      node.get('input')
+        ? (nodeCounters.input += 1)
+        : (nodeCounters.output += 1);
+    });
+  }
+
+  return nodeCounters;
 }

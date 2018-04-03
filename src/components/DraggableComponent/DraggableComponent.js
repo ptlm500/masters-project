@@ -165,6 +165,7 @@ class DraggableComponent extends React.Component {
       case 'ComponentBlockInput':
         return (
           <ComponentBlockInput
+            hidden={this.props.hidden}
             uuid={this.props.uuid}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
@@ -174,6 +175,7 @@ class DraggableComponent extends React.Component {
       case 'ComponentBlockOutput':
         return (
           <ComponentBlockOutput
+            hidden={this.props.hidden}
             uuid={this.props.uuid}
             component={this.props.component}
             selectedComponents={this.props.selectedComponents}
