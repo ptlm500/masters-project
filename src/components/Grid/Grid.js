@@ -4,7 +4,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import Immutable from 'immutable';
 import DraggableComponentContainer from '../../containers/DraggableComponentContainer/DraggableComponentContainer';
 import WireContainer from '../../containers/WireContainer/WireContainer';
-import { createUuid } from '../../helpers';
+import { createUuid, getParentsFromPath } from '../../helpers';
 import s from './Grid.css';
 
 class Grid extends React.Component {
@@ -87,7 +87,7 @@ class Grid extends React.Component {
       this.props.addComponent(
         componentUuid,
         this.props.draggingComponent(componentUuid, point.x, point.y, 2),
-        this.props.activeTab.get('componentParents'),
+        getParentsFromPath(this.props.activeTab.get('path')),
       );
       this.props.selectComponent(componentUuid, true);
       this.props.setDraggingComponent();
@@ -178,7 +178,7 @@ class Grid extends React.Component {
               newComponent,
               type,
               vertexId,
-              this.props.activeTab.get('componentParents'),
+              getParentsFromPath(this.props.activeTab.get('path')),
             );
             // Call wire updater
             this.updateWires(newComponent);
@@ -233,7 +233,7 @@ class Grid extends React.Component {
           newVertex,
           type,
           vertexId,
-          this.props.activeTab.get('componentParents'),
+          getParentsFromPath(this.props.activeTab.get('path')),
         );
       }
     };
@@ -254,7 +254,7 @@ class Grid extends React.Component {
           node.get('connections').forEach(connection => {
             this.props.updateWire(
               connection,
-              this.props.activeTab.get('componentParents'),
+              getParentsFromPath(this.props.activeTab.get('path')),
             );
           });
         }
@@ -273,7 +273,7 @@ class Grid extends React.Component {
             key={uuid}
             uuid={uuid}
             component={component}
-            parents={this.props.activeTab.get('componentParents')}
+            parents={getParentsFromPath(this.props.activeTab.get('path'))}
             moveComponent={this.startComponentDrag}
           />,
         );
@@ -294,7 +294,7 @@ class Grid extends React.Component {
             <WireContainer
               key={uuid}
               uuid={uuid}
-              parents={this.props.activeTab.get('componentParents')}
+              parents={getParentsFromPath(this.props.activeTab.get('path'))}
               moveVertex={this.startComponentDrag}
             />,
           );

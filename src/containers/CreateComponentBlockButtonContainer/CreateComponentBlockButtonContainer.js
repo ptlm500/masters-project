@@ -1,15 +1,18 @@
 import { connect } from 'react-redux';
 import { createComponentBlock } from '../../store/actions';
 import CreateComponentBlockButton from '../../components/Sidebar/CreateComponentBlockButton/CreateComponentBlockButton';
+import { getParentsFromPath } from '../../helpers';
 
 const mapStateToProps = (state, ownProps) => {
   return {
     selectedComponents: state.components.get('selectedComponents'),
-    parents: state.components.getIn([
-      'tabs',
-      state.components.get('activeTab'),
-      'componentParents',
-    ]),
+    parents: getParentsFromPath(
+      state.components.getIn([
+        'tabs',
+        state.components.get('activeTab'),
+        'path',
+      ]),
+    ),
   };
 };
 

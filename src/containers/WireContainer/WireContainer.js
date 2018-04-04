@@ -6,7 +6,7 @@ import { getComponentIdFromNodeId } from '../../helpers';
 const mapStateToProps = (state, ownProps) => {
   let wireLocation = ['wires', ownProps.uuid];
   let inputNodeLocation = ['components'];
-  if (ownProps.parents && Array.isArray(ownProps.parents)) {
+  if (ownProps.parents && ownProps.parents.length !== 0) {
     wireLocation = ['components'];
 
     ownProps.parents.forEach(parent => {
@@ -17,7 +17,7 @@ const mapStateToProps = (state, ownProps) => {
     wireLocation = wireLocation.concat([ownProps.uuid]);
   }
   const wire = state.components.getIn(wireLocation);
-
+  console.log('state', state.components.toJS(), wireLocation, ownProps.parents)
   return {
     wire,
     wireState: state.components.getIn(

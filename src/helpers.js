@@ -31,3 +31,10 @@ export function getOutputNodeId(component) {
 
   return outputNodeId;
 }
+
+export function getParentsFromPath(path) {
+  if (path) {
+    return path.filter(e => e !== 'components');
+  }
+  return [];
+}

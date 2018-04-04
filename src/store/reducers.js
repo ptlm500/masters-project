@@ -21,7 +21,7 @@ import {
   SET_VIEW_CONTEXT,
   ADD_BLOCK_NODE,
 } from './actions';
-import { getComponentIdFromNodeId, createUuid, getOutputNodeId, } from '../helpers';
+import { getComponentIdFromNodeId, createUuid, getOutputNodeId, getParentsFromPath, } from '../helpers';
 import {
   getComponentLocation,
   getWireLocation,
@@ -32,6 +32,7 @@ import {
   getComponentBlockNode,
   updateComponentNode,
   getNodeTotals,
+  addBlockNode,
 } from './helpers/componentBlockCreation';
 import {
   NODE_OFFSET,
@@ -288,16 +289,9 @@ const initialState = Immutable.fromJS({
   wires: {},
 });
 
-// function initialiseState(state) {
-//   let newState = state;
-
-//   newState = newState.setIn(['tabs', 'Root', 'componentParents'], []);
-
-//   return newState;
-// }
-
 // Component action reducers
 function components(state = initialState, action) {
+  // console.log('***', action.type);
   switch (action.type) {
     // NB: reducer composition may remove the need for 'components'
     case MOVE_COMPONENT: {
@@ -324,17 +318,24 @@ function components(state = initialState, action) {
     }
     case ADD_COMPONENT: {
       const componentLocation = getComponentLocation(action.parents);
-      const newState = state.setIn(
+      let newState = state.setIn(
         componentLocation.concat([action.uuid]),
         action.component,
       );
+
+      if (action.component.get('type') === 'ComponentBlockInput' || 'ComponentBlockOutput') {
+        newState = addBlockNode(newState, action);
+      }
+
+      console.log(newState.toJS())
+
       return newState;
     }
     case CREATE_COMPONENT_BLOCK: {
       let newState = state;
       const componentLocation = getComponentLocation(action.parents);
 
-      let newBlock = Immutable.Map({ x: 10, y: 10, type: 'ComponentBlock'});
+      const newBlock = Immutable.Map({ x: 10, y: 10, type: 'ComponentBlock'});
 
 
       newState = newState.setIn(
@@ -342,7 +343,7 @@ function components(state = initialState, action) {
         newBlock,
       );
 
-      console.log(newState.toJS());
+      // console.log(newState.toJS());
 
       return newState;
     }
@@ -542,6 +543,7 @@ function components(state = initialState, action) {
         ]),
         connections => connections.add(newState.get('activeWire')),
       );
+      console.log(newState.toJS(), action.nodes.outputNodeId);
       // Update output node connection info
       newState = newState.updateIn(
         componentLocation.concat([
@@ -767,45 +769,12 @@ function components(state = initialState, action) {
 
       return newState;
     }
-    case ADD_BLOCK_NODE: {
-      let newState = state;
-      const path = action.parents;
-      const blockUuid = path.pop();
-      const componentLocation = getComponentLocation(path);
-
-      console.log(action.node.toJS(), action.node.getIn(['nodes']));
-
-      newState = newState.setIn(
-        componentLocation.concat([blockUuid, 'nodes', action.uuid]),
-        getComponentBlockNode(
-          action.node.get('nodes').first(),
-          getNodeTotals(
-            newState.getIn(componentLocation.concat([blockUuid, 'nodes'])),
-          ),
-          true,
-        ),
-      );
-
-      if (action.node.get('input')) {
-        let inputNodes = newState.getIn(
-          componentLocation.concat([blockUuid, 'inputNodes']),
-        );
-        inputNodes = inputNodes ? 1 : (inputNodes += 1);
-
-        newState = newState.setIn(
-          componentLocation.concat([blockUuid, 'inputNodes'], inputNodes),
-        );
-      }
-
-      return newState;
-    }
     case UPDATE_SELECTION_BOX: {
-      const componentLocation = getComponentLocation(
-        state.getIn(['tabs', state.get('activeTab'), 'componentParents']),
+      const parents = getParentsFromPath(
+        state.getIn(['tabs', state.get('activeTab'), 'path']),
       );
-      const wireLocation = getWireLocation(
-        state.getIn(['tabs', state.get('activeTab'), 'componentParents']),
-      );
+      const componentLocation = getComponentLocation(parents);
+      const wireLocation = getWireLocation(parents);
 
       let newState = state;
       newState = state.update('selectionBox', original =>
@@ -903,7 +872,6 @@ function components(state = initialState, action) {
           ['tabs', `Block ${newState.get('tabs').size}`],
           Immutable.Map({
             path: action.path,
-            componentParents: action.componentParents,
           }),
         );
       }

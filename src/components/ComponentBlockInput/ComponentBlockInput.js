@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import NodeContainer from '../../containers/NodeContainer/NodeContainer';
 import { STROKE_WIDTH, LEG_LENGTH } from '../componentConstants';
-import { addBlockNode } from '../../store/actions';
 
 class ComponentBlockInput extends React.Component {
   static propTypes = {
@@ -12,14 +10,7 @@ class ComponentBlockInput extends React.Component {
     selectedComponents: PropTypes.object.isRequired,
     parents: PropTypes.array,
     hidden: PropTypes.bool,
-    dispatch: PropTypes.func.isRequired,
   };
-
-  componentDidMount() {
-    this.props.dispatch(
-      addBlockNode(this.props.uuid, this.props.component, this.props.parents),
-    );
-  }
 
   getComponentColour() {
     if (this.isSelectedComponent()) {
@@ -81,4 +72,4 @@ ComponentBlockInput.defaultProps = {
   hidden: false,
 };
 
-export default connect()(ComponentBlockInput);
+export default ComponentBlockInput;
