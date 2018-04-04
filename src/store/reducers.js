@@ -766,6 +766,24 @@ function components(state = initialState, action) {
                   );
                 }
               });
+            } else {
+              node.get('connections').forEach((connection, connectionId) => {
+                // Check if node is connected to an external connection
+                if (getComponentIdFromNodeId(connectionId) === action.uuid) {
+                  newState = newState.setIn(
+                    ['components', action.uuid, 'nodes', connectionId, 'state'],
+                    newState.getIn([
+                      'components',
+                      action.uuid,
+                      'components',
+                      componentId,
+                      'nodes',
+                      nodeId,
+                      'state',
+                    ]),
+                  );
+                }
+              });
             }
           });
         });

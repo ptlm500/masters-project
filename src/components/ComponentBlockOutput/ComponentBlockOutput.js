@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import Immutable from 'immutable';
 import NodeContainer from '../../containers/NodeContainer/NodeContainer';
 import {
   STROKE_WIDTH,
@@ -7,15 +9,32 @@ import {
   NODE_OFFSET,
   NODE_RADIUS,
 } from '../componentConstants';
+import { updateConnections } from '../../store/actions';
 
 class ComponentBlockOutput extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
     selectedComponents: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
     parents: PropTypes.array,
     hidden: PropTypes.bool,
   };
+
+  componentDidUpdate() {
+    // Check if we need to update component output state
+    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
+      this.props.dispatch(
+        updateConnections(
+          this.props.uuid,
+          'component',
+          null,
+          this.props.parents,
+        ),
+      );
+      this.nodes = this.props.component.get('nodes');
+    }
+  }
 
   getComponentColour() {
     if (this.isSelectedComponent()) {
@@ -85,4 +104,4 @@ ComponentBlockOutput.defaultProps = {
   hidden: false,
 };
 
-export default ComponentBlockOutput;
+export default connect()(ComponentBlockOutput);

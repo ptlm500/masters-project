@@ -26,8 +26,8 @@ export function generateComponentBlockInput(uuid, x, y) {
         input: false,
         connections: Immutable.Set([]),
         state: 0,
-      }
-    }
+      },
+    },
   });
 }
 

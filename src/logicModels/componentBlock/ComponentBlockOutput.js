@@ -12,15 +12,23 @@ export function generateComponentBlockOutput(uuid, x, y) {
     type: 'ComponentBlockOutput',
     x,
     y,
+    f: nodes => nodes.last().get('state'),
     nodes: {
       [`${uuid}_0`]: {
+        x: NODE_OFFSET,
+        y: 11,
+        input: false,
+        connections: Immutable.Set([]),
+        state: 0,
+      },
+      [`${uuid}_1`]: {
         x: NODE_OFFSET,
         y: 11,
         input: true,
         connections: Immutable.Set([]),
         state: 0,
-      }
-    }
+      },
+    },
   });
 }
 

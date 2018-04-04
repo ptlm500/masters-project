@@ -19,8 +19,14 @@ class ComponentBlockInput extends React.Component {
   componentDidUpdate() {
     // Check if we need to update component output state
     if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
-      // console.log('updating', this.props.uuid, this.props.parents);
-      this.props.dispatch(updateConnections(this.props.uuid, 'component', null, this.props.parents));
+      this.props.dispatch(
+        updateConnections(
+          this.props.uuid,
+          'component',
+          null,
+          this.props.parents,
+        ),
+      );
       this.nodes = this.props.component.get('nodes');
     }
   }
@@ -36,11 +42,6 @@ class ComponentBlockInput extends React.Component {
   isSelectedComponent() {
     return this.props.selectedComponents.includes(this.props.uuid);
   }
-
-  // BLOCK INPUT SHOULD HAVE TWO NODES
-  // Invisible input node, connected to block input
-  // Output node visible, connected to internal block components
-  // f should pass input > output
 
   renderNodes() {
     const nodes = [];
