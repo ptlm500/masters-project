@@ -84,6 +84,7 @@ class Grid extends React.Component {
 
       const componentUuid = createUuid();
       // Create component
+      console.log(getParentsFromPath(this.props.activeTab.get('path')), this.props.activeTab.get('path'));
       this.props.addComponent(
         componentUuid,
         this.props.draggingComponent(componentUuid, point.x, point.y, 2),

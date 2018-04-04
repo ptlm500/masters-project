@@ -1,16 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import Immutable from 'immutable';
 import NodeContainer from '../../containers/NodeContainer/NodeContainer';
 import { STROKE_WIDTH, LEG_LENGTH } from '../componentConstants';
+import { updateConnections } from '../../store/actions';
 
 class ComponentBlockInput extends React.Component {
   static propTypes = {
     uuid: PropTypes.string.isRequired,
     component: PropTypes.object.isRequired,
     selectedComponents: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
     parents: PropTypes.array,
     hidden: PropTypes.bool,
   };
+
+  componentDidUpdate() {
+    // Check if we need to update component output state
+    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
+      // console.log('updating', this.props.uuid, this.props.parents);
+      this.props.dispatch(updateConnections(this.props.uuid, 'component', null, this.props.parents));
+      this.nodes = this.props.component.get('nodes');
+    }
+  }
 
   getComponentColour() {
     if (this.isSelectedComponent()) {
@@ -23,6 +36,11 @@ class ComponentBlockInput extends React.Component {
   isSelectedComponent() {
     return this.props.selectedComponents.includes(this.props.uuid);
   }
+
+  // BLOCK INPUT SHOULD HAVE TWO NODES
+  // Invisible input node, connected to block input
+  // Output node visible, connected to internal block components
+  // f should pass input > output
 
   renderNodes() {
     const nodes = [];
@@ -62,6 +80,7 @@ class ComponentBlockInput extends React.Component {
         </g>
       );
     }
+    console.log('**', this.props.component.get('state'));
 
     return null;
   }
@@ -72,4 +91,4 @@ ComponentBlockInput.defaultProps = {
   hidden: false,
 };
 
-export default ComponentBlockInput;
+export default connect()(ComponentBlockInput);

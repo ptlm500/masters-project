@@ -11,7 +11,15 @@ export function generateComponentBlockInput(uuid, x, y) {
     type: 'ComponentBlockInput',
     x,
     y,
+    f: nodes => nodes.first().get('state'),
     nodes: {
+      [`${uuid}_0`]: {
+        x: 21 + LEG_LENGTH + NODE_RADIUS,
+        y: 11,
+        input: true,
+        connections: Immutable.Set([]),
+        state: 0,
+      },
       [`${uuid}_1`]: {
         x: 21 + LEG_LENGTH + NODE_RADIUS,
         y: 11,

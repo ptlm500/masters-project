@@ -13,7 +13,7 @@ export function generateComponentBlockOutput(uuid, x, y) {
     x,
     y,
     nodes: {
-      [`${uuid}_1`]: {
+      [`${uuid}_0`]: {
         x: NODE_OFFSET,
         y: 11,
         input: true,

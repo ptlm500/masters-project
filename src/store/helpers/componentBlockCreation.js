@@ -7,9 +7,9 @@ import {
 import { createUuid } from '../../helpers';
 import { getComponentLocation } from './utils';
 
-export function getComponentBlockNode(node, nodeCounters, invert) {
+export function getComponentBlockNode(node, nodeCounters) {
   console.log(nodeCounters, 6 + nodeCounters.input * 20);
-  const input = invert ? !node.get('input') : node.get('input');
+  const input = node.get('input');
   return Immutable.Map({
     x: input ? NODE_OFFSET : 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
     y: input ? 6 + nodeCounters.input * 20 : 6 + nodeCounters.output * 20,
@@ -73,24 +73,24 @@ export function getNodeTotals(nodes) {
 
 export function addBlockNode(state, action) {
   let newState = state;
-  const path = action.parents;
+  const path = action.parents.slice();
   const blockUuid = path.pop();
   const componentLocation = getComponentLocation(path);
   const nodeTotals = getNodeTotals(
     newState.getIn(componentLocation.concat([blockUuid, 'nodes'])),
   );
+  const blockNodeUuid = `${blockUuid}_${nodeTotals.input + nodeTotals.output}`;
 
   newState = newState.setIn(
-    componentLocation.concat([
-      blockUuid,
-      'nodes',
-      `${blockUuid}_${nodeTotals.input + nodeTotals.output}`,
+    componentLocation.concat([blockUuid, 'nodes', blockNodeUuid]),
+    getComponentBlockNode(action.component.get('nodes').first(), nodeTotals),
+  );
+
+  newState = newState.updateIn(
+    getComponentLocation(action.parents).concat([
+      action.uuid, 'nodes', `${action.uuid}_0`, 'connections'
     ]),
-    getComponentBlockNode(
-      action.component.get('nodes').first(),
-      nodeTotals,
-      true,
-    ),
+    connections => connections.add(blockNodeUuid),
   );
 
   if (action.component.get('input')) {
