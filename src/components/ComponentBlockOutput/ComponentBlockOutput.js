@@ -9,7 +9,7 @@ import {
   NODE_OFFSET,
   NODE_RADIUS,
 } from '../componentConstants';
-import { updateConnections } from '../../store/actions';
+import { updateConnections, updateBlockOutput } from '../../store/actions';
 
 class ComponentBlockOutput extends React.Component {
   static propTypes = {
@@ -21,7 +21,23 @@ class ComponentBlockOutput extends React.Component {
     hidden: PropTypes.bool,
   };
 
+  componentDidMount() {
+    this.updateComponent();
+  }
+
   componentDidUpdate() {
+    this.updateComponent();
+  }
+
+  getComponentColour() {
+    if (this.isSelectedComponent()) {
+      return 'blue';
+    }
+
+    return 'black';
+  }
+
+  updateComponent() {
     // Check if we need to update component output state
     if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
       this.props.dispatch(
@@ -32,16 +48,11 @@ class ComponentBlockOutput extends React.Component {
           this.props.parents,
         ),
       );
+      this.props.dispatch(
+        updateBlockOutput(this.props.uuid, this.props.parents),
+      );
       this.nodes = this.props.component.get('nodes');
     }
-  }
-
-  getComponentColour() {
-    if (this.isSelectedComponent()) {
-      return 'blue';
-    }
-
-    return 'black';
   }
 
   isSelectedComponent() {

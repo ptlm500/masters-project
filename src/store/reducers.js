@@ -20,6 +20,7 @@ import {
   SELECT_WIRE,
   SET_VIEW_CONTEXT,
   ADD_BLOCK_NODE,
+  UPDATE_BLOCK_OUTPUT,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId, getParentsFromPath, } from '../helpers';
 import {
@@ -730,11 +731,16 @@ function components(state = initialState, action) {
           ]),
           action.wireState,
         );
+
+        console.log(newState.getIn(outputNodeLocation.concat([getComponentIdFromNodeId(wireOutputNode)])).toJS())
+        if (newState.getIn([outputNodeLocation.concat([getComponentIdFromNodeId(wireOutputNode), 'type'])]) === 'LED')
+          console.log('new state WIRE', action.uuid, newState.toJS());
       }
 
       return newState;
     }
     case UPDATE_BLOCK: {
+      // Copies external input node state to internal input nodes
       let newState = state;
 
       // Update internal input nodes connected to external input nodes
@@ -766,27 +772,35 @@ function components(state = initialState, action) {
                   );
                 }
               });
-            } else {
-              node.get('connections').forEach((connection, connectionId) => {
-                // Check if node is connected to an external connection
-                if (getComponentIdFromNodeId(connectionId) === action.uuid) {
-                  newState = newState.setIn(
-                    ['components', action.uuid, 'nodes', connectionId, 'state'],
-                    newState.getIn([
-                      'components',
-                      action.uuid,
-                      'components',
-                      componentId,
-                      'nodes',
-                      nodeId,
-                      'state',
-                    ]),
-                  );
-                }
-              });
             }
           });
         });
+
+      return newState;
+    }
+    case UPDATE_BLOCK_OUTPUT: {
+      // Copies internal output node state to external output nodes
+      let newState = state;
+      const blockPath = action.parents.slice();
+      const blockUuid = blockPath.pop();
+      const blockLocation = getComponentLocation(blockPath);
+      const outputNode = newState.getIn(
+        getComponentLocation(action.parents).concat([
+          action.uuid,
+          'nodes',
+          `${action.uuid}_0`,
+        ]),
+      );
+
+      newState = newState.setIn(
+        blockLocation.concat([
+          blockUuid,
+          'nodes',
+          outputNode.get('connections').first(),
+          'state',
+        ]),
+        outputNode.get('state'),
+      );
 
       return newState;
     }

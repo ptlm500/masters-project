@@ -25,12 +25,12 @@ class ComponentBlock extends React.Component {
     this.doubleClick = this.doubleClick.bind(this);
   }
 
+  componentDidMount() {
+    this.updateComponent();
+  }
+
   componentDidUpdate() {
-    // Check if we need to update component output state
-    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
-      this.props.dispatch(updateBlock(this.props.uuid));
-      this.nodes = this.props.component.get('nodes');
-    }
+    this.updateComponent();
   }
 
   getComponentColour() {
@@ -40,6 +40,15 @@ class ComponentBlock extends React.Component {
 
     return 'black';
   }
+
+  updateComponent() {
+    // Check if we need to update component output state
+    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
+      this.props.dispatch(updateBlock(this.props.uuid));
+      this.nodes = this.props.component.get('nodes');
+    }
+  }
+
 
   isSelectedComponent() {
     return this.props.selectedComponents.includes(this.props.uuid);

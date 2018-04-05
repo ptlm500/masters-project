@@ -20,8 +20,12 @@ class Wire extends React.Component {
     this.keyDown = this.keyDown.bind(this);
   }
 
+  componentDidMount() {
+    this.updateWire();
+  }
+
   componentDidUpdate() {
-    this.props.updateConnections(this.props.wireState);
+    this.updateWire();
   }
 
   componentWillUnmount() {
@@ -44,6 +48,14 @@ class Wire extends React.Component {
     }
 
     return this.props.wireState === 0 ? 'black' : 'green';
+  }
+
+  updateWire() {
+    // Check if we need to update the wire and it's connections
+    if (this.wireState !== this.props.wireState) {
+      this.props.updateConnections(this.props.wireState);
+      this.wireState = this.props.wireState;
+    }
   }
 
   isSelectedWire() {

@@ -11,8 +11,6 @@ import {
 import Grid from '../../components/Grid/Grid';
 
 const mapStateToProps = (state, ownProps) => {
-  console.log(state.components.getIn([
-    'tabs']).toJS(), state.components.get('activeTab'));
   return {
     components: state.components.get('components'),
     wires: state.components.get('wires'),

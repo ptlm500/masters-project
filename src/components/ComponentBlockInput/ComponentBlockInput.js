@@ -16,7 +16,23 @@ class ComponentBlockInput extends React.Component {
     hidden: PropTypes.bool,
   };
 
+  componentDidMount() {
+    this.updateComponent();
+  }
+
   componentDidUpdate() {
+    this.updateComponent();
+  }
+
+  getComponentColour() {
+    if (this.isSelectedComponent()) {
+      return 'blue';
+    }
+
+    return 'black';
+  }
+
+  updateComponent() {
     // Check if we need to update component output state
     if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
       this.props.dispatch(
@@ -29,14 +45,6 @@ class ComponentBlockInput extends React.Component {
       );
       this.nodes = this.props.component.get('nodes');
     }
-  }
-
-  getComponentColour() {
-    if (this.isSelectedComponent()) {
-      return 'blue';
-    }
-
-    return 'black';
   }
 
   isSelectedComponent() {

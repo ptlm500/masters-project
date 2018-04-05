@@ -17,13 +17,12 @@ class LogicGate extends React.Component {
     hidden: PropTypes.bool,
   };
 
+  componentDidMount() {
+    this.updateComponent();
+  }
+
   componentDidUpdate() {
-    // Check if we need to update component output state
-    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
-      console.log('updating', this.props.uuid, this.props.parents);
-      this.props.dispatch(updateConnections(this.props.uuid, 'component', null, this.props.parents));
-      this.nodes = this.props.component.get('nodes');
-    }
+    this.updateComponent();
   }
 
   getComponentColour() {
@@ -51,6 +50,15 @@ class LogicGate extends React.Component {
     });
 
     return nodes;
+  }
+
+  updateComponent() {
+    // Check if we need to update component output state
+    if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
+      // console.log('updating', this.props.uuid, this.props.parents);
+      this.props.dispatch(updateConnections(this.props.uuid, 'component', null, this.props.parents));
+      this.nodes = this.props.component.get('nodes');
+    }
   }
 
   isSelectedComponent() {

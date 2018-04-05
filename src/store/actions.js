@@ -18,7 +18,7 @@ export const DELETE_WIRE = 'DELETE_WIRE';
 export const TOGGLE_STATE = 'TOGGLE_STATE';
 export const UPDATE_CONNECTIONS = 'UPDATE_CONNECTIONS';
 export const UPDATE_BLOCK = 'UPDATE_BLOCK';
-export const UPDATE_COMPONENT_OUTPUT = 'UPDATE_COMPONENT_OUTPUT';
+export const UPDATE_BLOCK_OUTPUT = 'UPDATE_BLOCK_OUTPUT';
 export const UPDATE_SELECTION_BOX = 'UPDATE_SELECTION_BOX';
 export const SET_VIEW_CONTEXT = 'SET_VIEW_CONTEXT';
 
@@ -152,11 +152,11 @@ export function updateBlock(uuid) {
   };
 }
 
-export function updateComponentOutput(uuid, outputState) {
+export function updateBlockOutput(uuid, parents) {
   return {
-    type: UPDATE_COMPONENT_OUTPUT,
+    type: UPDATE_BLOCK_OUTPUT,
     uuid,
-    outputState,
+    parents,
   };
 }
 
