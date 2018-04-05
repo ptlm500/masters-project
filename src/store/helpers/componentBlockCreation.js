@@ -93,16 +93,5 @@ export function addBlockNode(state, action) {
     connections => connections.add(blockNodeUuid),
   );
 
-  if (action.component.get('input')) {
-    let inputNodes = newState.getIn(
-      componentLocation.concat([blockUuid, 'inputNodes']),
-    );
-    inputNodes = inputNodes ? 1 : (inputNodes += 1);
-
-    newState = newState.setIn(
-      componentLocation.concat([blockUuid, 'inputNodes'], inputNodes),
-    );
-  }
-
   return newState;
 }

@@ -442,8 +442,6 @@ function components(state = initialState, action) {
         });
       });
 
-      newBlock = newBlock.set('inputNodes', inputNodes.length);
-
       newState = newState.setIn(['components', action.uuid], newBlock);
 
       console.log(newState.toJS());
@@ -731,10 +729,6 @@ function components(state = initialState, action) {
           ]),
           action.wireState,
         );
-
-        console.log(newState.getIn(outputNodeLocation.concat([getComponentIdFromNodeId(wireOutputNode)])).toJS())
-        if (newState.getIn([outputNodeLocation.concat([getComponentIdFromNodeId(wireOutputNode), 'type'])]) === 'LED')
-          console.log('new state WIRE', action.uuid, newState.toJS());
       }
 
       return newState;

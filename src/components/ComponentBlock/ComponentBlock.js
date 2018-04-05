@@ -41,6 +41,18 @@ class ComponentBlock extends React.Component {
     return 'black';
   }
 
+  getHeightMultiplier() {
+    let inputNodes = 0;
+    let outputNodes = 0;
+
+    if (this.props.component.get('nodes'))
+      this.props.component.get('nodes').forEach(
+        node => (node.get('input') ? (inputNodes += 1) : (outputNodes += 1)),
+      );
+
+    return Math.max(inputNodes, outputNodes, 2);
+  }
+
   updateComponent() {
     // Check if we need to update component output state
     if (!Immutable.is(this.nodes, this.props.component.get('nodes'))) {
@@ -162,9 +174,7 @@ class ComponentBlock extends React.Component {
   }
 
   render() {
-    const HEIGHT = this.props.component.get('inputNodes')
-      ? 10 + (this.props.component.get('inputNodes') - 1) * LEG_SPACING
-      : 30;
+    const HEIGHT = 10 + (this.getHeightMultiplier() - 1) * LEG_SPACING;
     return (
       <g onDoubleClick={this.doubleClick}>
         <rect
