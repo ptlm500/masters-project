@@ -6,9 +6,9 @@ import {
 } from '../../components/componentConstants';
 import { createUuid } from '../../helpers';
 import { getComponentLocation } from './utils';
+import { deleteWire } from './wires';
 
 export function getComponentBlockNode(node, nodeCounters) {
-  console.log(nodeCounters, 6 + nodeCounters.input * 20);
   const input = node.get('input');
   return Immutable.Map({
     x: input ? NODE_OFFSET : 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
@@ -66,8 +66,6 @@ export function getNodeTotals(nodes) {
     });
   }
 
-  console.log(nodeCounters);
-
   return nodeCounters;
 }
 
@@ -88,9 +86,55 @@ export function addBlockNode(state, action) {
 
   newState = newState.updateIn(
     getComponentLocation(action.parents).concat([
-      action.uuid, 'nodes', `${action.uuid}_0`, 'connections'
+      action.uuid,
+      'nodes',
+      `${action.uuid}_0`,
+      'connections',
     ]),
     connections => connections.add(blockNodeUuid),
+  );
+
+  return newState;
+}
+
+export function deleteBlockNode(state, action) {
+  // Delete node from component block
+  // Delete wires connected to component block node
+  let newState = state;
+  const path = action.parents.slice();
+  const blockUuid = path.pop();
+  const componentLocation = getComponentLocation(path);
+  const blockNodeUuid = newState
+    .getIn(
+      getComponentLocation(action.parents).concat([
+        action.uuid,
+        'nodes',
+        `${action.uuid}_0`,
+        'connections',
+      ]),
+    )
+    .first();
+
+  const blockNodeConnections = newState.getIn(
+    componentLocation.concat([
+      blockUuid,
+      'nodes',
+      blockNodeUuid,
+      'connections',
+    ]),
+  );
+
+  if (blockNodeConnections) {
+    blockNodeConnections.forEach(connection => {
+      newState = deleteWire(newState, {
+        parents: path,
+        wireId: connection,
+      });
+    });
+  }
+
+  newState = newState.deleteIn(
+    componentLocation.concat([blockUuid, 'nodes', blockNodeUuid]),
   );
 
   return newState;

@@ -19,7 +19,7 @@ import {
   CREATE_COMPONENT_BLOCK_FROM_SELECTED,
   SELECT_WIRE,
   SET_VIEW_CONTEXT,
-  ADD_BLOCK_NODE,
+  DELETE_BLOCK_NODE,
   UPDATE_BLOCK_OUTPUT,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId, getParentsFromPath, } from '../helpers';
@@ -32,9 +32,10 @@ import {
 import {
   getComponentBlockNode,
   updateComponentNode,
-  getNodeTotals,
   addBlockNode,
+  deleteBlockNode,
 } from './helpers/componentBlockCreation';
+import { updateWire, deleteWire } from './helpers/wires';
 import {
   NODE_OFFSET,
   LEG_LENGTH,
@@ -599,62 +600,10 @@ function components(state = initialState, action) {
       return newState;
     }
     case UPDATE_WIRE: {
-      const wireLocation = getWireLocation(action.parents);
-      const wire = state.getIn(wireLocation.concat([action.wireId]));
-      if (wire) {
-        return state.setIn(
-          wireLocation.concat([action.wireId, 'points']),
-          getWirePoints(
-            state,
-            wire.get('inputNode'),
-            wire.get('outputNode'),
-            action.parents,
-          ),
-        );
-      }
-      return state;
+      return updateWire(state, action);
     }
     case DELETE_WIRE: {
-      const wireLocation = getWireLocation(action.parents);
-      const componentLocation = getComponentLocation(action.parents);
-      let newState = state;
-
-      // TODO: IN COMPONENT BLOCKS, COMPONENTS CONNECTED TO BLOCK I/O HAVE NO WIRE, SO THIS WILL FAIL
-      const wire = newState.getIn(wireLocation.concat([action.wireId]));
-
-      const wireNodes = [wire.get('inputNode'), wire.get('outputNode')];
-      // Iterate through wire connections
-      wireNodes.forEach(nodeId => {
-        // Delete connection record for nodes
-        newState = newState.updateIn(
-          componentLocation.concat([
-            getComponentIdFromNodeId(nodeId),
-            'nodes',
-            nodeId,
-            'connections',
-          ]),
-          connections => connections.delete(action.wireId),
-        );
-      });
-
-      // Reset output node state to 0
-      newState = newState.setIn(
-        componentLocation.concat([
-          getComponentIdFromNodeId(wire.get('outputNode')),
-          'nodes',
-          wire.get('outputNode'),
-          'state',
-        ]),
-        0,
-      );
-
-      // Delete wire from store
-      newState = newState.deleteIn(wireLocation.concat([action.wireId]));
-      // Remove wire ID from selectedWires
-      newState = newState.update('selectedWires', selectedWires =>
-        selectedWires.delete(action.wireId),
-      );
-      return newState;
+      return deleteWire(state, action);
     }
     case TOGGLE_STATE: {
       const newComponentState = state.getIn(['components', action.uuid, 'state']) === 0 ? 1 : 0;
@@ -797,6 +746,9 @@ function components(state = initialState, action) {
       );
 
       return newState;
+    }
+    case DELETE_BLOCK_NODE: {
+      return deleteBlockNode(state, action);
     }
     case UPDATE_SELECTION_BOX: {
       const parents = getParentsFromPath(

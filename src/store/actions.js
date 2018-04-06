@@ -19,6 +19,7 @@ export const TOGGLE_STATE = 'TOGGLE_STATE';
 export const UPDATE_CONNECTIONS = 'UPDATE_CONNECTIONS';
 export const UPDATE_BLOCK = 'UPDATE_BLOCK';
 export const UPDATE_BLOCK_OUTPUT = 'UPDATE_BLOCK_OUTPUT';
+export const DELETE_BLOCK_NODE = 'DELETE_BLOCK_NODE';
 export const UPDATE_SELECTION_BOX = 'UPDATE_SELECTION_BOX';
 export const SET_VIEW_CONTEXT = 'SET_VIEW_CONTEXT';
 
@@ -155,6 +156,14 @@ export function updateBlock(uuid) {
 export function updateBlockOutput(uuid, parents) {
   return {
     type: UPDATE_BLOCK_OUTPUT,
+    uuid,
+    parents,
+  };
+}
+
+export function deleteBlockNode(uuid, parents) {
+  return {
+    type: DELETE_BLOCK_NODE,
     uuid,
     parents,
   };

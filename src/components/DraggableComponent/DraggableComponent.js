@@ -25,6 +25,7 @@ class DraggableComponent extends React.Component {
     selectComponent: PropTypes.func.isRequired,
     deleteComponent: PropTypes.func.isRequired,
     deleteWire: PropTypes.func.isRequired,
+    deleteBlockNode: PropTypes.func.isRequired,
     parents: PropTypes.array,
     hidden: PropTypes.bool,
   };
@@ -44,11 +45,7 @@ class DraggableComponent extends React.Component {
     if (!this.isSelectedComponent()) {
       this.props.selectComponent();
     }
-    this.props.moveComponent(
-      e,
-      this.props.uuid,
-      'component',
-    );
+    this.props.moveComponent(e, this.props.uuid, 'component');
   }
 
   isSelectedComponent() {
@@ -56,15 +53,24 @@ class DraggableComponent extends React.Component {
   }
 
   keyDown(e) {
-    console.log(e, this.props.parents);
-    if (this.isSelectedComponent() && (e.key === 'Delete' || e.key === 'Backspace')) {
-      this.props.component.get('nodes').forEach(node => {
-        if (node.get('connections').size !== 0) {
-          node.get('connections').forEach(connection => {
-            this.props.deleteWire(connection, this.props.parents);
-          });
-        }
-      });
+    if (
+      this.isSelectedComponent() &&
+      (e.key === 'Delete' || e.key === 'Backspace')
+    ) {
+      if (
+        this.props.component.get('type') !== 'ComponentBlockInput' &&
+        this.props.component.get('type') !== 'ComponentBlockOutput'
+      ) {
+        this.props.component.get('nodes').forEach(node => {
+          if (node.get('connections').size !== 0) {
+            node.get('connections').forEach(connection => {
+              this.props.deleteWire(connection, this.props.parents);
+            });
+          }
+        });
+      } else {
+        this.props.deleteBlockNode(this.props.uuid, this.props.parents);
+      }
       this.props.deleteComponent();
     }
   }

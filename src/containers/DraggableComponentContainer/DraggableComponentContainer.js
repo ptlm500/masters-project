@@ -1,5 +1,10 @@
 import { connect } from 'react-redux';
-import { selectComponent, deleteComponent, deleteWire } from '../../store/actions';
+import {
+  selectComponent,
+  deleteComponent,
+  deleteWire,
+  deleteBlockNode,
+} from '../../store/actions';
 import DraggableComponent from '../../components/DraggableComponent/DraggableComponent';
 
 const mapStateToProps = (state, ownProps) => {
@@ -20,6 +25,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     deleteWire: (uuid, parents) => {
       dispatch(deleteWire(uuid, parents));
+    },
+    deleteBlockNode: (uuid, parents) => {
+      dispatch(deleteBlockNode(uuid, parents));
     },
   };
 };
