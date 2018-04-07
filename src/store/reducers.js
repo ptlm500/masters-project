@@ -116,179 +116,7 @@ const initialState = Immutable.fromJS({
     eX: null,
     eY: null,
   },
-  components: {
-    // a: {
-    //   x: '20',
-    //   y: '20',
-    //   type: 'ComponentBlock',
-    //   components: {
-    //     'or': {
-    //       type: 'ORGate',
-    //       x: '40',
-    //       y: '40',
-    //       f: nodes => {
-    //         let outputState = 0;
-
-    //         nodes.forEach(node => {
-    //           if (node.get('input') && node.get('state') === 1) {
-    //             outputState = 1;
-    //             return false;
-    //           }
-    //           return true;
-    //         });
-
-    //         return outputState;
-    //       },
-    //       nodes: {
-    //         'or_1': {
-    //           input: true,
-    //           connections: Immutable.Set(['a_3']),
-    //           state: 0,
-    //         },
-    //         'or_2': {
-    //           input: true,
-    //           connections: Immutable.Set(['a_4']),
-    //           state: 0,
-    //         },
-    //         'or_3': {
-    //           input: false,
-    //           connections: Immutable.Set(['w_2']),
-    //           state: 0,
-    //         },
-    //       }
-    //     },
-    //     'and': {
-    //       type: 'ANDGate',
-    //       x: '40',
-    //       y: '40',
-    //       f: nodes => {
-    //         let outputState = 1;
-
-    //         nodes.forEach(node => {
-    //           if (node.get('input')) {
-    //             if (node.get('state') === 0) {
-    //               outputState = 0;
-    //               return false;
-    //             }
-    //             return true;
-    //           }
-    //           return true;
-    //         });
-
-    //         return outputState;
-    //       },
-    //       nodes: {
-    //         'and_1': {
-    //           input: true,
-    //           connections: Immutable.Set(['a_1']),
-    //           state: 0,
-    //         },
-    //         'and_2': {
-    //           input: true,
-    //           connections: Immutable.Set(['a_2']),
-    //           state: 0,
-    //         },
-    //         'and_3': {
-    //           input: false,
-    //           connections: Immutable.Set(['w_1']),
-    //           state: 0,
-    //         },
-    //       }
-    //     },
-    //     'xor': {
-    //       type: 'XORGate',
-    //       x: '40',
-    //       y: '40',
-    //       f: nodes => {
-    //         let nodeTotal = 0;
-
-    //         nodes.forEach(node => {
-    //           if (node.get('input')) {
-    //             nodeTotal += node.get('state');
-    //           }
-    //         });
-
-    //         if (nodeTotal === 1 || (nodes.size > 3 && nodeTotal === nodes.size - 1)) {
-    //           return 1;
-    //         }
-    //         return 0;
-    //       },
-    //       nodes: {
-    //         'xor_1': {
-    //           input: true,
-    //           connections: Immutable.Set(['w_1']),
-    //           state: 0,
-    //         },
-    //         'xor_2': {
-    //           input: true,
-    //           connections: Immutable.Set(['w_2']),
-    //           state: 0,
-    //         },
-    //         'xor_3': {
-    //           input: false,
-    //           connections: Immutable.Set(['a_5']),
-    //           state: 0,
-    //         },
-    //       }
-    //     },
-    //   },
-    //   wires: {
-    //     w_1: {
-    //       inputNode: 'and_3',
-    //       outputNode: 'xor_1',
-    //       points: Immutable.fromJS([{x: 0, y: 0}])
-    //     },
-    //     w_2: {
-    //       inputNode: 'or_3',
-    //       outputNode: 'xor_2',
-    //       points: Immutable.fromJS([{x: 0, y: 0}])
-    //     },
-    //     w_3: {
-    //       inputNode: 'xor_3',
-    //       outputNode: 'a_5',
-    //       points: Immutable.fromJS([{x: 0, y: 0}])
-    //     },
-    //   },
-    //   inputNodes: 4,
-    //   nodes: {
-    //     a_1: {
-    //       x: NODE_OFFSET,
-    //       y: 6,
-    //       input: true,
-    //       connections: Immutable.Set([]),
-    //       state: 0,
-    //     },
-    //     a_2: {
-    //       x: NODE_OFFSET,
-    //       y: 26,
-    //       input: true,
-    //       connections: Immutable.Set([]),
-    //       state: 0,
-    //     },
-    //     a_3: {
-    //       x: NODE_OFFSET,
-    //       y: 46,
-    //       input: true,
-    //       connections: Immutable.Set([]),
-    //       state: 0,
-    //     },
-    //     a_4: {
-    //       x: NODE_OFFSET,
-    //       y: 66,
-    //       input: true,
-    //       connections: Immutable.Set([]),
-    //       state: 0,
-    //     },
-    //     a_5: {
-    //       x: 40 + (LEG_LENGTH + STROKE_WIDTH) * 2 - NODE_OFFSET,
-    //       y: 37,
-    //       input: false,
-    //       connections: Immutable.Set([]),
-    //       state: 0,
-    //     },
-    //   },
-    // },
-  },
+  components: {},
   wires: {},
 });
 
@@ -333,8 +161,6 @@ function components(state = initialState, action) {
         newState = addBlockNode(newState, action);
       }
 
-      console.log(newState.toJS())
-
       return newState;
     }
     case CREATE_COMPONENT_BLOCK: {
@@ -348,8 +174,6 @@ function components(state = initialState, action) {
         componentLocation.concat([action.uuid]),
         newBlock,
       );
-
-      // console.log(newState.toJS());
 
       return newState;
     }
@@ -541,10 +365,6 @@ function components(state = initialState, action) {
       const componentLocation = getComponentLocation(action.parents);
       const wireLocation = getWireLocation(action.parents);
 
-
-      console.log('***', action.parents, newState.getIn(componentLocation.concat([
-        getComponentIdFromNodeId(action.nodes.inputNodeId)
-      ])));
       // Update input node connection info
       newState = newState.updateIn(
         componentLocation.concat([
@@ -555,7 +375,6 @@ function components(state = initialState, action) {
         ]),
         connections => connections.add(newState.get('activeWire')),
       );
-      console.log(newState.toJS(), action.nodes.outputNodeId);
       // Update output node connection info
       newState = newState.updateIn(
         componentLocation.concat([
@@ -878,7 +697,7 @@ function components(state = initialState, action) {
       return newState;
     }
     default:
-      console.log(`created store with state ${state} for ${action.type}`);
+      console.info(`created store with state ${state} for ${action.type}`);
       return state;
   }
 }
