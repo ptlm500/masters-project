@@ -59,8 +59,10 @@ class DraggableComponent extends React.Component {
     ) {
       if (
         this.props.component.get('type') !== 'ComponentBlockInput' &&
-        this.props.component.get('type') !== 'ComponentBlockOutput'
+        this.props.component.get('type') !== 'ComponentBlockOutput' &&
+        this.props.component.get('nodes')
       ) {
+        // If not a block node we can use the standard wire deletion method
         this.props.component.get('nodes').forEach(node => {
           if (node.get('connections').size !== 0) {
             node.get('connections').forEach(connection => {
@@ -68,7 +70,8 @@ class DraggableComponent extends React.Component {
             });
           }
         });
-      } else {
+      } else if (this.props.component.get('nodes')) {
+        // Handle deletion of block nodes using specialised method
         this.props.deleteBlockNode(this.props.uuid, this.props.parents);
       }
       this.props.deleteComponent();

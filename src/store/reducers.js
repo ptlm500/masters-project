@@ -866,7 +866,14 @@ function components(state = initialState, action) {
         );
       }
 
-      newState = newState.set('activeTab', tabExists || `Block ${newState.get('tabs').size - 1}`);
+      newState = newState.set(
+        'activeTab',
+        tabExists || `Block ${newState.get('tabs').size - 1}`,
+      );
+
+      // Clear selected components
+      newState = newState.set('selectedComponents', Immutable.Set([]));
+      newState = newState.set('selectedWires', Immutable.Set([]));
 
       return newState;
     }
