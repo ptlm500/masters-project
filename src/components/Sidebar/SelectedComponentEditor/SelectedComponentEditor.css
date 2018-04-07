@@ -1,0 +1,26 @@
+.root {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  height: 250px;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.total-display {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  bottom: 0;
+}
+
+.details-table {
+  display: flex;
+  flex-direction: row;
+}
+
+.details-table-column {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}

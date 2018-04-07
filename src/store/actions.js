@@ -8,6 +8,7 @@ export const CREATE_COMPONENT_BLOCK = 'CREATE_COMPONENT_BLOCK';
 export const CREATE_COMPONENT_BLOCK_FROM_SELECTED =
   'CREATE_COMPONENT_BLOCK_FROM_SELECTED';
 export const DELETE_COMPONENT = 'DELETE_COMPONENT';
+export const UPDATE_COMPONENT_NAME = 'UPDATE_COMPONENT_NAME';
 export const SELECT_COMPONENT = 'SELECT_COMPONENT';
 export const SELECT_WIRE = 'SELECT_WIRE';
 export const START_NODE_CONNECTION = 'START_NODE_CONNECTION';
@@ -88,6 +89,15 @@ export function deleteComponent(uuid, parents) {
     type: DELETE_COMPONENT,
     uuid,
     parents,
+  };
+}
+
+export function updateComponentName(uuid, parents, name) {
+  return {
+    type: UPDATE_COMPONENT_NAME,
+    uuid,
+    parents,
+    name,
   };
 }
 

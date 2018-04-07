@@ -21,6 +21,7 @@ import {
   SET_VIEW_CONTEXT,
   DELETE_BLOCK_NODE,
   UPDATE_BLOCK_OUTPUT,
+  UPDATE_COMPONENT_NAME,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId, getParentsFromPath, } from '../helpers';
 import {
@@ -494,6 +495,14 @@ function components(state = initialState, action) {
       newState = newState.set('selectedComponents', Immutable.Set([]));
 
       return newState;
+    }
+    case UPDATE_COMPONENT_NAME: {
+      const componentLocation = getComponentLocation(action.parents);
+
+      return state.setIn(
+        componentLocation.concat([action.uuid, 'name']),
+        action.name,
+      );
     }
     case START_NODE_CONNECTION: {
       let newState = state;

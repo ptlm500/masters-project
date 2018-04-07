@@ -1,0 +1,6 @@
+{
+  "name": "SelectedComponentEditor",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./SelectedComponentEditor.js"
+}

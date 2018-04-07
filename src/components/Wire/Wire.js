@@ -102,7 +102,6 @@ class Wire extends React.Component {
 
   render() {
     if (this.props.hidden) {
-      console.log('wire is hidden');
       return null;
     }
 

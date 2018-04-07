@@ -17,7 +17,7 @@ const mapStateToProps = (state, ownProps) => {
     wireLocation = wireLocation.concat([ownProps.uuid]);
   }
   const wire = state.components.getIn(wireLocation);
-  console.log('state', state.components.toJS(), wireLocation, ownProps.parents)
+
   return {
     wire,
     wireState: state.components.getIn(

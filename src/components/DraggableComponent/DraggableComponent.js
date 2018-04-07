@@ -193,6 +193,24 @@ class DraggableComponent extends React.Component {
     }
   }
 
+  renderText() {
+    const maxLength = 14;
+    let text = this.props.component.get('name');
+
+    if (text) {
+      if (text.length > maxLength) {
+        text = text.substring(0, maxLength);
+        text = text.concat('...');
+      }
+
+      return (
+        <text y="-6" fontFamily="Verdana" fontSize="12">{text}</text>
+      );
+    }
+
+    return null;
+  }
+
   render() {
     if (this.isSelectedComponent() && !this.keyListener) {
       document.addEventListener('keydown', this.keyDown);
@@ -204,11 +222,13 @@ class DraggableComponent extends React.Component {
 
     return (
       <svg
+        className={s.component}
         x={this.props.component.get('x')}
         y={this.props.component.get('y')}
         onMouseDown={e => this.onMouseDown(e)}
         onKeyDown={e => this.keyDown(e)}
       >
+        {this.renderText()}
        {this.renderComponent()}
       </svg>
     );

@@ -89,7 +89,6 @@ class ComponentBlockInput extends React.Component {
         </g>
       );
     }
-    console.log('**', this.props.component.get('state'));
 
     return null;
   }

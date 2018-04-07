@@ -5,6 +5,7 @@ import s from './Sidebar.css';
 import models from '../../logicModels/index';
 import ComponentCellContainer from '../../containers/ComponentCellContainer/ComponentCellContainer';
 import CreateComponentBlockButtonContainer from '../../containers/CreateComponentBlockButtonContainer/CreateComponentBlockButtonContainer';
+import SelectedComponentEditorContainer from '../../containers/SelectedComponentEditorContainer/SelectedComponentEditorContainer';
 
 class Sidebar extends React.Component {
   static propTypes = {
@@ -36,6 +37,7 @@ class Sidebar extends React.Component {
         <div className={s.library}>
           {this.renderComponentCells()}
         </div>
+        <SelectedComponentEditorContainer/>
         <CreateComponentBlockButtonContainer/>
       </div>
     );
