@@ -23,6 +23,7 @@ export const UPDATE_BLOCK_OUTPUT = 'UPDATE_BLOCK_OUTPUT';
 export const DELETE_BLOCK_NODE = 'DELETE_BLOCK_NODE';
 export const UPDATE_SELECTION_BOX = 'UPDATE_SELECTION_BOX';
 export const SET_VIEW_CONTEXT = 'SET_VIEW_CONTEXT';
+export const SAVE_STATE = 'SAVE_STATE';
 
 // Action creators
 export function moveComponent(uuid, component, moveType, vertexId, parents) {
@@ -191,5 +192,11 @@ export function setViewContext(path, name) {
     type: SET_VIEW_CONTEXT,
     path,
     name,
+  };
+}
+
+export function saveState() {
+  return {
+    type: SAVE_STATE,
   };
 }

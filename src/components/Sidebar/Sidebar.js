@@ -6,6 +6,8 @@ import models from '../../logicModels/index';
 import ComponentCellContainer from '../../containers/ComponentCellContainer/ComponentCellContainer';
 import CreateComponentBlockButtonContainer from '../../containers/CreateComponentBlockButtonContainer/CreateComponentBlockButtonContainer';
 import SelectedComponentEditorContainer from '../../containers/SelectedComponentEditorContainer/SelectedComponentEditorContainer';
+import SaveButton from './SaveButton/SaveButton';
+import LoadButton from './LoadButton/LoadButton';
 
 class Sidebar extends React.Component {
   static propTypes = {
@@ -37,8 +39,12 @@ class Sidebar extends React.Component {
         <div className={s.library}>
           {this.renderComponentCells()}
         </div>
-        <SelectedComponentEditorContainer/>
-        <CreateComponentBlockButtonContainer/>
+        <SelectedComponentEditorContainer />
+        <CreateComponentBlockButtonContainer />
+        <div className={s['save-load']}>
+          <SaveButton />
+          <LoadButton />
+        </div>
       </div>
     );
   }

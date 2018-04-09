@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
 import { combineReducers } from 'redux';
+import FileSaver from 'file-saver';
 import {
   MOVE_COMPONENT,
   SET_DRAGGING_COMPONENT,
@@ -22,6 +23,7 @@ import {
   DELETE_BLOCK_NODE,
   UPDATE_BLOCK_OUTPUT,
   UPDATE_COMPONENT_NAME,
+  SAVE_STATE,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId, getParentsFromPath, } from '../helpers';
 import {
@@ -724,6 +726,20 @@ function components(state = initialState, action) {
       // Clear selected components
       newState = newState.set('selectedComponents', Immutable.Set([]));
       newState = newState.set('selectedWires', Immutable.Set([]));
+
+      return newState;
+    }
+    case SAVE_STATE: {
+      const fileName = prompt('Please enter file name', 'state');
+      let newState = state;
+
+      if (fileName) {
+        newState = newState.set('saveDate', Date.now());
+        const saveData = new Blob([JSON.stringify(newState.toJS())], {
+          type: 'application/json',
+        });
+        FileSaver.saveAs(saveData, `${fileName}.ptlm`);
+      }
 
       return newState;
     }

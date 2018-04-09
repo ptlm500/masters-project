@@ -18,3 +18,12 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
+
+.save-load {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-left: 20%;
+  margin-right: 20%;
+  margin-top: 10px;
+}
