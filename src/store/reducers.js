@@ -312,11 +312,12 @@ function components(state = initialState, action) {
       const componentLocation = getComponentLocation(action.parents);
       let newState = state;
 
-      newState.get('selectedComponents').forEach(componentUuid => {
-        newState = newState.deleteIn(componentLocation.concat([componentUuid]));
-      });
-
-      newState = newState.set('selectedComponents', Immutable.Set([]));
+      // Remove component from state
+      newState = newState.deleteIn(componentLocation.concat([action.uuid]));
+      // Remove component from selected components
+      newState = newState.update('selectedComponents', selectedComponents =>
+        selectedComponents.delete(action.uuid),
+      );
 
       return newState;
     }

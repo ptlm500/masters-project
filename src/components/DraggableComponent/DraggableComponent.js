@@ -74,6 +74,7 @@ class DraggableComponent extends React.Component {
         // Handle deletion of block nodes using specialised method
         this.props.deleteBlockNode(this.props.uuid, this.props.parents);
       }
+      // Delete component
       this.props.deleteComponent();
     }
   }
