@@ -115,7 +115,7 @@ export function deleteBlockNode(state, action) {
     )
     .first();
 
-  const blockNodeConnections = newState.getIn(
+  const blockNodeExternalConnections = newState.getIn(
     componentLocation.concat([
       blockUuid,
       'nodes',
@@ -124,14 +124,30 @@ export function deleteBlockNode(state, action) {
     ]),
   );
 
-  if (blockNodeConnections) {
-    blockNodeConnections.forEach(connection => {
+  if (blockNodeExternalConnections) {
+    blockNodeExternalConnections.forEach(connection => {
       newState = deleteWire(newState, {
         parents: path,
         wireId: connection,
       });
     });
   }
+
+  newState
+    .getIn(
+      getComponentLocation(action.parents).concat([
+        action.uuid,
+        'nodes',
+        `${action.uuid}_1`,
+        'connections',
+      ]),
+    )
+    .forEach(connection => {
+      newState = deleteWire(newState, {
+        parents: action.parents,
+        wireId: connection,
+      });
+    });
 
   newState = newState.deleteIn(
     componentLocation.concat([blockUuid, 'nodes', blockNodeUuid]),
