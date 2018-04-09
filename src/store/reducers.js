@@ -670,7 +670,7 @@ function components(state = initialState, action) {
       let tabExists;
 
       newState.get('tabs').forEach((tab, tabName) => {
-        if (tab.get('path') === action.path) {
+        if (tab.get('path').toString() === action.path.toString()) {
           tabExists = tabName;
           newState = newState.setIn(['tabs', tabName, 'active'], true);
         }
