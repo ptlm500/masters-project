@@ -101,57 +101,63 @@ export function deleteBlockNode(state, action) {
   // Delete node from component block
   // Delete wires connected to component block node
   let newState = state;
-  const path = action.parents.slice();
-  const blockUuid = path.pop();
-  const componentLocation = getComponentLocation(path);
-  const blockNodeUuid = newState
-    .getIn(
-      getComponentLocation(action.parents).concat([
-        action.uuid,
-        'nodes',
-        `${action.uuid}_0`,
-        'connections',
-      ]),
-    )
-    .first();
-
-  const blockNodeExternalConnections = newState.getIn(
-    componentLocation.concat([
-      blockUuid,
-      'nodes',
-      blockNodeUuid,
-      'connections',
-    ]),
+  const type = newState.getIn(
+    getComponentLocation(action.parents).concat([action.uuid, 'type']),
   );
 
-  if (blockNodeExternalConnections) {
-    blockNodeExternalConnections.forEach(connection => {
-      newState = deleteWire(newState, {
-        parents: path,
-        wireId: connection,
+  if (type === 'ComponentBlockInput' || type === 'ComponentBlockOutput') {
+    const path = action.parents.slice();
+    const blockUuid = path.pop();
+    const componentLocation = getComponentLocation(path);
+    const blockNodeUuid = newState
+      .getIn(
+        getComponentLocation(action.parents).concat([
+          action.uuid,
+          'nodes',
+          `${action.uuid}_0`,
+          'connections',
+        ]),
+      )
+      .first();
+
+    const blockNodeExternalConnections = newState.getIn(
+      componentLocation.concat([
+        blockUuid,
+        'nodes',
+        blockNodeUuid,
+        'connections',
+      ]),
+    );
+
+    if (blockNodeExternalConnections) {
+      blockNodeExternalConnections.forEach(connection => {
+        newState = deleteWire(newState, {
+          parents: path,
+          wireId: connection,
+        });
       });
-    });
+    }
+
+    newState
+      .getIn(
+        getComponentLocation(action.parents).concat([
+          action.uuid,
+          'nodes',
+          `${action.uuid}_1`,
+          'connections',
+        ]),
+      )
+      .forEach(connection => {
+        newState = deleteWire(newState, {
+          parents: action.parents,
+          wireId: connection,
+        });
+      });
+
+    newState = newState.deleteIn(
+      componentLocation.concat([blockUuid, 'nodes', blockNodeUuid]),
+    );
   }
-
-  newState
-    .getIn(
-      getComponentLocation(action.parents).concat([
-        action.uuid,
-        'nodes',
-        `${action.uuid}_1`,
-        'connections',
-      ]),
-    )
-    .forEach(connection => {
-      newState = deleteWire(newState, {
-        parents: action.parents,
-        wireId: connection,
-      });
-    });
-
-  newState = newState.deleteIn(
-    componentLocation.concat([blockUuid, 'nodes', blockNodeUuid]),
-  );
 
   return newState;
 }

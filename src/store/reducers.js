@@ -576,7 +576,15 @@ function components(state = initialState, action) {
       return newState;
     }
     case DELETE_BLOCK_NODE: {
-      return deleteBlockNode(state, action);
+      let newState = state;
+
+      newState.get('selectedComponents').forEach(componentUuid => {
+        newState = deleteBlockNode(newState, {
+          parents: action.parents,
+          uuid: componentUuid,
+        });
+      });
+      return newState;
     }
     case UPDATE_SELECTION_BOX: {
       const parents = getParentsFromPath(
