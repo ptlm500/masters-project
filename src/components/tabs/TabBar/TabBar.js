@@ -15,9 +15,9 @@ class TabBar extends React.Component {
     const tabs = [];
 
     if (this.props.tabs) {
-      this.props.tabs.forEach((tab, tabName) => {
+      this.props.tabs.forEach((tab, tabId) => {
         tabs.push(
-          <Tab tabName={tabName} tab={tab} activeTab={this.props.activeTab} />,
+          <Tab tabName={tab.get('name')} tab={tab} activeTab={this.props.activeTab} tabId={tabId}/>,
         );
       });
     }

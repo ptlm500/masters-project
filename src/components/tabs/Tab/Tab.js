@@ -8,6 +8,7 @@ import {setViewContext} from '../../../store/actions';
 
 class Tab extends React.Component {
   static propTypes = {
+    tabId: PropTypes.string.isRequired,
     tabName: PropTypes.string.isRequired,
     tab: PropTypes.object.isRequired,
     activeTab: PropTypes.string.isRequired,
@@ -26,7 +27,7 @@ class Tab extends React.Component {
   }
 
   isActiveTab() {
-    return this.props.activeTab === this.props.tabName;
+    return this.props.activeTab === this.props.tabId;
   }
 
   render() {
@@ -37,7 +38,7 @@ class Tab extends React.Component {
 
     return (
       <div key={this.props.tabName} className={className} onClick={this.onClick}>
-        {this.props.tabName}
+        {this.props.tabName || this.props.tabId}
       </div>
     );
   }

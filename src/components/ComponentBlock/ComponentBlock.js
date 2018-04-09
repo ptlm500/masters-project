@@ -75,7 +75,7 @@ class ComponentBlock extends React.Component {
     });
     path = path.concat([this.props.uuid]);
 
-    this.props.dispatch(setViewContext(path));
+    this.props.dispatch(setViewContext(path, this.props.component.get('name')));
   }
 
   renderNodes() {

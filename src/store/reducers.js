@@ -96,6 +96,7 @@ const initialState = Immutable.fromJS({
   activeTab: 'Root',
   tabs: {
     'Root': {
+      name: 'Root',
       path: '',
     },
   },
@@ -312,6 +313,17 @@ function components(state = initialState, action) {
       const componentLocation = getComponentLocation(action.parents);
       let newState = state;
 
+      if (
+        newState.getIn(componentLocation.concat([action.uuid, 'type'])) ===
+        'ComponentBlock'
+      ) {
+        newState.get('tabs').forEach((tab, tabId) => {
+          if (tab.get('path').slice(-1)[0] === action.uuid) {
+            newState = newState.deleteIn(['tabs', tabId]);
+          }
+        });
+      }
+
       // Remove component from state
       newState = newState.deleteIn(componentLocation.concat([action.uuid]));
       // Remove component from selected components
@@ -323,11 +335,20 @@ function components(state = initialState, action) {
     }
     case UPDATE_COMPONENT_NAME: {
       const componentLocation = getComponentLocation(action.parents);
+      let newState = state;
 
-      return state.setIn(
+      newState.get('tabs').forEach((tab, tabId) => {
+        if (tab.get('path').slice(-1)[0] === action.uuid) {
+          newState = newState.setIn(['tabs', tabId, 'name'], action.name);
+        }
+      });
+
+      newState = newState.setIn(
         componentLocation.concat([action.uuid, 'name']),
         action.name,
       );
+
+      return newState;
     }
     case START_NODE_CONNECTION: {
       let newState = state;
@@ -690,6 +711,7 @@ function components(state = initialState, action) {
           ['tabs', `Block ${newState.get('tabs').size}`],
           Immutable.Map({
             path: action.path,
+            name: action.name || `Block ${newState.get('tabs').size}`,
           }),
         );
       }
