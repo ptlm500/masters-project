@@ -4,8 +4,22 @@
   background-color: #5596e6;
   color: #ffffff;
   text-align: center;
-  cursor: pointer;
   height: 40px;
   width: 60px;
   line-height: 40px;
+  cursor: pointer;
+}
+
+.input {
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  width: 60px;
+  height: 40px;
+  cursor: pointer;
+}
+.wrapper {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
 }

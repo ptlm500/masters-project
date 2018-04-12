@@ -24,6 +24,7 @@ import {
   UPDATE_BLOCK_OUTPUT,
   UPDATE_COMPONENT_NAME,
   SAVE_STATE,
+  LOAD_STATE,
 } from './actions';
 import { getComponentIdFromNodeId, createUuid, getOutputNodeId, getParentsFromPath, } from '../helpers';
 import {
@@ -738,10 +739,18 @@ function components(state = initialState, action) {
         const saveData = new Blob([JSON.stringify(newState.toJS())], {
           type: 'application/json',
         });
-        FileSaver.saveAs(saveData, `${fileName}.ptlm`);
+        FileSaver.saveAs(saveData, `${fileName}.json`);
       }
 
       return newState;
+    }
+    case LOAD_STATE: {
+      // Load state and convert it back to an Immutable object
+      return Immutable.fromJS(
+        action.state,
+        (key, value) =>
+          Immutable.isIndexed(value) ? value.toSet() : value.toMap(),
+      );
     }
     default:
       console.info(`created store with state ${state} for ${action.type}`);

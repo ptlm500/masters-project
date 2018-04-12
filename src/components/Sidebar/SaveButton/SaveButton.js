@@ -16,7 +16,7 @@ class SaveButton extends React.Component {
 
   render() {
     return(
-      <div className={s['button']} onClick={() => this.onClick()}>
+      <div className={s.button} onClick={() => this.onClick()}>
         Save
       </div>
     );
